@@ -79,7 +79,6 @@ class CoordinateBased:
     @property
     def dy(self):
         """
-        
 
         Returns
         -------
@@ -136,7 +135,7 @@ class CoordinateBased:
         """
         plt.scatter(self.data[:,0],self.data[:,1])
         plt.show()
-    
+        
     def plot_profile(self):
         """
         This function plots the profile using a plot from matplotlib
