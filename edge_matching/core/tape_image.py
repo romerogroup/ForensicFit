@@ -2,12 +2,13 @@
 """
 Created on Sun Jun 28 14:11:02 2020
 
-@author: ptava
+@author: Pedram Tavadze
 """
 
 import os
 import cv2
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 class TapeImage():
@@ -15,15 +16,28 @@ class TapeImage():
                  fname=None,
                  tape_label=None,
                  mask_threshold=60,
+                 rescale=None,
+                 split=True,
+                 gaussian_blur=None,
+                 split_side='L',
+                 split_position=None,
                  ):
         self.fname = fname
         self.tape_label = tape_label
         
         self.image = cv2.imread(fname,0)
         self.image_original = self.image.copy()
+        if split :
+            self.split_vertical(split_position,split_side)
+        if gaussian_blur is  not None:
+            self.gaussian_blur(gaussian_blur)
+        if rescale is not None:
+            self.resize(
+                size=(int(self.image.shape[0]*rescale),int(self.image.shape[1]*rescale)))
         self.mask_threshold = mask_threshold
         self.masked = None
-            
+        self.colored = cv2.cvtColor(self.image,cv2.COLOR_GRAY2BGR)
+        self._get_masked()
         
     
     def _get_masked(self):
@@ -35,8 +49,13 @@ class TapeImage():
         None.
 
         """
-        self.masked = cv2.inRange(self.gray_scale,self.mask_threshold,255)
+        self.masked = cv2.inRange(self.image,self.mask_threshold,255)
+        
         return
+    
+    @property 
+    def binerized_mask(self):
+        return cv2.bitwise_and(self.image,self.image,mask=self.masked)
     
 
     @property
@@ -50,8 +69,13 @@ class TapeImage():
             Gray Scale image of the input image.
 
         """
-        gray_scale = cv2.cvtColor(self.image,cv2.COLOR_BGR2GRAY)
+        if len(self.image.shapelen) >2:
+            gray_scale = cv2.cvtColor(self.image,cv2.COLOR_BGR2GRAY)
+        else : 
+            gray_scale = self.image
         return gray_scale
+    
+
     
     @property
     def width(self):
@@ -80,6 +104,31 @@ class TapeImage():
         return self.image.shape[0]
     
     
+    @property
+    def size(self):
+        """
+        
+
+        Returns
+        -------
+        int
+            Total number of pixels.
+
+        """
+        return self.image.size
+    
+    @property
+    def shape(self):
+        """
+        
+
+        Returns
+        -------
+        tuple int
+            2d tuple with height and width.
+
+        """
+        return self.image.shape
     
     def gaussian_blur(self,window=(15,15)):
         """
@@ -97,16 +146,17 @@ class TapeImage():
 
         """
         self.image = cv2.GaussianBlur(self.image,window,0)
+        self.colored =  cv2.cvtColor(self.image,cv2.COLOR_GRAY2BGR)
         return
     
-    def split_vertical(self,pixel_index=None,pick_side='L'):
+    def split_vertical(self,pixel_index=0.5,pick_side='L'):
         """
         
 
         Parameters
         ----------
         pixel_index : int, optional
-            The pixel number at which the image is going to be split. The default is None.
+            fraction in which the image is going to be split. The default is 0.5.
         pick_side : str, optional
             The side in which will over write the image in the class. The default is 'L'.
 
@@ -117,10 +167,12 @@ class TapeImage():
         """        
         if pixel_index is None:
             pixel_index = self.width//2
+        
         if pick_side == 'L':
             self.image = self.image[:, 0:pixel_index]
         else : 
             self.image = cv2.flip(self.image[:,pixel_index:self.width],1)
+        self.colored =  cv2.cvtColor(self.image,cv2.COLOR_GRAY2BGR)
         return
     
     @property
@@ -171,7 +223,7 @@ class TapeImage():
             2d array with the list of pixels of the largest contour
 
         """
-        contour_max_area=self.contour_max_area
+        contour_max_area=self.largest_contour
         return contour_max_area.reshape(contour_max_area.shape[0],2)
 
 
@@ -263,8 +315,14 @@ class TapeImage():
         cond_and = np.bitwise_and(cond1,cond2)
         ymax = int(self.boundary[cond_and,1].max()) # using int because pixel numbers are integers
         return ymax
+    
+    def resize(self,size=None):
+        if size is None:
+            return 
+        else:
+            self.image = cv2.resize(self.image,size)
 
-    def plot(self,savefig=None):
+    def show(self,savefig=None,cmap='gray'):
         """
         
         Plots the image
@@ -278,9 +336,30 @@ class TapeImage():
         None.
 
         """
-        cv2.imshow(self.tape_label,self.image)
-        cv2.waitKey(0)
+        plt.imshow(self.image,cmap=cmap)
         if savefig is not None:
             cv2.imwrite(savefig,self.image)
-
+        return 
     
+    def show_binarized(self,savefig=None,cmap='gray'):
+        plt.imshow(self.binerized_mask,cmap=cmap)
+        return 
+
+    def plot_boundary(self,savefig=None,color='r'):
+        """
+        
+
+        Parameters
+        ----------
+        savefig : str, optional
+            path to save the plot. The default is None.
+
+        Returns
+        -------
+        None.
+
+        """
+        # if savefig is not None:
+        #     plt.savefig()
+        plt.plot(self.boundary[:,0],self.boundary[:,1],c=color)
+        return
