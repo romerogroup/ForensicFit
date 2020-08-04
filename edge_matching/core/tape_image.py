@@ -9,7 +9,7 @@ import os
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-
+ndivision = 6
 
 class TapeImage():
     def __init__(self,
@@ -25,19 +25,26 @@ class TapeImage():
         self.fname = fname
         self.tape_label = tape_label
         
+        self.image_tilt = None
+        self.crop_y_top = None
+        self.crop_y_bottom = None
+        
         self.image = cv2.imread(fname,0)
         self.image_original = self.image.copy()
         if split :
             self.split_vertical(split_position,split_side)
-        if gaussian_blur is  not None:
+        if gaussian_blur is  not None :
             self.gaussian_blur(gaussian_blur)
         if rescale is not None:
             self.resize(
-                size=(int(self.image.shape[0]*rescale),int(self.image.shape[1]*rescale)))
+                size=(int(self.image.shape[0]*rescale),
+                      int(self.image.shape[1]*rescale)))
         self.mask_threshold = mask_threshold
         self.masked = None
         self.colored = cv2.cvtColor(self.image,cv2.COLOR_GRAY2BGR)
         self._get_masked()
+        self._get_image_tilt()
+        
         
     
     def _get_masked(self):
@@ -49,13 +56,17 @@ class TapeImage():
         None.
 
         """
-        self.masked = cv2.inRange(self.image,self.mask_threshold,255)
+        self.masked = cv2.inRange(self.image,
+                                  self.mask_threshold,
+                                  255)
         
         return
     
     @property 
     def binerized_mask(self):
-        return cv2.bitwise_and(self.image,self.image,mask=self.masked)
+        return cv2.bitwise_and(self.image,
+                               self.image,
+                                mask=self.masked)
     
 
     @property
@@ -129,6 +140,133 @@ class TapeImage():
 
         """
         return self.image.shape
+    
+    
+    
+    def _get_image_tilt(self,plot=False):
+        stds = np.ones((ndivision-1,2))*1000
+        conditions_top = []
+        conditions_top.append([])
+        conditions_bottom = []
+        conditions_bottom.append([])
+        boundary = self.boundary
+        y_min = self.ymin
+        y_max = self.ymax
+        
+        x_min = self.xmin
+        x_max = self.xmax
+        if plot:
+            _ = plt.figure()
+
+        for idivision in range(1,ndivision-1):
+
+            y_interval = y_max-y_min
+            cond1 = boundary[:,1]> y_max-y_interval/ndivision
+            cond2 = boundary[:,1]< y_max+y_interval/ndivision
+            
+            x_interal = x_max-x_min
+            cond3 = boundary[:,0]>= x_min+x_interal/ndivision*idivision
+            cond4 = boundary[:,0]<= x_min+x_interal/ndivision*(idivision+1)
+            
+            cond_12 = np.bitwise_and(cond1,cond2)
+            cond_34 = np.bitwise_and(cond3,cond4)
+            cond_and_top = np.bitwise_and(cond_12,cond_34)
+            
+            # This part is to rotate the images
+
+            if sum(cond_and_top) == 0 :
+                conditions_top.append([])
+                
+                continue
+            if plot:
+                plt.plot(boundary[cond_and_top][:,0],boundary[cond_and_top][:,1])
+            m_top,b0_top = np.polyfit(boundary[cond_and_top][:,0],boundary[cond_and_top][:,1],1)
+            std_top = np.std(boundary[cond_and_top][:,1])
+            stds[idivision,0] = std_top
+            conditions_top.append(cond_and_top)
+            
+        for idivision in range(1,ndivision-1):
+            
+            cond1 = boundary[:,1]> y_min-y_interval/ndivision
+            cond2 = boundary[:,1]< y_min+y_interval/ndivision
+            
+            x_interal = x_max-x_min
+            cond3 = boundary[:,0]>= x_min+x_interal/ndivision*idivision
+            cond4 = boundary[:,0]<= x_min+x_interal/ndivision*(idivision+1)
+            
+            cond_12 = np.bitwise_and(cond1,cond2)
+            cond_34 = np.bitwise_and(cond3,cond4)
+            cond_and_bottom = np.bitwise_and(cond_12,cond_34)
+            
+            if sum(cond_and_bottom) == 0 :
+                
+                conditions_bottom.append([])
+                continue
+            if plot:
+                plt.plot(boundary[cond_and_bottom][:,0],boundary[cond_and_bottom][:,1])
+            m_bottom,b0_bottom = np.polyfit(boundary[cond_and_bottom][:,0],boundary[cond_and_bottom][:,1],1)
+            
+            m = np.average([m_top,m_bottom])
+            
+            std_bottom = np.std(boundary[cond_and_bottom][:,1])
+            # print(std_top,std_bottom)
+            
+            stds[idivision,1] = std_bottom
+            conditions_bottom.append(cond_and_bottom)
+            if plot:
+                plt.figure()
+                plt.plot(boundary[:,0],boundary[:,1])
+                plt.scatter(boundary[cond_and_top][:,0],boundary[cond_and_top][:,1])
+                plt.scatter(boundary[cond_and_bottom][:,0],boundary[cond_and_bottom][:,1])
+        
+        arg_mins = np.argmin(stds,axis=0)
+        
+        cond_and_top = conditions_top[arg_mins[0]]
+        cond_and_bottom = conditions_bottom[arg_mins[1]]
+        
+        self.crop_y_top = np.average(boundary[cond_and_top][:,1])
+        self.crop_y_bottom = np.average(boundary[cond_and_bottom][:,1])
+        
+        if np.min(stds,axis=0)[0] > 10 :
+            self.crop_y_top = y_max
+        if np.min(stds,axis=0)[1] > 10 :
+            self.crop_y_bottom = y_min
+        angle = np.arctan(m)
+        angle_d = np.rad2deg(angle)
+        self.image_tilt = angle_d
+        return angle_d
+        
+    def auto_crop_y(self):
+
+        self.image = self.image[int(self.crop_y_bottom):int(self.crop_y_top),:]
+        self.colored =  cv2.cvtColor(self.image,cv2.COLOR_GRAY2BGR)
+        self._get_masked()
+        
+        # self._get_image_tilt()
+        
+    
+
+    def rotate_image(self, angle):
+        """
+        
+        Rotates the image by angle degrees
+        Parameters
+        ----------
+        angle : float
+            Angle of rotation.
+
+        Returns
+        -------
+        None.
+
+        """
+        image_center = tuple(np.array(self.image.shape[1::-1]) / 2)
+        rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
+        self.image = cv2.warpAffine(self.image, rot_mat, self.image.shape[1::-1], flags=cv2.INTER_LINEAR)
+        self.colored =  cv2.cvtColor(self.image,cv2.COLOR_GRAY2BGR)
+        self._get_masked()
+
+        return 
     
     def gaussian_blur(self,window=(15,15)):
         """
@@ -286,15 +424,16 @@ class TapeImage():
     def ymin(self):
         """
         
-
+        
         Returns
         -------
         ymin : int
              Y coordinate of minimum pixel of the boundary
 
         """
-        cond1 = self.boundary[:,0]>= self.xmin+self.x_interal/self.n_xsections*1
-        cond2 = self.boundary[:,0]<= self.xmin+self.x_interal/self.n_xsections*2
+        n_xsections = 6
+        cond1 = self.boundary[:,0]>= self.xmin+self.x_interval/n_xsections*1
+        cond2 = self.boundary[:,0]<= self.xmin+self.x_interval/n_xsections*2
         cond_and = np.bitwise_and(cond1,cond2)
         ymin = int(self.boundary[cond_and,1].min()) # using int because pixel numbers are integers
         return ymin
@@ -303,15 +442,16 @@ class TapeImage():
     def ymax(self):
         """
         
-
+        
         Returns
         -------
         ymax : int
              Y coordinate of maximum pixel of the boundary
 
         """
-        cond1 = self.boundary[:,0]>= self.xmin+self.x_interal/self.n_xsections*1
-        cond2 = self.boundary[:,0]<= self.xmin+self.x_interal/self.n_xsections*2
+        n_xsections = 6
+        cond1 = self.boundary[:,0]>= self.xmin+self.x_interval/n_xsections*1
+        cond2 = self.boundary[:,0]<= self.xmin+self.x_interval/n_xsections*2
         cond_and = np.bitwise_and(cond1,cond2)
         ymax = int(self.boundary[cond_and,1].max()) # using int because pixel numbers are integers
         return ymax
@@ -363,3 +503,156 @@ class TapeImage():
         #     plt.savefig()
         plt.plot(self.boundary[:,0],self.boundary[:,1],c=color)
         return
+
+    def coordinate_based(self,npoints=1000,x_trim_param=2,plot=False):
+        """
+        
+
+        Parameters
+        ----------
+        npoints : int, optional
+            Number of points to be selected on the edge. The default is 1000.
+        x_trim_param : int, optional
+            The x direction of the edge will be divided by this number and only the first one is selected. The default is 6.
+
+        Returns
+        -------
+        None.
+
+        """
+        x_min = self.xmin
+        x_max = self.xmax
+        x_interal = x_max-x_min
+        boundary = self.boundary
+
+        cond1 = boundary[:,0]>= x_min+x_interal/x_trim_param*0
+        cond2 = boundary[:,0]<= x_min+x_interal/x_trim_param*1
+        cond_12 = np.bitwise_and(cond1,cond2)
+        # cond_12 = cond1
+        data = np.zeros((npoints,2))
+        y_min = self.ymin
+        y_max = self.ymax
+        y_interval = y_max - y_min
+        edge = boundary[cond_12]
+        
+
+        
+        
+        for ipoint in range(0,npoints):
+            y_start = y_min+ipoint*(y_interval/npoints)
+            y_end   = y_min+(ipoint+1)*(y_interval/npoints)
+            cond1 = edge[:,1] >= y_start
+            cond2 = edge[:,1] <= y_end
+            cond_and = np.bitwise_and(cond1,cond2)
+
+
+            data[ipoint,:] = np.average(edge[cond_and],axis=0)
+        if plot:
+            plt.figure(figsize=(1.65,10))
+            plt.scatter(data[:,0],data[:,1],s=1)
+        
+        return data
+    
+    def weft_based(self,
+                   window_background=20,
+                   window_tape=300,
+                   dynamic_window=False,
+                   size=(300,30),
+                   nsegments=4,
+                   plot=False,
+                   ):
+        """
+        
+
+        Parameters
+        ----------
+        window_background : int, optional
+            Number of pixels to be included in each segment in the backgroung side of the image. The default is 20.
+        window_tape : int, optional
+            Number of pixels to be included in each segment in the tape side of the image. The default is 300.
+        dynamic_window : TYPE, optional
+            Whether the windows move in each segment. The default is False.
+        size : 2d tuple integers, optional
+            The size of each segment in pixels. The default is (300,30).
+        nsegments : int, optional
+            Number of segments that the tape is going to divided into. The default is 4.
+        plot : bool, optional
+            Whether or not to plot the divided image. The default is False.
+
+
+        Returns
+        -------
+        An array of 2d numpy arrays with images of each segment.
+
+        """
+        boundary = self.boundary
+        x_min = self.xmin
+        x_max = self.xmax
+                
+        y_min = self.ymin
+        y_max = self.ymax
+        
+        x_start = x_min-window_background
+        x_end = x_min+window_tape
+
+        seg_len = (y_max-y_min)//(nsegments)
+        
+        segments = []
+        plot_segmets = []
+        for iseg in range(0,nsegments):
+            y_start = y_min+iseg*seg_len
+            y_end =   y_min+(iseg+1)*seg_len
+            if dynamic_window:
+                cond1 = boundary[:,1]>= y_start
+                cond2 = boundary[:,1]<= y_end
+                cond_and = np.bitwise_and(cond1,cond2)
+                x_start =  boundary[cond_and,0].min()
+                x_end   =  x_start + window_tape
+#            cv2.imwrite('%s_%d.tif'%(fname[:-4],iseg),im_color[y_start:y_end,x_start:x_end])
+            isection = self.binerized_mask[y_start:y_end,x_start:x_end]
+            # isection = cv2.resize(isection,(size[1],size[0]))
+            segments.append(isection)
+            
+            isection = cv2.copyMakeBorder(isection,1,1,1,1,cv2.BORDER_CONSTANT,value=[0,0,0])
+            plot_segmets.append(isection)
+            # segments.append(cv2.cvtColor(isection,cv2.COLOR_BGR2GRAY))
+            
+        if plot:
+            plt.figure()
+            plt.imshow(cv2.vconcat(plot_segmets),cmap='gray')
+        return segments
+    
+    def max_contrast(self,
+                     window_background=20,
+                     window_tape=300,
+                     plot=False):
+        """
+        
+
+        Parameters
+        ----------
+        window_background : int, optional
+            Number of pixels to be included in each segment in the backgroung side of the image. The default is 20.
+        window_tape : int, optional
+            Number of pixels to be included in each segment in the tape side of the image. The default is 300.
+        plot : bool, optional
+            Whether or not to plot the divided image. The default is False.
+
+        Returns
+        -------
+        edge_bw : 2d numpy array
+            A black image with all the pixels on the edge white.
+
+        """
+        zeros = np.zeros_like(self.image)        
+        edge_bw = cv2.drawContours(zeros,[self.boundary],0,(255,255,255),2)
+        x_min = self.xmin
+        
+        x_start = x_min-window_background
+        x_end = x_min+window_tape
+        edge_bw = edge_bw[:,x_start:x_end]
+        if plot:
+            plt.figure()
+            plt.imshow(edge_bw,cmap='gray')
+        return edge_bw
+    
