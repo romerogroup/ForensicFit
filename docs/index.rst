@@ -1,16 +1,16 @@
-.. Forensics Edge Matching documentation master file, created by
-   sphinx-quickstart on Tue Aug  4 00:11:50 2020.
+.. Forensics documentation master file, created by
+   sphinx-quickstart on Wed Aug  5 21:43:15 2020.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Forensics Edge Matching's documentation!
-===================================================
+Welcome to Forensics's documentation!
+=====================================
 
 .. toctree::
    :maxdepth: 2
+   :caption: Contents:
 
-   API
-
+   modules 
 
 Indices and tables
 ==================

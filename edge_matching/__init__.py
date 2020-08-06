@@ -4,4 +4,4 @@
 # import os
 
 
-from .core.tape_image import TapeImage
+from . import core

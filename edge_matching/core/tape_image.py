@@ -13,16 +13,43 @@ ndivision = 6
 
 class TapeImage():
     def __init__(self,
-                 fname=None,
+                 fname,
                  tape_label=None,
                  mask_threshold=60,
                  rescale=None,
                  split=True,
-                 gaussian_blur=None,
+                 gaussian_blur=(15,15),
                  split_side='L',
                  split_position=None,
                  ):
+        """
+        
+
+        Parameters
+        ----------
+        fname : str
+            Path to the image file. The default is None.
+        tape_label : str, optional
+            Label to this specific image. The default is None.
+        mask_threshold : int, optional
+            The number in which pixel values are regarded zero. The default is 60.
+        rescale : float, optional
+            Only for scale images down to a smaller size for example rescale=1/2. The default is None.
+        split : bool, optional
+            Whether or not to split the image. The default is True.
+        gaussian_blur : 2d tuple of int, optional
+            Defines the window in which Gaussian Blur filter is applied. The default is (15,15).
+        split_side : string, optional
+            After splitting the image which side is chosen. The default is 'L'.
+        split_position : float, optional
+            Number between 0-1. Defines the where the vertical split is going to happen. 1/2 will be in the middle. The default is None.
+         
+    
+    
+        """
         self.fname = fname
+        if not os.path.exists(fname):
+            raise Exception("File %s does not exist"%fname)
         self.tape_label = tape_label
         
         self.image_tilt = None
@@ -49,9 +76,9 @@ class TapeImage():
     
     def _get_masked(self):
         """
-        
         Populates the masked image with the gray scale threshold
         Returns
+        
         -------
         None.
 
@@ -64,6 +91,15 @@ class TapeImage():
     
     @property 
     def binerized_mask(self):
+        """
+        This funtion return the binarized version of the tape
+
+        Returns
+        -------
+        2d array of the image
+            .
+
+        """
         return cv2.bitwise_and(self.image,
                                self.image,
                                 mask=self.masked)
@@ -144,6 +180,20 @@ class TapeImage():
     
     
     def _get_image_tilt(self,plot=False):
+        """
+        This function calculates the degree in which the tape is tilted with respect to the horizontal line.
+
+        Parameters
+        ----------
+        plot : bool, optional
+            Plot the segmentation as the image tilt is being calculated. The default is False.
+
+        Returns
+        -------
+        angle_d : TYPE
+            DESCRIPTION.
+
+        """
         stds = np.ones((ndivision-1,2))*1000
         conditions_top = []
         conditions_top.append([])
@@ -237,7 +287,14 @@ class TapeImage():
         return angle_d
         
     def auto_crop_y(self):
+        """
+        This method automatically crops the image in y direction (top and bottom)
 
+        Returns
+        -------
+        None.
+
+        """
         self.image = self.image[int(self.crop_y_bottom):int(self.crop_y_top),:]
         self.colored =  cv2.cvtColor(self.image,cv2.COLOR_GRAY2BGR)
         self._get_masked()
@@ -248,16 +305,16 @@ class TapeImage():
 
     def rotate_image(self, angle):
         """
-        
         Rotates the image by angle degrees
+        
         Parameters
         ----------
-        angle : float
-            Angle of rotation.
+            angle : float
+                Angle of rotation.
 
         Returns
         -------
-        None.
+            None.
 
         """
         image_center = tuple(np.array(self.image.shape[1::-1]) / 2)
@@ -464,8 +521,8 @@ class TapeImage():
 
     def show(self,savefig=None,cmap='gray'):
         """
-        
         Plots the image
+        
         Parameters
         ----------
         savefig : str, optional
@@ -508,16 +565,16 @@ class TapeImage():
         """
         
 
-        Parameters
-        ----------
-        npoints : int, optional
-            Number of points to be selected on the edge. The default is 1000.
-        x_trim_param : int, optional
-            The x direction of the edge will be divided by this number and only the first one is selected. The default is 6.
+        Parameters:
+        
+            npoints : int, optional
+                Number of points to be selected on the edge. The default is 1000.
+            x_trim_param : int, optional
+                The x direction of the edge will be divided by this number and only the first one is selected. The default is 6.
 
-        Returns
-        -------
-        None.
+        Returns:
+        
+           None.
 
         """
         x_min = self.xmin
