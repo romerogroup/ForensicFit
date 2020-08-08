@@ -1,0 +1,21 @@
+edge\_matching.preprocess package
+=================================
+
+.. automodule:: edge_matching.preprocess
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Submodules
+----------
+
+edge\_matching.preprocess.tape_image module
+-------------------------------------------
+
+.. automodule:: edge_matching.preprocess.tape_image
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+

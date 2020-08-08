@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'Forensics'
+project = 'Forensics Edge Matching'
 copyright = '2020, Pedram Tavadze, Freddie Farah, Aldo Romero'
 author = 'Pedram Tavadze, Freddie Farah, Aldo Romero'
 
@@ -29,6 +29,9 @@ author = 'Pedram Tavadze, Freddie Farah, Aldo Romero'
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.coverage',
+    'sphinx.ext.viewcode',
+    'numpydoc'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -45,7 +48,14 @@ language = 'en'
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
-
+autoclass_content = 'both'
+# autodoc_default_options = {
+#     'members': True,
+#     'member-order': 'bysource',
+#     'special-members': '__init__',
+#     'undoc-members': True,
+#     'exclude-members': '__weakref__'
+# }
 
 # -- Options for HTML output -------------------------------------------------
 

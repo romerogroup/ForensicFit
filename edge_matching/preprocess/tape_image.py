@@ -23,7 +23,10 @@ class TapeImage():
                  split_position=None,
                  ):
         """
-        
+        TapeImage is a class created for tape images to be preprocessed for 
+        Machine Learning. This Class detects the edges, auto crops the image 
+        and returns the results in 3 different method coordinate_based, 
+        weft_based and max_contrast. 
 
         Parameters
         ----------
@@ -32,20 +35,24 @@ class TapeImage():
         tape_label : str, optional
             Label to this specific image. The default is None.
         mask_threshold : int, optional
-            The number in which pixel values are regarded zero. The default is 60.
+            The number in which pixel values are regarded zero. The default is
+            60.
         rescale : float, optional
-            Only for scale images down to a smaller size for example rescale=1/2. The default is None.
+            Only for scale images down to a smaller size for example 
+            rescale=1/2. The default is None.
         split : bool, optional
             Whether or not to split the image. The default is True.
         gaussian_blur : 2d tuple of int, optional
-            Defines the window in which Gaussian Blur filter is applied. The default is (15,15).
+            Defines the window in which Gaussian Blur filter is applied. The 
+            default is (15,15).
         split_side : string, optional
             After splitting the image which side is chosen. The default is 'L'.
         split_position : float, optional
-            Number between 0-1. Defines the where the vertical split is going to happen. 1/2 will be in the middle. The default is None.
+            Number between 0-1. Defines the where the vertical split is going 
+            to happen. 1/2 will be in the middle. The default is None.
          
     
-    
+
         """
         self.fname = fname
         if not os.path.exists(fname):
@@ -70,7 +77,7 @@ class TapeImage():
         self.masked = None
         self.colored = cv2.cvtColor(self.image,cv2.COLOR_GRAY2BGR)
         self._get_masked()
-        self._get_image_tilt()
+        self.get_image_tilt()
         
         
     
@@ -108,7 +115,7 @@ class TapeImage():
     @property
     def gray_scale(self):
         """
-        
+        Gray Scale image of the input image.
 
         Returns
         -------
@@ -127,7 +134,7 @@ class TapeImage():
     @property
     def width(self):
         """
-        
+        Width of the image.
 
         Returns
         -------
@@ -140,7 +147,7 @@ class TapeImage():
     @property
     def height(self):
         """
-        
+        Height of the image.
 
         Returns
         -------
@@ -154,7 +161,7 @@ class TapeImage():
     @property
     def size(self):
         """
-        
+        Total number of pixels.
 
         Returns
         -------
@@ -167,7 +174,7 @@ class TapeImage():
     @property
     def shape(self):
         """
-        
+        2d tuple with height and width.
 
         Returns
         -------
@@ -179,14 +186,16 @@ class TapeImage():
     
     
     
-    def _get_image_tilt(self,plot=False):
+    def get_image_tilt(self,plot=False):
         """
-        This function calculates the degree in which the tape is tilted with respect to the horizontal line.
+        This function calculates the degree in which the tape is tilted with 
+        respect to the horizontal line.
 
         Parameters
         ----------
         plot : bool, optional
-            Plot the segmentation as the image tilt is being calculated. The default is False.
+            Plot the segmentation as the image tilt is being calculated. The 
+            default is False.
 
         Returns
         -------
@@ -253,8 +262,10 @@ class TapeImage():
                 conditions_bottom.append([])
                 continue
             if plot:
-                plt.plot(boundary[cond_and_bottom][:,0],boundary[cond_and_bottom][:,1])
-            m_bottom,b0_bottom = np.polyfit(boundary[cond_and_bottom][:,0],boundary[cond_and_bottom][:,1],1)
+                plt.plot(
+                    boundary[cond_and_bottom][:,0],boundary[cond_and_bottom][:,1])
+            m_bottom,b0_bottom = np.polyfit(
+                boundary[cond_and_bottom][:,0],boundary[cond_and_bottom][:,1],1)
             
             m = np.average([m_top,m_bottom])
             
@@ -319,7 +330,8 @@ class TapeImage():
         """
         image_center = tuple(np.array(self.image.shape[1::-1]) / 2)
         rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
-        self.image = cv2.warpAffine(self.image, rot_mat, self.image.shape[1::-1], flags=cv2.INTER_LINEAR)
+        self.image = cv2.warpAffine(
+            self.image, rot_mat, self.image.shape[1::-1], flags=cv2.INTER_LINEAR)
         self.colored =  cv2.cvtColor(self.image,cv2.COLOR_GRAY2BGR)
         self._get_masked()
 
@@ -327,7 +339,7 @@ class TapeImage():
     
     def gaussian_blur(self,window=(15,15)):
         """
-        
+        This method applies Gaussian Blur filter to the image. 
 
         Parameters
         ----------
@@ -346,14 +358,17 @@ class TapeImage():
     
     def split_vertical(self,pixel_index=0.5,pick_side='L'):
         """
-        
+        This method splits the image in 2 images based on the fraction that is 
+        given in pixel_index
 
         Parameters
         ----------
-        pixel_index : int, optional
-            fraction in which the image is going to be split. The default is 0.5.
+        pixel_index : float, optional
+            fraction in which the image is going to be split. The value should
+            be a number between zero and one. The default is 0.5.
         pick_side : str, optional
-            The side in which will over write the image in the class. The default is 'L'.
+            The side in which will over write the image in the class. The 
+            default is 'L'.
 
         Returns
         -------
@@ -373,7 +388,7 @@ class TapeImage():
     @property
     def contours(self):
         """
-        
+         A list of pixels that create the contours in the image
 
         Returns
         -------
@@ -382,13 +397,14 @@ class TapeImage():
 
         """
         
-        contours,_ = cv2.findContours(self.masked,cv2.RETR_TREE,cv2.CHAIN_APPROX_NONE)
+        contours,_ = cv2.findContours(
+            self.masked,cv2.RETR_TREE,cv2.CHAIN_APPROX_NONE)
         return contours
 
     @property
     def largest_contour(self):
         """
-        
+        A list of pixels forming the contour with the largest area
 
         Returns
         -------
@@ -410,7 +426,7 @@ class TapeImage():
     @property
     def boundary(self):
         """
-        
+        2d array with the list of pixels of the largest contour
 
         Returns
         -------
@@ -425,7 +441,7 @@ class TapeImage():
     @property
     def edge(self):
         """
-        
+         List of pixels that create the boundary.
 
         Returns
         -------
@@ -440,6 +456,8 @@ class TapeImage():
     @property
     def xmin(self):
         """
+        X coordinate of minimum pixel of the boundary
+        
         Returns
         -------
         xmin : int
@@ -452,7 +470,7 @@ class TapeImage():
     @property
     def xmax(self):
         """
-        
+        X coordinate of minimum pixel of the boundary
 
         Returns
         -------
@@ -466,7 +484,7 @@ class TapeImage():
     @property
     def x_interval(self):
         """
-        
+        interval of the coordinates in X direction
 
         Returns
         -------
@@ -480,7 +498,7 @@ class TapeImage():
     @property
     def ymin(self):
         """
-        
+        Y coordinate of minimum pixel of the boundary
         
         Returns
         -------
@@ -498,7 +516,7 @@ class TapeImage():
     @property
     def ymax(self):
         """
-        
+        Y coordinate of maximum pixel of the boundary
         
         Returns
         -------
@@ -513,7 +531,20 @@ class TapeImage():
         ymax = int(self.boundary[cond_and,1].max()) # using int because pixel numbers are integers
         return ymax
     
-    def resize(self,size=None):
+    def resize(self,size):
+        """
+        This method resizes the image to the pixel size given.
+
+        Parameters
+        ----------
+        size : tuple int,
+            The target size in which the image is going to be resized. 
+
+        Returns
+        -------
+        None.
+
+        """
         if size is None:
             return 
         else:
@@ -527,7 +558,9 @@ class TapeImage():
         ----------
         savefig : str, optional
             path to the file one wants to save the image. The default is None.
-
+        cmap : str, optional
+            The color map in which the image is shown. The default is 'gray'.
+            
         Returns
         -------
         None.
@@ -539,12 +572,27 @@ class TapeImage():
         return 
     
     def show_binarized(self,savefig=None,cmap='gray'):
+        """
+        This function returns the image as the background 
+
+        Parameters
+        ----------
+        savefig : TYPE, optional
+            DESCRIPTION. The default is None.
+        cmap : TYPE, optional
+            DESCRIPTION. The default is 'gray'.
+
+        Returns
+        -------
+        None.
+
+        """
         plt.imshow(self.binerized_mask,cmap=cmap)
         return 
 
     def plot_boundary(self,savefig=None,color='r'):
         """
-        
+        This function plots the detected boundary of the image. 
 
         Parameters
         ----------
@@ -562,19 +610,23 @@ class TapeImage():
         return
 
     def coordinate_based(self,npoints=1000,x_trim_param=2,plot=False):
-        """
-        
 
-        Parameters:
-        
-            npoints : int, optional
-                Number of points to be selected on the edge. The default is 1000.
-            x_trim_param : int, optional
-                The x direction of the edge will be divided by this number and only the first one is selected. The default is 6.
+        """
+        This method returns the data of the detected edge as a set of points 
+        in 2d plain with (x,y)
+
+        Parameters
+        ----------
+        npoints int, optional
+                Number of points to be selected on the edge. The default is 
+                1000.
+        x_trim_param int, optional
+                The x direction of the edge will be divided by this number and
+                only the first one is selected. The default is 6.
 
         Returns:
         
-           None.
+            None.
 
         """
         x_min = self.xmin
@@ -619,20 +671,27 @@ class TapeImage():
                    plot=False,
                    ):
         """
+        This method returns the detected edge as a set of croped images from 
+        the edge. The number if images is defined by nsegments. The goal is 
+        to try to match the segmentation to the wefts of the tape. 
+        In the future this method will try to detecte the wefts automatically.
         
 
         Parameters
         ----------
         window_background : int, optional
-            Number of pixels to be included in each segment in the backgroung side of the image. The default is 20.
+            Number of pixels to be included in each segment in the backgroung 
+            side of the image. The default is 20.
         window_tape : int, optional
-            Number of pixels to be included in each segment in the tape side of the image. The default is 300.
+            Number of pixels to be included in each segment in the tape side 
+            of the image. The default is 300.
         dynamic_window : TYPE, optional
             Whether the windows move in each segment. The default is False.
         size : 2d tuple integers, optional
             The size of each segment in pixels. The default is (300,30).
         nsegments : int, optional
-            Number of segments that the tape is going to divided into. The default is 4.
+            Number of segments that the tape is going to divided into. The 
+            default is 4.
         plot : bool, optional
             Whether or not to plot the divided image. The default is False.
 
@@ -684,7 +743,8 @@ class TapeImage():
                      window_tape=300,
                      plot=False):
         """
-        
+        This method returns the detected image as a black image with only the 
+        boundary being white.
 
         Parameters
         ----------

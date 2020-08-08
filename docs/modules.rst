@@ -1,4 +1,4 @@
-Forensics_edge_matching
+Package API
 =======================
 
 .. toctree::

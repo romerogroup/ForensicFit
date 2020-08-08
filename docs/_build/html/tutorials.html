@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>edge_matching package &mdash; Forensics Edge Matching  documentation</title>
+  <title>Tutorials &mdash; Forensics Edge Matching  documentation</title>
   
 
   
@@ -36,8 +36,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="edge_matching.preprocess package" href="edge_matching.preprocess.html" />
-    <link rel="prev" title="Package API" href="modules.html" /> 
+    <link rel="next" title="Preprocessing" href="preprocess.html" />
+    <link rel="prev" title="Developers" href="developers.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -86,17 +86,17 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="developers.html">Developers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Package API</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">edge_matching package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="edge_matching.preprocess.html">edge_matching.preprocess package</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#preprocessing">Preprocessing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#single-image-processing">Single image processing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#loading-the-image">Loading the image</a></li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Package API</a></li>
 </ul>
 
             
@@ -143,15 +143,13 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-          <li><a href="modules.html">Package API</a> &raquo;</li>
-        
-      <li>edge_matching package</li>
+      <li>Tutorials</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/edge_matching.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/tutorials.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -164,18 +162,33 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-edge_matching">
-<span id="edge-matching-package"></span><h1>edge_matching package<a class="headerlink" href="#module-edge_matching" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="tutorials">
+<h1>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this headline">¶</a></h1>
+<p>The following set of tutorials explains the basic usage of this package.
+The examples provide information on how to use the preprocessing method for different
+approaches. Later it will explain how one can use the data generated in this
+section in different Machine Learning approaches using keras package.</p>
+<div class="section" id="preprocessing">
+<h2>Preprocessing<a class="headerlink" href="#preprocessing" title="Permalink to this headline">¶</a></h2>
+<p>At first we will explain the steps one has to take to process a single image,
+Then we will move to processing directories of images.</p>
+<div class="section" id="single-image-processing">
+<h3>Single image processing<a class="headerlink" href="#single-image-processing" title="Permalink to this headline">¶</a></h3>
+<p>All of our tutorials are eplained in ipython interactive session, However these
+commands can be easily moved to a python script for more automation.</p>
+<div class="section" id="loading-the-image">
+<h4>Loading the image<a class="headerlink" href="#loading-the-image" title="Permalink to this headline">¶</a></h4>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">edge_matching</span>
+<span class="n">tape_image</span> <span class="o">=</span> <span class="n">edge_matching</span><span class="o">.</span><span class="n">TapeImage</span><span class="p">(</span><span class="s1">&#39;L001.tiff&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="edge_matching.preprocess.html">edge_matching.preprocess package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="edge_matching.preprocess.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="edge_matching.preprocess.html#module-edge_matching.preprocess.tape_image">edge_matching.preprocess.tape_image module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="preprocess.html">Preprocessing</a></li>
 </ul>
-</li>
-</ul>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -188,10 +201,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="edge_matching.preprocess.html" class="btn btn-neutral float-right" title="edge_matching.preprocess package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="preprocess.html" class="btn btn-neutral float-right" title="Preprocessing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="modules.html" class="btn btn-neutral float-left" title="Package API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="developers.html" class="btn btn-neutral float-left" title="Developers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
