@@ -7,5 +7,6 @@ all/*
 HQHT-Set_1/*
 HQHT-Set_C/*
 MQHT/*
+*~
 .spyproject
 __pycache__

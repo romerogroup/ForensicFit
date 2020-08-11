@@ -24,7 +24,7 @@ Loading the image
 
 Usage::
 
-  import edge_matching
+  import 
   tape_image = edge_matching.TapeImage('L001.tiff')
     
 
