@@ -3,9 +3,9 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Forensics Edge Matching documentation!
+Welcome to ForensicFit documentation!
 =================================================
-This package is created to preprocess scanned images from different tears and
+ForensicFit is created to preprocess scanned images from different tears and
 generate a database that is going to be used in a different machine learning
 approaches. This package will prepare the data in four dirrent approaches which 
 are going to be show in the tutorial sections. 

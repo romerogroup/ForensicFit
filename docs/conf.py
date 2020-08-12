@@ -17,9 +17,9 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'Forensics Edge Matching'
-copyright = '2020, Pedram Tavadze, Freddie Farah, Aldo Romero'
-author = 'Pedram Tavadze, Freddie Farah, Aldo Romero'
+project = 'Forensic Fit'
+copyright = '2020, Pedram Tavadze'
+author = 'Pedram Tavadze, Freddie Farah'
 
 
 # -- General configuration ---------------------------------------------------
