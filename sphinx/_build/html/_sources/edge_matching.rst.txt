@@ -1,0 +1,16 @@
+edge\_matching package
+======================
+
+.. automodule:: edge_matching
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Subpackages
+-----------
+
+.. toctree::
+
+   edge_matching.preprocess
+

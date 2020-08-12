@@ -1,0 +1,822 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>edge_matching.preprocess package &mdash; Forensics Edge Matching  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="edge_matching package" href="edge_matching.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Forensics Edge Matching
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Package API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="edge_matching.html">edge_matching package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="edge_matching.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">edge_matching.preprocess package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Forensics Edge Matching</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="modules.html">Package API</a> &raquo;</li>
+        
+          <li><a href="edge_matching.html">edge_matching package</a> &raquo;</li>
+        
+      <li>edge_matching.preprocess package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/edge_matching.preprocess.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-edge_matching.preprocess">
+<span id="edge-matching-preprocess-package"></span><h1>edge_matching.preprocess package<a class="headerlink" href="#module-edge_matching.preprocess" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-edge_matching.preprocess.tape_image">
+<span id="edge-matching-preprocess-tape-image-module"></span><h2>edge_matching.preprocess.tape_image module<a class="headerlink" href="#module-edge_matching.preprocess.tape_image" title="Permalink to this headline">¶</a></h2>
+<p>Created on Sun Jun 28 14:11:02 2020</p>
+<p>&#64;author: Pedram Tavadze</p>
+<dl class="class">
+<dt id="edge_matching.preprocess.tape_image.TapeImage">
+<em class="property">class </em><code class="sig-prename descclassname">edge_matching.preprocess.tape_image.</code><code class="sig-name descname">TapeImage</code><span class="sig-paren">(</span><em class="sig-param">fname</em>, <em class="sig-param">tape_label=None</em>, <em class="sig-param">mask_threshold=60</em>, <em class="sig-param">rescale=None</em>, <em class="sig-param">split=True</em>, <em class="sig-param">gaussian_blur=(15</em>, <em class="sig-param">15)</em>, <em class="sig-param">split_side='L'</em>, <em class="sig-param">split_position=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/edge_matching/preprocess/tape_image.html#TapeImage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#edge_matching.preprocess.tape_image.TapeImage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>TapeImage is a class created for tape images to be preprocessed for 
+Machine Learning. This Class detects the edges, auto crops the image 
+and returns the results in 3 different method coordinate_based, 
+weft_based and max_contrast.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>fname</strong><span class="classifier">str</span></dt><dd><p>Path to the image file. The default is None.</p>
+</dd>
+<dt><strong>tape_label</strong><span class="classifier">str, optional</span></dt><dd><p>Label to this specific image. The default is None.</p>
+</dd>
+<dt><strong>mask_threshold</strong><span class="classifier">int, optional</span></dt><dd><p>The number in which pixel values are regarded zero. The default is
+60.</p>
+</dd>
+<dt><strong>rescale</strong><span class="classifier">float, optional</span></dt><dd><p>Only for scale images down to a smaller size for example 
+rescale=1/2. The default is None.</p>
+</dd>
+<dt><strong>split</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether or not to split the image. The default is True.</p>
+</dd>
+<dt><strong>gaussian_blur</strong><span class="classifier">2d tuple of int, optional</span></dt><dd><p>Defines the window in which Gaussian Blur filter is applied. The 
+default is (15,15).</p>
+</dd>
+<dt><strong>split_side</strong><span class="classifier">string, optional</span></dt><dd><p>After splitting the image which side is chosen. The default is ‘L’.</p>
+</dd>
+<dt><strong>split_position</strong><span class="classifier">float, optional</span></dt><dd><p>Number between 0-1. Defines the where the vertical split is going 
+to happen. 1/2 will be in the middle. The default is None.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference internal" href="#edge_matching.preprocess.tape_image.TapeImage.binerized_mask" title="edge_matching.preprocess.tape_image.TapeImage.binerized_mask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">binerized_mask</span></code></a></dt><dd><p>This funtion return the binarized version of the tape</p>
+</dd>
+<dt><a class="reference internal" href="#edge_matching.preprocess.tape_image.TapeImage.boundary" title="edge_matching.preprocess.tape_image.TapeImage.boundary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">boundary</span></code></a></dt><dd><p>2d array with the list of pixels of the largest contour</p>
+</dd>
+<dt><a class="reference internal" href="#edge_matching.preprocess.tape_image.TapeImage.contours" title="edge_matching.preprocess.tape_image.TapeImage.contours"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contours</span></code></a></dt><dd><p>A list of pixels that create the contours in the image</p>
+</dd>
+<dt><a class="reference internal" href="#edge_matching.preprocess.tape_image.TapeImage.edge" title="edge_matching.preprocess.tape_image.TapeImage.edge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">edge</span></code></a></dt><dd><p>List of pixels that create the boundary.</p>
+</dd>
+<dt><a class="reference internal" href="#edge_matching.preprocess.tape_image.TapeImage.gray_scale" title="edge_matching.preprocess.tape_image.TapeImage.gray_scale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gray_scale</span></code></a></dt><dd><p>Gray Scale image of the input image.</p>
+</dd>
+<dt><a class="reference internal" href="#edge_matching.preprocess.tape_image.TapeImage.height" title="edge_matching.preprocess.tape_image.TapeImage.height"><code class="xref py py-obj docutils literal notranslate"><span class="pre">height</span></code></a></dt><dd><p>Height of the image.</p>
+</dd>
+<dt><a class="reference internal" href="#edge_matching.preprocess.tape_image.TapeImage.largest_contour" title="edge_matching.preprocess.tape_image.TapeImage.largest_contour"><code class="xref py py-obj docutils literal notranslate"><span class="pre">largest_contour</span></code></a></dt><dd><p>A list of pixels forming the contour with the largest area</p>
+</dd>
+<dt><a class="reference internal" href="#edge_matching.preprocess.tape_image.TapeImage.shape" title="edge_matching.preprocess.tape_image.TapeImage.shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code></a></dt><dd><p>2d tuple with height and width.</p>
+</dd>
+<dt><a class="reference internal" href="#edge_matching.preprocess.tape_image.TapeImage.size" title="edge_matching.preprocess.tape_image.TapeImage.size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size</span></code></a></dt><dd><p>Total number of pixels.</p>
+</dd>
+<dt><a class="reference internal" href="#edge_matching.preprocess.tape_image.TapeImage.width" title="edge_matching.preprocess.tape_image.TapeImage.width"><code class="xref py py-obj docutils literal notranslate"><span class="pre">width</span></code></a></dt><dd><p>Width of the image.</p>
+</dd>
+<dt><a class="reference internal" href="#edge_matching.preprocess.tape_image.TapeImage.x_interval" title="edge_matching.preprocess.tape_image.TapeImage.x_interval"><code class="xref py py-obj docutils literal notranslate"><span class="pre">x_interval</span></code></a></dt><dd><p>interval of the coordinates in X direction</p>
+</dd>
+<dt><a class="reference internal" href="#edge_matching.preprocess.tape_image.TapeImage.xmax" title="edge_matching.preprocess.tape_image.TapeImage.xmax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xmax</span></code></a></dt><dd><p>X coordinate of minimum pixel of the boundary</p>
+</dd>
+<dt><a class="reference internal" href="#edge_matching.preprocess.tape_image.TapeImage.xmin" title="edge_matching.preprocess.tape_image.TapeImage.xmin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xmin</span></code></a></dt><dd><p>X coordinate of minimum pixel of the boundary</p>
+</dd>
+<dt><a class="reference internal" href="#edge_matching.preprocess.tape_image.TapeImage.ymax" title="edge_matching.preprocess.tape_image.TapeImage.ymax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ymax</span></code></a></dt><dd><p>Y coordinate of maximum pixel of the boundary</p>
+</dd>
+<dt><a class="reference internal" href="#edge_matching.preprocess.tape_image.TapeImage.ymin" title="edge_matching.preprocess.tape_image.TapeImage.ymin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ymin</span></code></a></dt><dd><p>Y coordinate of minimum pixel of the boundary</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#edge_matching.preprocess.tape_image.TapeImage.auto_crop_y" title="edge_matching.preprocess.tape_image.TapeImage.auto_crop_y"><code class="xref py py-obj docutils literal notranslate"><span class="pre">auto_crop_y</span></code></a>(self)</p></td>
+<td><p>This method automatically crops the image in y direction (top and bottom)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#edge_matching.preprocess.tape_image.TapeImage.coordinate_based" title="edge_matching.preprocess.tape_image.TapeImage.coordinate_based"><code class="xref py py-obj docutils literal notranslate"><span class="pre">coordinate_based</span></code></a>(self[, npoints, …])</p></td>
+<td><p>This method returns the data of the detected edge as a set of points  in 2d plain with (x,y)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#edge_matching.preprocess.tape_image.TapeImage.gaussian_blur" title="edge_matching.preprocess.tape_image.TapeImage.gaussian_blur"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gaussian_blur</span></code></a>(self[, window])</p></td>
+<td><p>This method applies Gaussian Blur filter to the image.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#edge_matching.preprocess.tape_image.TapeImage.get_image_tilt" title="edge_matching.preprocess.tape_image.TapeImage.get_image_tilt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_image_tilt</span></code></a>(self[, plot])</p></td>
+<td><p>This function calculates the degree in which the tape is tilted with  respect to the horizontal line.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#edge_matching.preprocess.tape_image.TapeImage.max_contrast" title="edge_matching.preprocess.tape_image.TapeImage.max_contrast"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_contrast</span></code></a>(self[, window_background, …])</p></td>
+<td><p>This method returns the detected image as a black image with only the  boundary being white.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#edge_matching.preprocess.tape_image.TapeImage.plot_boundary" title="edge_matching.preprocess.tape_image.TapeImage.plot_boundary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_boundary</span></code></a>(self[, savefig, color])</p></td>
+<td><p>This function plots the detected boundary of the image.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#edge_matching.preprocess.tape_image.TapeImage.resize" title="edge_matching.preprocess.tape_image.TapeImage.resize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resize</span></code></a>(self, size)</p></td>
+<td><p>This method resizes the image to the pixel size given.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#edge_matching.preprocess.tape_image.TapeImage.rotate_image" title="edge_matching.preprocess.tape_image.TapeImage.rotate_image"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotate_image</span></code></a>(self, angle)</p></td>
+<td><p>Rotates the image by angle degrees</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#edge_matching.preprocess.tape_image.TapeImage.show" title="edge_matching.preprocess.tape_image.TapeImage.show"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show</span></code></a>(self[, savefig, cmap])</p></td>
+<td><p>Plots the image</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#edge_matching.preprocess.tape_image.TapeImage.show_binarized" title="edge_matching.preprocess.tape_image.TapeImage.show_binarized"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_binarized</span></code></a>(self[, savefig, cmap])</p></td>
+<td><p>This function returns the image as the background</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#edge_matching.preprocess.tape_image.TapeImage.split_vertical" title="edge_matching.preprocess.tape_image.TapeImage.split_vertical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">split_vertical</span></code></a>(self[, pixel_index, pick_side])</p></td>
+<td><p>This method splits the image in 2 images based on the fraction that is  given in pixel_index</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#edge_matching.preprocess.tape_image.TapeImage.weft_based" title="edge_matching.preprocess.tape_image.TapeImage.weft_based"><code class="xref py py-obj docutils literal notranslate"><span class="pre">weft_based</span></code></a>(self[, window_background, …])</p></td>
+<td><p>This method returns the detected edge as a set of croped images from  the edge.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="edge_matching.preprocess.tape_image.TapeImage.auto_crop_y">
+<code class="sig-name descname">auto_crop_y</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/edge_matching/preprocess/tape_image.html#TapeImage.auto_crop_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#edge_matching.preprocess.tape_image.TapeImage.auto_crop_y" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method automatically crops the image in y direction (top and bottom)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>None.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="edge_matching.preprocess.tape_image.TapeImage.binerized_mask">
+<em class="property">property </em><code class="sig-name descname">binerized_mask</code><a class="headerlink" href="#edge_matching.preprocess.tape_image.TapeImage.binerized_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>This funtion return the binarized version of the tape</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>2d array of the image</dt><dd><p>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="edge_matching.preprocess.tape_image.TapeImage.boundary">
+<em class="property">property </em><code class="sig-name descname">boundary</code><a class="headerlink" href="#edge_matching.preprocess.tape_image.TapeImage.boundary" title="Permalink to this definition">¶</a></dt>
+<dd><p>2d array with the list of pixels of the largest contour</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>list</dt><dd><p>2d array with the list of pixels of the largest contour</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="edge_matching.preprocess.tape_image.TapeImage.contours">
+<em class="property">property </em><code class="sig-name descname">contours</code><a class="headerlink" href="#edge_matching.preprocess.tape_image.TapeImage.contours" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>A list of pixels that create the contours in the image</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>contours</strong><span class="classifier">list</span></dt><dd><p>A list of pixels that create the contours in the image</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="edge_matching.preprocess.tape_image.TapeImage.coordinate_based">
+<code class="sig-name descname">coordinate_based</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">npoints=1000</em>, <em class="sig-param">x_trim_param=2</em>, <em class="sig-param">plot=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/edge_matching/preprocess/tape_image.html#TapeImage.coordinate_based"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#edge_matching.preprocess.tape_image.TapeImage.coordinate_based" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method returns the data of the detected edge as a set of points 
+in 2d plain with (x,y)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>npoints int, optional</strong></dt><dd><p>Number of points to be selected on the edge. The default is 
+1000.</p>
+</dd>
+<dt><strong>x_trim_param int, optional</strong></dt><dd><p>The x direction of the edge will be divided by this number and
+only the first one is selected. The default is 6.</p>
+</dd>
+<dt><strong>Returns:</strong></dt><dd><p>None.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="edge_matching.preprocess.tape_image.TapeImage.edge">
+<em class="property">property </em><code class="sig-name descname">edge</code><a class="headerlink" href="#edge_matching.preprocess.tape_image.TapeImage.edge" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>List of pixels that create the boundary.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>edge_bw</strong><span class="classifier">2d array int</span></dt><dd><p>List of pixels that create the boundary.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="edge_matching.preprocess.tape_image.TapeImage.gaussian_blur">
+<code class="sig-name descname">gaussian_blur</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">window=(15</em>, <em class="sig-param">15)</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/edge_matching/preprocess/tape_image.html#TapeImage.gaussian_blur"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#edge_matching.preprocess.tape_image.TapeImage.gaussian_blur" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method applies Gaussian Blur filter to the image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>window</strong><span class="classifier">tuple int, optional</span></dt><dd><p>The window in which the gaussian blur is going to be applied.
+The default is (15,15).</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>None.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="edge_matching.preprocess.tape_image.TapeImage.get_image_tilt">
+<code class="sig-name descname">get_image_tilt</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">plot=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/edge_matching/preprocess/tape_image.html#TapeImage.get_image_tilt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#edge_matching.preprocess.tape_image.TapeImage.get_image_tilt" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculates the degree in which the tape is tilted with 
+respect to the horizontal line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>plot</strong><span class="classifier">bool, optional</span></dt><dd><p>Plot the segmentation as the image tilt is being calculated. The 
+default is False.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>angle_d</strong><span class="classifier">TYPE</span></dt><dd><p>DESCRIPTION.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="edge_matching.preprocess.tape_image.TapeImage.gray_scale">
+<em class="property">property </em><code class="sig-name descname">gray_scale</code><a class="headerlink" href="#edge_matching.preprocess.tape_image.TapeImage.gray_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gray Scale image of the input image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>gray_scale</strong><span class="classifier">cv2 object</span></dt><dd><p>Gray Scale image of the input image.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="edge_matching.preprocess.tape_image.TapeImage.height">
+<em class="property">property </em><code class="sig-name descname">height</code><a class="headerlink" href="#edge_matching.preprocess.tape_image.TapeImage.height" title="Permalink to this definition">¶</a></dt>
+<dd><p>Height of the image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>int</dt><dd><p>Height of the image.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="edge_matching.preprocess.tape_image.TapeImage.largest_contour">
+<em class="property">property </em><code class="sig-name descname">largest_contour</code><a class="headerlink" href="#edge_matching.preprocess.tape_image.TapeImage.largest_contour" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of pixels forming the contour with the largest area</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>contour_max_area</strong><span class="classifier">list</span></dt><dd><p>A list of pixels forming the contour with the largest area</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="edge_matching.preprocess.tape_image.TapeImage.max_contrast">
+<code class="sig-name descname">max_contrast</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">window_background=20</em>, <em class="sig-param">window_tape=300</em>, <em class="sig-param">plot=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/edge_matching/preprocess/tape_image.html#TapeImage.max_contrast"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#edge_matching.preprocess.tape_image.TapeImage.max_contrast" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method returns the detected image as a black image with only the 
+boundary being white.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>window_background</strong><span class="classifier">int, optional</span></dt><dd><p>Number of pixels to be included in each segment in the backgroung side of the image. The default is 20.</p>
+</dd>
+<dt><strong>window_tape</strong><span class="classifier">int, optional</span></dt><dd><p>Number of pixels to be included in each segment in the tape side of the image. The default is 300.</p>
+</dd>
+<dt><strong>plot</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether or not to plot the divided image. The default is False.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>edge_bw</strong><span class="classifier">2d numpy array</span></dt><dd><p>A black image with all the pixels on the edge white.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="edge_matching.preprocess.tape_image.TapeImage.plot_boundary">
+<code class="sig-name descname">plot_boundary</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">savefig=None</em>, <em class="sig-param">color='r'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/edge_matching/preprocess/tape_image.html#TapeImage.plot_boundary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#edge_matching.preprocess.tape_image.TapeImage.plot_boundary" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function plots the detected boundary of the image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>savefig</strong><span class="classifier">str, optional</span></dt><dd><p>path to save the plot. The default is None.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>None.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="edge_matching.preprocess.tape_image.TapeImage.resize">
+<code class="sig-name descname">resize</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">size</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/edge_matching/preprocess/tape_image.html#TapeImage.resize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#edge_matching.preprocess.tape_image.TapeImage.resize" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method resizes the image to the pixel size given.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>size</strong><span class="classifier">tuple int,</span></dt><dd><p>The target size in which the image is going to be resized.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>None.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="edge_matching.preprocess.tape_image.TapeImage.rotate_image">
+<code class="sig-name descname">rotate_image</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">angle</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/edge_matching/preprocess/tape_image.html#TapeImage.rotate_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#edge_matching.preprocess.tape_image.TapeImage.rotate_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotates the image by angle degrees</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>angle</strong><span class="classifier">float</span></dt><dd><p>Angle of rotation.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>None.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="edge_matching.preprocess.tape_image.TapeImage.shape">
+<em class="property">property </em><code class="sig-name descname">shape</code><a class="headerlink" href="#edge_matching.preprocess.tape_image.TapeImage.shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>2d tuple with height and width.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>tuple int</dt><dd><p>2d tuple with height and width.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="edge_matching.preprocess.tape_image.TapeImage.show">
+<code class="sig-name descname">show</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">savefig=None</em>, <em class="sig-param">cmap='gray'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/edge_matching/preprocess/tape_image.html#TapeImage.show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#edge_matching.preprocess.tape_image.TapeImage.show" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the image</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>savefig</strong><span class="classifier">str, optional</span></dt><dd><p>path to the file one wants to save the image. The default is None.</p>
+</dd>
+<dt><strong>cmap</strong><span class="classifier">str, optional</span></dt><dd><p>The color map in which the image is shown. The default is ‘gray’.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>None.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="edge_matching.preprocess.tape_image.TapeImage.show_binarized">
+<code class="sig-name descname">show_binarized</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">savefig=None</em>, <em class="sig-param">cmap='gray'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/edge_matching/preprocess/tape_image.html#TapeImage.show_binarized"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#edge_matching.preprocess.tape_image.TapeImage.show_binarized" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns the image as the background</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>savefig</strong><span class="classifier">TYPE, optional</span></dt><dd><p>DESCRIPTION. The default is None.</p>
+</dd>
+<dt><strong>cmap</strong><span class="classifier">TYPE, optional</span></dt><dd><p>DESCRIPTION. The default is ‘gray’.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>None.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="edge_matching.preprocess.tape_image.TapeImage.size">
+<em class="property">property </em><code class="sig-name descname">size</code><a class="headerlink" href="#edge_matching.preprocess.tape_image.TapeImage.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Total number of pixels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>int</dt><dd><p>Total number of pixels.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="edge_matching.preprocess.tape_image.TapeImage.split_vertical">
+<code class="sig-name descname">split_vertical</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">pixel_index=0.5</em>, <em class="sig-param">pick_side='L'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/edge_matching/preprocess/tape_image.html#TapeImage.split_vertical"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#edge_matching.preprocess.tape_image.TapeImage.split_vertical" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method splits the image in 2 images based on the fraction that is 
+given in pixel_index</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>pixel_index</strong><span class="classifier">float, optional</span></dt><dd><p>fraction in which the image is going to be split. The value should
+be a number between zero and one. The default is 0.5.</p>
+</dd>
+<dt><strong>pick_side</strong><span class="classifier">str, optional</span></dt><dd><p>The side in which will over write the image in the class. The 
+default is ‘L’.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>None.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="edge_matching.preprocess.tape_image.TapeImage.weft_based">
+<code class="sig-name descname">weft_based</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">window_background=20</em>, <em class="sig-param">window_tape=300</em>, <em class="sig-param">dynamic_window=False</em>, <em class="sig-param">size=(300</em>, <em class="sig-param">30)</em>, <em class="sig-param">nsegments=4</em>, <em class="sig-param">plot=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/edge_matching/preprocess/tape_image.html#TapeImage.weft_based"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#edge_matching.preprocess.tape_image.TapeImage.weft_based" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method returns the detected edge as a set of croped images from 
+the edge. The number if images is defined by nsegments. The goal is 
+to try to match the segmentation to the wefts of the tape. 
+In the future this method will try to detecte the wefts automatically.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>window_background</strong><span class="classifier">int, optional</span></dt><dd><p>Number of pixels to be included in each segment in the backgroung 
+side of the image. The default is 20.</p>
+</dd>
+<dt><strong>window_tape</strong><span class="classifier">int, optional</span></dt><dd><p>Number of pixels to be included in each segment in the tape side 
+of the image. The default is 300.</p>
+</dd>
+<dt><strong>dynamic_window</strong><span class="classifier">TYPE, optional</span></dt><dd><p>Whether the windows move in each segment. The default is False.</p>
+</dd>
+<dt><strong>size</strong><span class="classifier">2d tuple integers, optional</span></dt><dd><p>The size of each segment in pixels. The default is (300,30).</p>
+</dd>
+<dt><strong>nsegments</strong><span class="classifier">int, optional</span></dt><dd><p>Number of segments that the tape is going to divided into. The 
+default is 4.</p>
+</dd>
+<dt><strong>plot</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether or not to plot the divided image. The default is False.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>An array of 2d numpy arrays with images of each segment.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="edge_matching.preprocess.tape_image.TapeImage.width">
+<em class="property">property </em><code class="sig-name descname">width</code><a class="headerlink" href="#edge_matching.preprocess.tape_image.TapeImage.width" title="Permalink to this definition">¶</a></dt>
+<dd><p>Width of the image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>int</dt><dd><p>Width of the image.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="edge_matching.preprocess.tape_image.TapeImage.x_interval">
+<em class="property">property </em><code class="sig-name descname">x_interval</code><a class="headerlink" href="#edge_matching.preprocess.tape_image.TapeImage.x_interval" title="Permalink to this definition">¶</a></dt>
+<dd><p>interval of the coordinates in X direction</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x_interval</strong><span class="classifier">int</span></dt><dd><p>interval of the coordinates in X direction</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="edge_matching.preprocess.tape_image.TapeImage.xmax">
+<em class="property">property </em><code class="sig-name descname">xmax</code><a class="headerlink" href="#edge_matching.preprocess.tape_image.TapeImage.xmax" title="Permalink to this definition">¶</a></dt>
+<dd><p>X coordinate of minimum pixel of the boundary</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>xmax</strong><span class="classifier">int</span></dt><dd><p>X coordinate of minimum pixel of the boundary</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="edge_matching.preprocess.tape_image.TapeImage.xmin">
+<em class="property">property </em><code class="sig-name descname">xmin</code><a class="headerlink" href="#edge_matching.preprocess.tape_image.TapeImage.xmin" title="Permalink to this definition">¶</a></dt>
+<dd><p>X coordinate of minimum pixel of the boundary</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>xmin</strong><span class="classifier">int</span></dt><dd><p>X coordinate of minimum pixel of the boundary</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="edge_matching.preprocess.tape_image.TapeImage.ymax">
+<em class="property">property </em><code class="sig-name descname">ymax</code><a class="headerlink" href="#edge_matching.preprocess.tape_image.TapeImage.ymax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Y coordinate of maximum pixel of the boundary</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ymax</strong><span class="classifier">int</span></dt><dd><p>Y coordinate of maximum pixel of the boundary</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="edge_matching.preprocess.tape_image.TapeImage.ymin">
+<em class="property">property </em><code class="sig-name descname">ymin</code><a class="headerlink" href="#edge_matching.preprocess.tape_image.TapeImage.ymin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Y coordinate of minimum pixel of the boundary</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ymin</strong><span class="classifier">int</span></dt><dd><p>Y coordinate of minimum pixel of the boundary</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="edge_matching.html" class="btn btn-neutral float-left" title="edge_matching package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Pedram Tavadze, Freddie Farah, Aldo Romero
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,289 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Tutorials &mdash; Forensic Fit  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Preprocessing" href="preprocess.html" />
+    <link rel="prev" title="Developers" href="developers.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Forensic Fit
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developers</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#preprocessing">Preprocessing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#single-image-processing">Single image processing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#loading-the-image">Loading the image</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#show">Show</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Package API</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Forensic Fit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Tutorials</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/tutorials.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="tutorials">
+<h1>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this headline">¶</a></h1>
+<p>The following set of tutorials explains the basic usage of this package.
+The examples provide information on how to use the preprocessing method for different
+approaches. Later it will explain how one can use the data generated in this
+section in different Machine Learning approaches using keras package.</p>
+<div class="section" id="preprocessing">
+<h2>Preprocessing<a class="headerlink" href="#preprocessing" title="Permalink to this headline">¶</a></h2>
+<p>At first we will explain the steps one has to take to process a single image,
+Then we will move to processing directories of images. Each gray scale image is constructed from a grid of pixels. Each pixel contains a number from 0 to 255 representing the gray shade of that specific pixel.</p>
+<div class="section" id="single-image-processing">
+<h3>Single image processing<a class="headerlink" href="#single-image-processing" title="Permalink to this headline">¶</a></h3>
+<p>All of our tutorials are eplained in ipython interactive session, However these
+commands can be easily moved to a python script for more automation.</p>
+<div class="section" id="loading-the-image">
+<h4>Loading the image<a class="headerlink" href="#loading-the-image" title="Permalink to this headline">¶</a></h4>
+<p>Given the path to the image forensicfit will create a TapeImage object.
+Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">forensicfit</span>
+<span class="n">tape_image</span> <span class="o">=</span> <span class="n">forensicfit</span><span class="o">.</span><span class="n">TapeImage</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="s1">&#39;L001.tiff&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">tape_image</span></code> is a TapeImage object with different properties and method in this section we will explain the usage of each method and property.
+Before explaining each of the methods, let’s list the input parameter of this class. Any of the following parameters can be used as an input for TapeMatch by putting tha parameter between the parentheses.</p>
+<blockquote>
+<div><dl>
+<dt>fname :</dt><dd><p>fname defines the path to the image file. This can be any format the <a class="reference external" href="https://docs.opencv.org/2.4/modules/highgui/doc/reading_and_writing_images_and_video.html">opencv</a> supports.</p>
+<p>example: <code class="docutils literal notranslate"><span class="pre">TapeImage(fname='L001.tiff')</span></code></p>
+</dd>
+<dt>tape_label :</dt><dd><p>Tape label is used to label the processed image.</p>
+<p>example: <code class="docutils literal notranslate"><span class="pre">TapeImage(fname='L001.tiff',tape_label='LQ_R')</span></code></p>
+</dd>
+<dt>mask_threshold :</dt><dd><p>Inorder to find the boundaries of the tape, the algorithm changes every pixel with a value lower than mask_threshold to 0(black)</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">mask_threshold=60</span></code></p>
+</dd>
+</dl>
+<p>rescale : float, optional</p>
+<blockquote>
+<div><p>Only for scale images down to a smaller size for example
+rescale=1/2. The default is None.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>split<span class="classifier">bool, optional</span></dt><dd><p>Whether or not to split the image. The default is True.</p>
+</dd>
+<dt>gaussian_blur<span class="classifier">2d tuple of int, optional</span></dt><dd><p>Defines the window in which Gaussian Blur filter is applied. The
+default is (15,15).</p>
+</dd>
+<dt>split_side<span class="classifier">string, optional</span></dt><dd><p>After splitting the image which side is chosen. The default is ‘L’.</p>
+</dd>
+<dt>split_position<span class="classifier">float, optional</span></dt><dd><p>Number between 0-1. Defines the where the vertical split is going
+to happen. 1/2 will be in the middle. The default is None.</p>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="show">
+<h4>Show<a class="headerlink" href="#show" title="Permalink to this headline">¶</a></h4>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="preprocess.html">Preprocessing</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="preprocess.html" class="btn btn-neutral float-right" title="Preprocessing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="developers.html" class="btn btn-neutral float-left" title="Developers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Pedram Tavadze
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
