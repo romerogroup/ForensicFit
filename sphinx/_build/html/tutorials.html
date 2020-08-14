@@ -88,9 +88,10 @@
 <li class="toctree-l1"><a class="reference internal" href="developers.html">Developers</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorials</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#preprocessing">Preprocessing</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#single-image-processing">Single image processing</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#loading-the-image">Loading the image</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#show">Show</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#single-image-processing">1. Single image processing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#loading-the-image-and-show">1.1. Loading the image and show</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#splitting-the-image-vertically">1.2. Splitting the image vertically</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#finding-the-tilt-of-the-image">1.3. Finding the tilt of the image</a></li>
 </ul>
 </li>
 </ul>
@@ -174,52 +175,77 @@ section in different Machine Learning approaches using keras package.</p>
 <p>At first we will explain the steps one has to take to process a single image,
 Then we will move to processing directories of images. Each gray scale image is constructed from a grid of pixels. Each pixel contains a number from 0 to 255 representing the gray shade of that specific pixel.</p>
 <div class="section" id="single-image-processing">
-<h3>Single image processing<a class="headerlink" href="#single-image-processing" title="Permalink to this headline">¶</a></h3>
+<h3>1. Single image processing<a class="headerlink" href="#single-image-processing" title="Permalink to this headline">¶</a></h3>
 <p>All of our tutorials are eplained in ipython interactive session, However these
 commands can be easily moved to a python script for more automation.</p>
-<div class="section" id="loading-the-image">
-<h4>Loading the image<a class="headerlink" href="#loading-the-image" title="Permalink to this headline">¶</a></h4>
-<p>Given the path to the image forensicfit will create a TapeImage object.
-Usage:</p>
+<div class="section" id="loading-the-image-and-show">
+<h4>1.1. Loading the image and show<a class="headerlink" href="#loading-the-image-and-show" title="Permalink to this headline">¶</a></h4>
+<p>Given the path to the image forensicfit will create a TapeImage object.</p>
+<p>Usage:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">forensicfit</span>
 <span class="n">tape_image</span> <span class="o">=</span> <span class="n">forensicfit</span><span class="o">.</span><span class="n">TapeImage</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="s1">&#39;L001.tiff&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">tape_image</span></code> is a TapeImage object with different properties and method in this section we will explain the usage of each method and property.
-Before explaining each of the methods, let’s list the input parameter of this class. Any of the following parameters can be used as an input for TapeMatch by putting tha parameter between the parentheses.</p>
-<blockquote>
-<div><dl>
-<dt>fname :</dt><dd><p>fname defines the path to the image file. This can be any format the <a class="reference external" href="https://docs.opencv.org/2.4/modules/highgui/doc/reading_and_writing_images_and_video.html">opencv</a> supports.</p>
-<p>example: <code class="docutils literal notranslate"><span class="pre">TapeImage(fname='L001.tiff')</span></code></p>
-</dd>
-<dt>tape_label :</dt><dd><p>Tape label is used to label the processed image.</p>
-<p>example: <code class="docutils literal notranslate"><span class="pre">TapeImage(fname='L001.tiff',tape_label='LQ_R')</span></code></p>
-</dd>
-<dt>mask_threshold :</dt><dd><p>Inorder to find the boundaries of the tape, the algorithm changes every pixel with a value lower than mask_threshold to 0(black)</p>
-<p>default: <code class="docutils literal notranslate"><span class="pre">mask_threshold=60</span></code></p>
-</dd>
-</dl>
-<p>rescale : float, optional</p>
-<blockquote>
-<div><p>Only for scale images down to a smaller size for example
-rescale=1/2. The default is None.</p>
-</div></blockquote>
-<dl class="simple">
-<dt>split<span class="classifier">bool, optional</span></dt><dd><p>Whether or not to split the image. The default is True.</p>
-</dd>
-<dt>gaussian_blur<span class="classifier">2d tuple of int, optional</span></dt><dd><p>Defines the window in which Gaussian Blur filter is applied. The
-default is (15,15).</p>
-</dd>
-<dt>split_side<span class="classifier">string, optional</span></dt><dd><p>After splitting the image which side is chosen. The default is ‘L’.</p>
-</dd>
-<dt>split_position<span class="classifier">float, optional</span></dt><dd><p>Number between 0-1. Defines the where the vertical split is going
-to happen. 1/2 will be in the middle. The default is None.</p>
-</dd>
-</dl>
-</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">tape_image</span></code> is a TapeImage object with different properties and method in
+this section we will explain the usage of each method and property.
+Before explaining each of the methods, let’s list the input parameter of this
+class. A comprehensive description of each parameter is provided in the
+<a class="reference external" href="forensicfit.preprocess.html#module-forensicfit.preprocess.tape_image">API package</a> section.
+To show the image we can use the method <code class="docutils literal notranslate"><span class="pre">show</span></code>.</p>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tape_image</span> <span class="o">=</span> <span class="n">forensicfir</span><span class="o">.</span><span class="n">TapeImage</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="s1">&#39;LQ_775.tiff&#39;</span><span class="p">)</span>
+<span class="n">tape_image</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
+</pre></div>
 </div>
-<div class="section" id="show">
-<h4>Show<a class="headerlink" href="#show" title="Permalink to this headline">¶</a></h4>
+<p>The following plot will appear as a confirmation that the image has been loaded.
+As <code class="docutils literal notranslate"><span class="pre">cmap</span></code> defines the color map for the gray scale image.</p>
+<img alt="_images/1.show.png" src="_images/1.show.png" />
+</div>
+<div class="section" id="splitting-the-image-vertically">
+<h4>1.2. Splitting the image vertically<a class="headerlink" href="#splitting-the-image-vertically" title="Permalink to this headline">¶</a></h4>
+<p>Sometimes one does not need one side of the image. To address this issue <code class="docutils literal notranslate"><span class="pre">split</span></code>
+parameter is implemented.One has to turn on the split paramter by <code class="docutils literal notranslate"><span class="pre">split=True</span></code>,
+Then select the side of the image that is important to us (<code class="docutils literal notranslate"><span class="pre">'L'</span></code> for left or <code class="docutils literal notranslate"><span class="pre">'R'</span></code> for right)
+by <code class="docutils literal notranslate"><span class="pre">split_side='L'</span></code> (important: do not forget that this parameter has to a python string), and
+finally one has to choose the <code class="docutils literal notranslate"><span class="pre">split_position</span></code>. split_position can only be a number between 0
+and 1. for example if <code class="docutils literal notranslate"><span class="pre">split_position=0.5</span></code>, the image will be divided in the half way line. The defaults are
+<code class="docutils literal notranslate"><span class="pre">split=False</span></code>, <code class="docutils literal notranslate"><span class="pre">split_position=0.5</span></code> and <code class="docutils literal notranslate"><span class="pre">split_side='L'</span></code>.
+Let’s also view the split image by using the <code class="docutils literal notranslate"><span class="pre">show()</span></code> method.</p>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tape_image</span> <span class="o">=</span> <span class="n">forensicfir</span><span class="o">.</span><span class="n">TapeImage</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="s1">&#39;LQ_775.tiff&#39;</span><span class="p">,</span>
+                                    <span class="n">split</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                    <span class="n">split_side</span><span class="o">=</span><span class="s1">&#39;L&#39;</span><span class="p">,</span>
+                                    <span class="n">split_position</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">tape_image</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/2.split_L.png" src="_images/2.split_L.png" />
+</div>
+<div class="section" id="finding-the-tilt-of-the-image">
+<h4>1.3. Finding the tilt of the image<a class="headerlink" href="#finding-the-tilt-of-the-image" title="Permalink to this headline">¶</a></h4>
+<p>During the scanning process one might not position the image exactly parallel to the
+horizontal line. The property of <code class="docutils literal notranslate"><span class="pre">image_tilt</span></code> can calculate the tilt of the tape. To calculate
+this number the algorithm finds the boundaries at the top and the bottom of the image.
+Then each line is divided in 6 segments(our experience showed that 6 is segments usually works good).
+The first and the last segments are discarted to avoid noise close to the edge. The the slop and standard
+deviation(in y direction) is calculated with a linear fit. The two
+segments with the least are selected from the top and bottom. Furthur more the average angle
+by each line is reported in degrees.</p>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">tape_image</span><span class="o">.</span><span class="n">image_tilt</span><span class="p">)</span>
+<span class="mf">0.12844069008595374</span>
+</pre></div>
+</div>
+<p>If one wants to monitor all of the steps of the selection of the best segment for angle calculation,
+One can use the <code class="docutils literal notranslate"><span class="pre">get_image_tilt(plot=True)</span></code>, with the plot parameter turn on(True).</p>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tape_image</span><span class="o">.</span><span class="n">get_image_tilt</span><span class="p">(</span><span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This method will produce two plots one with all of the segments shown in diferent colors,</p>
+<img alt="_images/3.tilt_1_all.png" src="_images/3.tilt_1_all.png" />
+<p>and one with the two segments with the least standard deviation, plotted over the detected boundary.</p>
+<img alt="_images/4.tilt_2_best.png" src="_images/4.tilt_2_best.png" />
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="preprocess.html">Preprocessing</a></li>

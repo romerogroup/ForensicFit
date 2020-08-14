@@ -17,7 +17,7 @@ class TapeImage():
                  tape_label=None,
                  mask_threshold=60,
                  rescale=None,
-                 split=True,
+                 split=False,
                  gaussian_blur=(15,15),
                  split_side='L',
                  split_position=None,
@@ -31,11 +31,12 @@ class TapeImage():
         Parameters
         ----------
         fname : str
-            Path to the image file. The default is None.
+            fname defines the path to the image file. This can be any format the `opencv <https://docs.opencv.org/2.4/modules/highgui/doc/reading_and_writing_images_and_video.html>`_ supports.
+
         tape_label : str, optional
             Label to this specific image. The default is None.
         mask_threshold : int, optional
-            The number in which pixel values are regarded zero. The default is
+            Inorder to find the boundaries of the tape, the algorithm changes every pixel with a value lower than mask_threshold to 0(black). The default is
             60.
         rescale : float, optional
             Only for scale images down to a smaller size for example 
@@ -238,7 +239,7 @@ class TapeImage():
                 
                 continue
             if plot:
-                plt.plot(boundary[cond_and_top][:,0],boundary[cond_and_top][:,1])
+                plt.plot(boundary[cond_and_top][:,0],boundary[cond_and_top][:,1],linewidth=3)
             m_top,b0_top = np.polyfit(boundary[cond_and_top][:,0],boundary[cond_and_top][:,1],1)
             std_top = np.std(boundary[cond_and_top][:,1])
             stds[idivision,0] = std_top
@@ -263,7 +264,7 @@ class TapeImage():
                 continue
             if plot:
                 plt.plot(
-                    boundary[cond_and_bottom][:,0],boundary[cond_and_bottom][:,1])
+                    boundary[cond_and_bottom][:,0],boundary[cond_and_bottom][:,1],linewidth=3)
             m_bottom,b0_bottom = np.polyfit(
                 boundary[cond_and_bottom][:,0],boundary[cond_and_bottom][:,1],1)
             
@@ -274,17 +275,18 @@ class TapeImage():
             
             stds[idivision,1] = std_bottom
             conditions_bottom.append(cond_and_bottom)
-            if plot:
-                plt.figure()
-                plt.plot(boundary[:,0],boundary[:,1])
-                plt.scatter(boundary[cond_and_top][:,0],boundary[cond_and_top][:,1])
-                plt.scatter(boundary[cond_and_bottom][:,0],boundary[cond_and_bottom][:,1])
+
         
         arg_mins = np.argmin(stds,axis=0)
         
         cond_and_top = conditions_top[arg_mins[0]]
         cond_and_bottom = conditions_bottom[arg_mins[1]]
-        
+        if plot:
+            plt.figure()
+            plt.plot(boundary[:,0],boundary[:,1],color='black')
+            plt.scatter(boundary[cond_and_top][:,0],boundary[cond_and_top][:,1],color='blue')
+            plt.scatter(boundary[cond_and_bottom][:,0],boundary[cond_and_bottom][:,1],color='red')
+            
         self.crop_y_top = np.average(boundary[cond_and_top][:,1])
         self.crop_y_bottom = np.average(boundary[cond_and_bottom][:,1])
         

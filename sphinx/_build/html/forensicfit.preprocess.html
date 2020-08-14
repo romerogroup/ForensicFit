@@ -181,7 +181,7 @@
 <p>&#64;author: Pedram Tavadze</p>
 <dl class="class">
 <dt id="forensicfit.preprocess.tape_image.TapeImage">
-<em class="property">class </em><code class="sig-prename descclassname">forensicfit.preprocess.tape_image.</code><code class="sig-name descname">TapeImage</code><span class="sig-paren">(</span><em class="sig-param">fname</em>, <em class="sig-param">tape_label=None</em>, <em class="sig-param">mask_threshold=60</em>, <em class="sig-param">rescale=None</em>, <em class="sig-param">split=True</em>, <em class="sig-param">gaussian_blur=(15</em>, <em class="sig-param">15)</em>, <em class="sig-param">split_side='L'</em>, <em class="sig-param">split_position=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/preprocess/tape_image.html#TapeImage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#forensicfit.preprocess.tape_image.TapeImage" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">forensicfit.preprocess.tape_image.</code><code class="sig-name descname">TapeImage</code><span class="sig-paren">(</span><em class="sig-param">fname</em>, <em class="sig-param">tape_label=None</em>, <em class="sig-param">mask_threshold=60</em>, <em class="sig-param">rescale=None</em>, <em class="sig-param">split=False</em>, <em class="sig-param">gaussian_blur=(15</em>, <em class="sig-param">15)</em>, <em class="sig-param">split_side='L'</em>, <em class="sig-param">split_position=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/preprocess/tape_image.html#TapeImage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#forensicfit.preprocess.tape_image.TapeImage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>TapeImage is a class created for tape images to be preprocessed for 
 Machine Learning. This Class detects the edges, auto crops the image 
@@ -190,11 +190,11 @@ weft_based and max_contrast.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>fname</strong><span class="classifier">str</span></dt><dd><p>Path to the image file. The default is None.</p>
+<dt><strong>fname</strong><span class="classifier">str</span></dt><dd><p>fname defines the path to the image file. This can be any format the <a class="reference external" href="https://docs.opencv.org/2.4/modules/highgui/doc/reading_and_writing_images_and_video.html">opencv</a> supports.</p>
 </dd>
 <dt><strong>tape_label</strong><span class="classifier">str, optional</span></dt><dd><p>Label to this specific image. The default is None.</p>
 </dd>
-<dt><strong>mask_threshold</strong><span class="classifier">int, optional</span></dt><dd><p>The number in which pixel values are regarded zero. The default is
+<dt><strong>mask_threshold</strong><span class="classifier">int, optional</span></dt><dd><p>Inorder to find the boundaries of the tape, the algorithm changes every pixel with a value lower than mask_threshold to 0(black). The default is
 60.</p>
 </dd>
 <dt><strong>rescale</strong><span class="classifier">float, optional</span></dt><dd><p>Only for scale images down to a smaller size for example 
