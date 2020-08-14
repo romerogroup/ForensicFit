@@ -45,6 +45,21 @@ As ``cmap`` defines the color map for the gray scale image.
 
 .. image:: images/1.show.png
 
+``gaussian_blur`` is also an important filter that is applied in the begining of this class.
+This filter is applied to image to decrease the image noise and help the finding of the 
+boundaries. A good number usually depends on the amount of the noise the scanner 
+adds to the image. This parameter defines the window of pixels in which this filter is applied.
+The default of this paramter is ``gaussian_blur=(15,15)``. To demonstrate the effects of this 
+filter we choose a large window to exagerate the effect. The window has to be alway constructed 
+by odd numbers.
+
+Usage::
+
+    tape_image = forensicfit.preprocess.TapeImage('LQ_775.tif',
+                                gaussian_blur=(101,101))
+
+.. image:: images/1.gaussian_blur.png
+
 1.2. Splitting the image vertically
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Sometimes one does not need one side of the image. To address this issue ``split``
@@ -95,7 +110,34 @@ This method will produce two plots one with all of the segments shown in diferen
 
 and one with the two segments with the least standard deviation, plotted over the detected boundary.
 
-.. image:: images/4.tilt_2_best.png
+.. image:: images/3.tilt_2_best.png
+
+1.4. Plot Boundaries
+^^^^^^^^^^^^^^^^^^^^
+This class automatically(using opencv) detects the boundaries. To plot this boundary 
+one has to use, ``plot_boundary(color='red')``. As it's self explanatory the color 
+parameter changes the color of the boundary. To plot this boundary one has to plot 
+the image first then use the plot boundary similar to the following example.
+
+Usage::
+
+    tape_image.show(cmap='gray')
+    tape_image.plot_boundary(color='red')
+
+1.5. Auto Crop in Y direction
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+``auto_crop_y()`` will automatically crop the image based on the boundaries that it found.
+To make this example more interesting we add a plot boundary function as well.
+ 
+Usage::
+
+    tape_image.auto_crop_y()
+    tape_image.show(cmap='gray')
+    tape_image.plot_boundary(color='red')
+    
+.. image:: images/5.auto_crop_y.png
+
+    
 
 .. toctree::
    
