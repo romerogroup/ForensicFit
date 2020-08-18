@@ -9,6 +9,7 @@ import os
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+import math
 ndivision = 6
 
 class TapeImage():
@@ -311,6 +312,7 @@ class TapeImage():
         self.image = self.image[int(self.crop_y_bottom):int(self.crop_y_top),:]
         self.colored =  cv2.cvtColor(self.image,cv2.COLOR_GRAY2BGR)
         self._get_masked()
+        self.get_image_tilt()
         
         # self._get_image_tilt()
         
@@ -552,6 +554,12 @@ class TapeImage():
         else:
             self.image = cv2.resize(self.image,size)
 
+    
+    # @property
+    # def slope(self):
+    #     return np.diff(self.boundary[1:-1:10,1])/np.diff(self.boundary[1:-1:10,0])
+            
+
     def show(self,savefig=None,cmap='gray'):
         """
         Plots the image
@@ -659,14 +667,18 @@ class TapeImage():
 
             data[ipoint,:] = np.average(edge[cond_and],axis=0)
         if plot:
-            plt.figure(figsize=(1.65,10))
-            plt.scatter(data[:,0],data[:,1],s=1)
+            # plt.figure(figsize=(1.65,10))
+            plt.figure()
+            self.show()
+            plt.scatter(data[:,0],data[:,1],s=1,color='red')
+            plt.xlim(data[:,0].min()*0.9,data[:,0].max()*1.1)
+            
         
         return data
     
     def weft_based(self,
-                   window_background=20,
-                   window_tape=300,
+                   window_background=50,
+                   window_tape=200,
                    dynamic_window=False,
                    size=(300,30),
                    nsegments=4,
@@ -709,17 +721,23 @@ class TapeImage():
                 
         y_min = self.ymin
         y_max = self.ymax
+        y_min = 0
+        y_max = self.image.shape[0]
         
         x_start = x_min-window_background
         x_end = x_min+window_tape
 
         seg_len = (y_max-y_min)//(nsegments)
-        
+        seg_len = (y_max-y_min)/(nsegments)
+
         segments = []
         plot_segmets = []
+        dynamic_positions = []
+        y_end = 0
         for iseg in range(0,nsegments):
-            y_start = y_min+iseg*seg_len
-            y_end =   y_min+(iseg+1)*seg_len
+            # y_start = y_min+iseg*seg_len
+            y_start = y_end
+            y_end =   math.ceil(y_min+(iseg+1)*seg_len)
             if dynamic_window:
                 cond1 = boundary[:,1]>= y_start
                 cond2 = boundary[:,1]<= y_end
@@ -728,6 +746,8 @@ class TapeImage():
                 x_end   =  x_start + window_tape
 #            cv2.imwrite('%s_%d.tif'%(fname[:-4],iseg),im_color[y_start:y_end,x_start:x_end])
             isection = self.binerized_mask[y_start:y_end,x_start:x_end]
+            dynamic_positions.append([[x_start,x_end],[y_start,y_end]])
+
             # isection = cv2.resize(isection,(size[1],size[0]))
             segments.append(isection)
             
@@ -738,6 +758,21 @@ class TapeImage():
         if plot:
             plt.figure()
             plt.imshow(cv2.vconcat(plot_segmets),cmap='gray')
+            plt.figure()
+
+            self.show(cmap='gray')
+            for iseg in dynamic_positions:
+                # y = (iseg[1][0]+iseg[1][1])/2
+                y1 = iseg[1][0]
+                y2 = iseg[1][1]
+                x1 = iseg[0][0]
+                x2 = iseg[0][1]
+                plt.plot([x1,x1],[y1,y2],color='red')
+                plt.plot([x2,x2],[y1,y2],color='red')
+                plt.plot([x1,x2],[y1,y1],color='red')
+                plt.plot([x1,x2],[y2,y2],color='red')
+                
+                # plt.plot(iseg[0],[y,y],color='red')
         return segments
     
     def max_contrast(self,

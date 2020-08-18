@@ -44,7 +44,8 @@ The following plot will appear as a confirmation that the image has been loaded.
 As ``cmap`` defines the color map for the gray scale image. 
 
 .. image:: images/1.show.png
-
+    :align: center
+    
 ``gaussian_blur`` is also an important filter that is applied in the begining of this class.
 This filter is applied to image to decrease the image noise and help the finding of the 
 boundaries. A good number usually depends on the amount of the noise the scanner 
@@ -59,7 +60,8 @@ Usage::
                                 gaussian_blur=(101,101))
 
 .. image:: images/1.gaussian_blur.png
-
+    :align: center
+    
 1.2. Splitting the image vertically
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Sometimes one does not need one side of the image. To address this issue ``split``
@@ -80,7 +82,8 @@ Usage::
     tape_image.show(cmap='gray')
 
 .. image:: images/2.split_L.png
-
+    :align: center
+    
 1.3. Finding the tilt of the image
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 During the scanning process one might not position the image exactly parallel to the 
@@ -107,11 +110,13 @@ Usage::
 This method will produce two plots one with all of the segments shown in diferent colors,
 
 .. image:: images/3.tilt_1_all.png
-
+    :align: center
+    
 and one with the two segments with the least standard deviation, plotted over the detected boundary.
 
 .. image:: images/3.tilt_2_best.png
-
+    :align: center
+    
 1.4. Plot Boundaries
 ^^^^^^^^^^^^^^^^^^^^
 This class automatically(using opencv) detects the boundaries. To plot this boundary 
@@ -136,8 +141,93 @@ Usage::
     tape_image.plot_boundary(color='red')
     
 .. image:: images/5.auto_crop_y.png
+    :align: center
 
+
+1.6. Rotate Image
+^^^^^^^^^^^^^^^^^
+As the name suggests This method will perform an rotation around the center of the image.
+
+Usage::
     
+    tape_image.rotate_image(90)
+    tape_image.show(cmap='gray')
+
+
+1.7. Coordinate Based
+^^^^^^^^^^^^^^^^^^^^^
+This method will return a 2 dimentional array of coordinates of points on the edge.
+The most important parameter for this method is ``npoints`` representing the number of
+points in the returned array. This method divides the edge into the small sections and 
+returns the average of each section as one point. if the parameter ``plot`` is set to true 
+the plots will be plotted on the main image. The following example contains 1000 points for
+the resulting array.
+
+Usage::
+
+    tape_image.coordinate_based(plot=True,x_trim_param=6,npoints=500)
+    
+.. image:: images/7.coordinate_based_zoomed.png
+.. image:: images/7.coordinate_based.png
+    
+1.8. Weft based
+^^^^^^^^^^^^^^^
+In order to get as close as possible to a regular examination, this method was 
+added. This method will divide the edge of the image by the number of segments 
+defined by ``nsegments``. If this value is chose to be as close as the number of 
+wefts in a specific tape, the segments will be close to separating the segments
+by the wefts. There are three important paramters that can be passed on to this
+method. ``window_backround`` and ``window_tape`` define the number of pixels 
+that are going to be considered from the edge towards the background and from the 
+edge towards the tape respectively. There two different approaches that one can 
+define the window, either the whole window is fixed for the whole image or the window 
+can moves to adjust the same amount of background and tape to be involve in the image.
+This can be defined by ``dynamic_window`` equal to ``True`` or ``False``. The 
+following example can illustrate the dynamic window better. The image on the left
+represents ``dynamic=True`` and the image on the right represent ``dynamic=False``.
+Similar to the coordinate based, if one choose ``plot=True``, one can oversee the 
+boundary and window selection by plotting the results.
+
+Usage::
+
+    tape_image.weft_based(plot=True,dynamic_window=True,nsegments=39,
+                      window_background=70,window_tape=300)
+    tape_image.weft_based(plot=True,dynamic_window=False,nsegments=39,
+                      window_background=70,window_tape=300)
+    
+.. image:: images/6.weft_based_dynamic1.png
+    :width: 49.5 %
+.. image:: images/6.weft_based.png
+    :width: 49.5 %
+
+If ``nsegments`` is set to a small number, this approach can be looked at as a 
+big picture approach that can help improve the weft base approach.
+
+
+1.9. Max Contrast
+^^^^^^^^^^^^^^^^^^
+This method makes a maximum contrast between the edge and the rest of the image. 
+The rest of the image is represneted by a white color(255) and the rest of the 
+image is represented by a black color(0). Similar to the weft based one can choose 
+the number of pixels included in the ``window_background`` and the ``wondow_tape``.
+``window_backround`` and ``window_tape`` define the number of pixels 
+that are going to be considered from the edge towards the background and from the 
+edge towards the tape respectively. There two different approaches that one can 
+define the window, either the whole window is fixed for the whole image or the window 
+can moves to adjust the same amount of background and tape to be involve in the image.
+Similar to the coordinate based, if one choose ``plot=True``, one can oversee the 
+boundary and window selection by plotting the results. In the following example 
+we choose the default for the ``window_background`` and ``window_tape``.
+
+Usage::
+
+    tape_image.max_contrast(plot=True)
+    
+.. image:: images/9.max_contrast.png
+    :width: 20 %
+    :align: center
+
+
 
 .. toctree::
    
