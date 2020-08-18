@@ -155,7 +155,43 @@
 <span class="kn">from</span> <span class="nn">.preprocess</span> <span class="kn">import</span> <span class="n">TapeImage</span>
 
 <div class="viewcode-block" id="process_directory"><a class="viewcode-back" href="../../forensicfit.html#forensicfit.script_process_dir.process_directory">[docs]</a><span class="k">def</span> <span class="nf">process_directory</span><span class="p">(</span><span class="n">dir_path</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span>
-                      <span class="p">):</span>
+                      <span class="n">output_format</span><span class="o">=</span><span class="s1">&#39;json&#39;</span><span class="p">,</span>
+                      <span class="n">mode</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;coordinate_based&#39;</span><span class="p">,</span><span class="s1">&#39;weft_based&#39;</span><span class="p">,</span><span class="s1">&#39;big_picture&#39;</span><span class="p">,</span><span class="s1">&#39;max_contrast&#39;</span><span class="p">],</span>
+                      <span class="n">dynamic_window</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                      <span class="n">tape_window</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                      <span class="n">background_window</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+                      <span class="n">npoints</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+                      <span class="n">auto_rotate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                      <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    </span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dir_path : TYPE, optional</span>
+<span class="sd">        DESCRIPTION. The default is &#39;.&#39;.</span>
+<span class="sd">    output_format : TYPE, optional</span>
+<span class="sd">        DESCRIPTION. The default is &#39;json&#39;.</span>
+<span class="sd">    mode : TYPE, optional</span>
+<span class="sd">        DESCRIPTION. The default is [&#39;coordinate_based&#39;,&#39;weft_based&#39;,&#39;big_picture&#39;,&#39;max_contrast&#39;].</span>
+<span class="sd">    dynamic_window : TYPE, optional</span>
+<span class="sd">        DESCRIPTION. The default is True.</span>
+<span class="sd">    tape_window : TYPE, optional</span>
+<span class="sd">        DESCRIPTION. The default is 100.</span>
+<span class="sd">    background_window : TYPE, optional</span>
+<span class="sd">        DESCRIPTION. The default is 50.</span>
+<span class="sd">    npoints : TYPE, optional</span>
+<span class="sd">        DESCRIPTION. The default is 1000.</span>
+<span class="sd">    auto_rotate : TYPE, optional</span>
+<span class="sd">        DESCRIPTION. The default is False.</span>
+<span class="sd">    plot : TYPE, optional</span>
+<span class="sd">        DESCRIPTION. The default is False.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">dir_path</span><span class="p">)</span></div>
 
 </pre></div>

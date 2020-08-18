@@ -748,7 +748,7 @@ class TapeImage():
             isection = self.binerized_mask[y_start:y_end,x_start:x_end]
             dynamic_positions.append([[x_start,x_end],[y_start,y_end]])
 
-            # isection = cv2.resize(isection,(size[1],size[0]))
+            isection = cv2.resize(isection,(size[1],size[0]))
             segments.append(isection)
             
             isection = cv2.copyMakeBorder(isection,1,1,1,1,cv2.BORDER_CONSTANT,value=[0,0,0])
