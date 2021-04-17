@@ -16,12 +16,14 @@ class TapeImage():
     def __init__(self,
                  fname,
                  tape_label=None,
+                 flip=False,
                  mask_threshold=60,
                  rescale=None,
                  split=False,
                  gaussian_blur=(15,15),
                  split_side='L',
                  split_position=None,
+                 verbose=True,
                  ):
         """
         TapeImage is a class created for tape images to be preprocessed for 
@@ -36,6 +38,8 @@ class TapeImage():
 
         tape_label : str, optional
             Label to this specific image. The default is None.
+        flip : bool, optional
+            Applies inversion
         mask_threshold : int, optional
             Inorder to find the boundaries of the tape, the algorithm changes every pixel with a value lower than mask_threshold to 0(black). The default is
             60.
@@ -57,19 +61,28 @@ class TapeImage():
 
         """
         self.fname = fname
+        self.verbose = verbose
         if not os.path.exists(fname):
             raise Exception("File %s does not exist"%fname)
-        self.tape_label = tape_label
         
+        self.tape_label = tape_label
+        self.flip = flip
         self.image_tilt = None
         self.crop_y_top = None
         self.crop_y_bottom = None
-        
+        if verbose:
+            print("openning %s" % self.fname)
         self.image = cv2.imread(fname,0)
+        if self.flip:
+            self.image=cv2.flip(self.image, 0)
         self.image_original = self.image.copy()
         if split :
+            if verbose:
+                print("splitting and selecting %s"%split_side)
             self.split_vertical(split_position,split_side)
-        if gaussian_blur is  not None :
+        if gaussian_blur is not None :
+            if verbose:
+                print("applying Gaussian Blur")
             self.gaussian_blur(gaussian_blur)
         if rescale is not None:
             self.resize(
@@ -78,7 +91,11 @@ class TapeImage():
         self.mask_threshold = mask_threshold
         self.masked = None
         self.colored = cv2.cvtColor(self.image,cv2.COLOR_GRAY2BGR)
+        if verbose:
+            print("getting the mask")
         self._get_masked()
+        if verbose:
+            print("calculating the tilt")
         self.get_image_tilt()
         
         
@@ -778,6 +795,7 @@ class TapeImage():
     def max_contrast(self,
                      window_background=20,
                      window_tape=300,
+                     size=None,
                      plot=False):
         """
         This method returns the detected image as a black image with only the 
@@ -798,6 +816,8 @@ class TapeImage():
             A black image with all the pixels on the edge white.
 
         """
+        if self.verbose:
+            print("getting max contrast")
         zeros = np.zeros_like(self.image)        
         edge_bw = cv2.drawContours(zeros,[self.boundary],0,(255,255,255),2)
         x_min = self.xmin
@@ -805,6 +825,8 @@ class TapeImage():
         x_start = x_min-window_background
         x_end = x_min+window_tape
         edge_bw = edge_bw[:,x_start:x_end]
+        if size is not None:
+            edge_bw = cv2.resize(edge_bw,(size[1],size[0]))
         if plot:
             plt.figure()
             plt.imshow(edge_bw,cmap='gray')

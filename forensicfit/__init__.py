@@ -5,4 +5,4 @@
 
 
 from .preprocess import TapeImage
-from .script_process_dir import process_directory
+# from .script_process_dir import process_directory

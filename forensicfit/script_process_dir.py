@@ -137,7 +137,7 @@ def process_directory(dir_path='.',
                                            shape=(nfiles,npoints,2))
             for ilabel in output_dictionary["coordinate_base"]:
                 
-        if'weft_based' in modes:
+        if 'weft_based' in modes:
             weft_dset = wf.create_dataset("output/weft_based", 
                                           shape=(nfiles,
                                                  weft_based_size[0],
