@@ -5,65 +5,23 @@ Created on Sun Jun 28 14:11:02 2020
 @author: Pedram Tavadze
 """
 
-import os
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-import math
-ndivision = 6
 
-class TapeImage():
+
+class Tape():
     def __init__(self,
-                 fname,
                  tape_label=None,
-                 flip=False,
-                 mask_threshold=60,
-                 rescale=None,
-                 split=False,
-                 gaussian_blur=(15,15),
-                 split_side='L',
-                 split_position=None,
-                 verbose=True,
+                 image=None,
+                 max_contrast=None,
+                 weft_based=None,
+                 coordinate_based=None,
+                 meta_data={},
                  ):
-        """
-        TapeImage is a class created for tape images to be preprocessed for 
-        Machine Learning. This Class detects the edges, auto crops the image 
-        and returns the results in 3 different method coordinate_based, 
-        weft_based and max_contrast. 
 
-        Parameters
-        ----------
-        fname : str
-            fname defines the path to the image file. This can be any format the `opencv <https://docs.opencv.org/2.4/modules/highgui/doc/reading_and_writing_images_and_video.html>`_ supports.
-
-        tape_label : str, optional
-            Label to this specific image. The default is None.
-        flip : bool, optional
-            Applies inversion
-        mask_threshold : int, optional
-            Inorder to find the boundaries of the tape, the algorithm changes every pixel with a value lower than mask_threshold to 0(black). The default is
-            60.
-        rescale : float, optional
-            Only for scale images down to a smaller size for example 
-            rescale=1/2. The default is None.
-        split : bool, optional
-            Whether or not to split the image. The default is True.
-        gaussian_blur : 2d tuple of int, optional
-            Defines the window in which Gaussian Blur filter is applied. The 
-            default is (15,15).
-        split_side : string, optional
-            After splitting the image which side is chosen. The default is 'L'.
-        split_position : float, optional
-            Number between 0-1. Defines the where the vertical split is going 
-            to happen. 1/2 will be in the middle. The default is None.
-         
-    
-
-        """
         self.fname = fname
         self.verbose = verbose
-        if not os.path.exists(fname):
-            raise Exception("File %s does not exist"%fname)
         
         self.tape_label = tape_label
         self.flip = flip
@@ -101,54 +59,9 @@ class TapeImage():
         
 
     
-    def _get_masked(self):
-        """
-        Populates the masked image with the gray scale threshold
-        Returns
-        
-        -------
-        None.
+   
 
-        """
-        self.masked = cv2.inRange(self.image,
-                                  self.mask_threshold,
-                                  255)
-        
-        return
-    
-    @property 
-    def binerized_mask(self):
-        """
-        This funtion return the binarized version of the tape
 
-        Returns
-        -------
-        2d array of the image
-            .
-
-        """
-        return cv2.bitwise_and(self.image,
-                               self.image,
-                                mask=self.masked)
-    
-
-    @property
-    def gray_scale(self):
-        """
-        Gray Scale image of the input image.
-
-        Returns
-        -------
-        gray_scale : cv2 object
-            Gray Scale image of the input image.
-
-        """
-        if len(self.image.shapelen) >2:
-            gray_scale = cv2.cvtColor(self.image,cv2.COLOR_BGR2GRAY)
-        else : 
-            gray_scale = self.image
-        return gray_scale
-    
 
     
     @property
@@ -204,245 +117,7 @@ class TapeImage():
         """
         return self.image.shape
     
-    
-    
-    def get_image_tilt(self,plot=False):
-        """
-        This function calculates the degree in which the tape is tilted with 
-        respect to the horizontal line.
 
-        Parameters
-        ----------
-        plot : bool, optional
-            Plot the segmentation as the image tilt is being calculated. The 
-            default is False.
-
-        Returns
-        -------
-        angle_d : TYPE
-            DESCRIPTION.
-
-        """
-        stds = np.ones((ndivision-1,2))*1000
-        conditions_top = []
-        conditions_top.append([])
-        conditions_bottom = []
-        conditions_bottom.append([])
-        boundary = self.boundary
-        y_min = self.ymin
-        y_max = self.ymax
-        
-        x_min = self.xmin
-        x_max = self.xmax
-        if plot:
-            _ = plt.figure()
-
-        for idivision in range(1,ndivision-1):
-
-            y_interval = y_max-y_min
-            cond1 = boundary[:,1]> y_max-y_interval/ndivision
-            cond2 = boundary[:,1]< y_max+y_interval/ndivision
-            
-            x_interal = x_max-x_min
-            cond3 = boundary[:,0]>= x_min+x_interal/ndivision*idivision
-            cond4 = boundary[:,0]<= x_min+x_interal/ndivision*(idivision+1)
-            
-            cond_12 = np.bitwise_and(cond1,cond2)
-            cond_34 = np.bitwise_and(cond3,cond4)
-            cond_and_top = np.bitwise_and(cond_12,cond_34)
-            
-            # This part is to rotate the images
-
-            if sum(cond_and_top) == 0 :
-                conditions_top.append([])
-                
-                continue
-            if plot:
-                plt.plot(boundary[cond_and_top][:,0],boundary[cond_and_top][:,1],linewidth=3)
-            m_top,b0_top = np.polyfit(boundary[cond_and_top][:,0],boundary[cond_and_top][:,1],1)
-            std_top = np.std(boundary[cond_and_top][:,1])
-            stds[idivision,0] = std_top
-            conditions_top.append(cond_and_top)
-            
-        for idivision in range(1,ndivision-1):
-            
-            cond1 = boundary[:,1]> y_min-y_interval/ndivision
-            cond2 = boundary[:,1]< y_min+y_interval/ndivision
-            
-            x_interal = x_max-x_min
-            cond3 = boundary[:,0]>= x_min+x_interal/ndivision*idivision
-            cond4 = boundary[:,0]<= x_min+x_interal/ndivision*(idivision+1)
-            
-            cond_12 = np.bitwise_and(cond1,cond2)
-            cond_34 = np.bitwise_and(cond3,cond4)
-            cond_and_bottom = np.bitwise_and(cond_12,cond_34)
-            
-            if sum(cond_and_bottom) == 0 :
-                
-                conditions_bottom.append([])
-                continue
-            if plot:
-                plt.plot(
-                    boundary[cond_and_bottom][:,0],boundary[cond_and_bottom][:,1],linewidth=3)
-            m_bottom,b0_bottom = np.polyfit(
-                boundary[cond_and_bottom][:,0],boundary[cond_and_bottom][:,1],1)
-            
-            m = np.average([m_top,m_bottom])
-            
-            std_bottom = np.std(boundary[cond_and_bottom][:,1])
-            # print(std_top,std_bottom)
-            
-            stds[idivision,1] = std_bottom
-            conditions_bottom.append(cond_and_bottom)
-
-        
-        arg_mins = np.argmin(stds,axis=0)
-        
-        cond_and_top = conditions_top[arg_mins[0]]
-        cond_and_bottom = conditions_bottom[arg_mins[1]]
-        if plot:
-            plt.figure()
-            plt.plot(boundary[:,0],boundary[:,1],color='black')
-            plt.scatter(boundary[cond_and_top][:,0],boundary[cond_and_top][:,1],color='blue')
-            plt.scatter(boundary[cond_and_bottom][:,0],boundary[cond_and_bottom][:,1],color='red')
-            
-        self.crop_y_top = np.average(boundary[cond_and_top][:,1])
-        self.crop_y_bottom = np.average(boundary[cond_and_bottom][:,1])
-        
-        if np.min(stds,axis=0)[0] > 10 :
-            self.crop_y_top = y_max
-        if np.min(stds,axis=0)[1] > 10 :
-            self.crop_y_bottom = y_min
-        angle = np.arctan(m)
-        angle_d = np.rad2deg(angle)
-        self.image_tilt = angle_d
-        return angle_d
-        
-    def auto_crop_y(self):
-        """
-        This method automatically crops the image in y direction (top and bottom)
-
-        Returns
-        -------
-        None.
-
-        """
-        self.image = self.image[int(self.crop_y_bottom):int(self.crop_y_top),:]
-        self.colored =  cv2.cvtColor(self.image,cv2.COLOR_GRAY2BGR)
-        self._get_masked()
-        self.get_image_tilt()
-        
-        # self._get_image_tilt()
-        
-    
-
-    def rotate_image(self, angle):
-        """
-        Rotates the image by angle degrees
-        
-        Parameters
-        ----------
-            angle : float
-                Angle of rotation.
-
-        Returns
-        -------
-            None.
-
-        """
-        image_center = tuple(np.array(self.image.shape[1::-1]) / 2)
-        rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
-        self.image = cv2.warpAffine(
-            self.image, rot_mat, self.image.shape[1::-1], flags=cv2.INTER_LINEAR)
-        self.colored =  cv2.cvtColor(self.image,cv2.COLOR_GRAY2BGR)
-        self._get_masked()
-
-        return 
-    
-    def gaussian_blur(self,window=(15,15)):
-        """
-        This method applies Gaussian Blur filter to the image. 
-
-        Parameters
-        ----------
-        window : tuple int, optional
-            The window in which the gaussian blur is going to be applied.
-            The default is (15,15).
-
-        Returns
-        -------
-        None.
-
-        """
-        self.image = cv2.GaussianBlur(self.image,window,0)
-        self.colored =  cv2.cvtColor(self.image,cv2.COLOR_GRAY2BGR)
-        return
-    
-    def split_vertical(self,pixel_index=0.5,pick_side='L'):
-        """
-        This method splits the image in 2 images based on the fraction that is 
-        given in pixel_index
-
-        Parameters
-        ----------
-        pixel_index : float, optional
-            fraction in which the image is going to be split. The value should
-            be a number between zero and one. The default is 0.5.
-        pick_side : str, optional
-            The side in which will over write the image in the class. The 
-            default is 'L'.
-
-        Returns
-        -------
-        None.
-
-        """        
-        if pixel_index is None:
-            pixel_index = self.width//2
-        
-        if pick_side == 'L':
-            self.image = self.image[:, 0:pixel_index]
-        else : 
-            self.image = cv2.flip(self.image[:,pixel_index:self.width],1)
-        self.colored =  cv2.cvtColor(self.image,cv2.COLOR_GRAY2BGR)
-        return
-    
-    @property
-    def contours(self):
-        """
-         A list of pixels that create the contours in the image
-
-        Returns
-        -------
-        contours : list 
-            A list of pixels that create the contours in the image
-
-        """
-        
-        contours,_ = cv2.findContours(
-            self.masked,cv2.RETR_TREE,cv2.CHAIN_APPROX_NONE)
-        return contours
-
-    @property
-    def largest_contour(self):
-        """
-        A list of pixels forming the contour with the largest area
-
-        Returns
-        -------
-        contour_max_area : list
-            A list of pixels forming the contour with the largest area
-
-        """
-        
-        max_con = 0
-        max_con_arg = 0
-        for ic in range(len(self.contours)):
-            if cv2.contourArea(self.contours[ic]) > max_con :
-                max_con = cv2.contourArea(self.contours[ic])
-                max_con_arg = ic
-        contour_max_area = self.contours[max_con_arg]
-        return contour_max_area
 
 
     @property
@@ -553,24 +228,7 @@ class TapeImage():
         ymax = int(self.boundary[cond_and,1].max()) # using int because pixel numbers are integers
         return ymax
     
-    def resize(self,size):
-        """
-        This method resizes the image to the pixel size given.
 
-        Parameters
-        ----------
-        size : tuple int,
-            The target size in which the image is going to be resized. 
-
-        Returns
-        -------
-        None.
-
-        """
-        if size is None:
-            return 
-        else:
-            self.image = cv2.resize(self.image,size)
 
     
     # @property
