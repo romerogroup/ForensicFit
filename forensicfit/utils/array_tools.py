@@ -3,10 +3,13 @@
 import numpy as np
 
 def serializer(indict):
+    ret = {}
     for key in indict:
         if type(indict[key]) is dict:
-            indict[key] = serializer(indict[key])
+            ret[key] = serializer(indict[key])
         elif type(indict[key]) is np.ndarray :
-            indict[key] = indict[key].tolist()
-    return indict
+            ret[key] = indict[key].tolist()
+        else :
+            ret[key] = indict[key]
+    return ret
             
