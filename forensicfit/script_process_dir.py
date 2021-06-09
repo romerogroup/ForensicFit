@@ -32,6 +32,7 @@ def process_directory(
         split_position=0.5,
         calculate_tilt=True,
         verbose=True,
+        update=False,
         db_name='forensicfit',
         host='localhost',
         port=27017,
@@ -102,11 +103,12 @@ def process_directory(
     for count, ifile in enumerate(files):
         if ifile.split('.')[1] not in ['tif', 'jpg', 'bmp', 'png']:
             continue
+
         quality = ifile[0]
         for iside in side:
             for iflip in [True, False]:
                 print(r"Analyzing file %s, side %s, flip %r, %d/%d" %
-                      (ifile, iside, iflip, count, nfiles))
+                      (ifile+1, iside, iflip, count, nfiles))
                 tape = Tape(ifile, label=ifile)
                 tape.add_metadata("quality", quality)
                 if iflip:
@@ -114,8 +116,12 @@ def process_directory(
                         db.insert_item(tape)
                     tape.flip_h()
                 tape.split_vertical(pixel_index=0.5)
-                analyed_tape = TapeAnalyzer(
-                    tape, mask_threshold, gaussian_blur, ndivision, auto_crop, calculate_tilt, verbose)
+                try:
+                    analyed_tape = TapeAnalyzer(
+                        tape, mask_threshold, gaussian_blur, ndivision, auto_crop, calculate_tilt, verbose)
+                except:
+                    print("++++++++++++++++++++++++++++")
+                    
                 analyed_tape.add_metadata("quality", quality)
                 if 'coordinate_based' in modes:
                     analyed_tape.get_coordinate_based(npoints, x_trim_param)

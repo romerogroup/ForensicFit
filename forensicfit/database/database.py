@@ -109,7 +109,9 @@ class Database:
                        'metadata': iq.metadata}
             else:
                 queries = self.gridfs_analysis.find(
-                    {"filename": filename, "metadata.split_vertical.side": side}).sort("uploadDate", version)
+                    {"filename": filename, "metadata.side": side}).sort("uploadDate", version)
+                print("%d item found"%queries.count())
+
                 if queries.count() != 0:
                     metadata = {}
                     values = {}
@@ -132,8 +134,8 @@ class Database:
                        'metadata': iq.metadata}
             else:
                 queries = self.gridfs_item.find(
-                    {"filename": filename, "metadata.split_vertical.side": side}).sort("uploadDate", version).limit(1)
-
+                    {"filename": filename}).sort("uploadDate", version).limit(1)
+                print("%d item found"%queries.count())
                 iq = next(queries, None)
                 if iq is not None:
 
@@ -152,4 +154,3 @@ class Database:
     def delete_database(self):
         self.client.drop_database(self.name)
 
-    def get_
