@@ -123,8 +123,11 @@ def process_directory(
             for iflip in [True, False]:
 
                 tape = Tape(ifile, label=ifile)
+
                 if split:
                     tape.split_vertical(pixel_index=split_position, pick_side=iside)
+                if iflip:
+                	tape.flip_h()
                 if ignore_errors:
                     try:
                         analyed_tape = TapeAnalyzer(
@@ -158,4 +161,3 @@ def process_directory(
                         window_background, window_tape, max_contrast_size)
                 db.insert_item(analyed_tape)
                 c+=1
-    print(c)
