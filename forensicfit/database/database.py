@@ -55,6 +55,12 @@ class Database:
             ret += "{:<7}    :  {}\n".format(key, self.db_info[key])
         return ret
 
+    def exists_item(self, filename):
+        return self.gridfs_item.exists({"filename":filename})
+
+    def exists_analysis(self, filename):
+        return self.gridfs_analysis.exists({"filename":filename})
+
     def insert_item(self, item, overwrite=False, skip=False):
 
         if item.metadata['mode'] == 'analysis':
@@ -77,6 +83,7 @@ class Database:
                     metadata = item.metadata.copy()
                     # metadata['analysis'] = {}
                     metadata['analysis_mode'] = key
+                    
                     self.gridfs_analysis.put(output.getvalue(), filename=item.label,
                                              metadata=metadata)
         elif item.metadata['mode'] == 'item':

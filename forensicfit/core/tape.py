@@ -101,7 +101,10 @@ class TapeAnalyzer(Analyzer):
         self.metadata["gaussian_blur"] = self.gaussian_blur
         self.metadata["mask_threshold"] = self.mask_threshold
         self.metadata["ndivision"] = self.ndivision
-        self.metadata['side'] = self.metadata['image']['split_vertical']['side']
+        if 'split_vertical' in self.metadata['image']:
+            self.metadata['side'] = self.metadata['image']['split_vertical']['side']
+        else :
+            self.metadata['side'] = None
         self.metadata["analysis"] = {}
 
     @classmethod

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+from tqdm import tqdm
 from multiprocessing import Pool
 from .core import Tape
 from .database import Database
@@ -34,11 +35,11 @@ def worker(args):
     db = Database(db_name, host, port, username, password)
 
     nfiles = len(files)
-
-    for count, ifile in enumerate(files):
+    
+    for count in tqdm(range(nfiles), ascii=True, desc=("Storing ")):
+        ifile = files[count]
         if ifile.split('.')[1] not in ['tif', 'jpg', 'bmp', 'png']:
             continue
-        print(count, ifile)
         tape = Tape(ifile, label=ifile)
         quality = ifile.split("_")[0]
         if len(quality) == 4:
@@ -55,6 +56,8 @@ def worker(args):
         tape.add_metadata("streched", streched)
         tape.add_metadata("side", side)
         db.insert_item(tape, overwrite, skip)
+        
+    
 
 
 def store_on_db(
@@ -98,7 +101,7 @@ def store_on_db(
 
     """
 
-    files = os.listdir(dir_path)
+    files = os.listdir(dir_path)[:30]
     worker(chunks(files, 1,  db_name,
                           host, port, username, password, overwrite, skip)[0])
     # p = Pool(nprocessors)
