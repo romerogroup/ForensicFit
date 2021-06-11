@@ -5,7 +5,6 @@ from matplotlib import pylab as plt
 
 from abc import ABCMeta, abstractmethod
 from collections.abc import Mapping
-import time
 
 class Analyzer:
     __metaclass__ = ABCMeta
@@ -16,7 +15,7 @@ class Analyzer:
         self.mode = 'analysis'
         self.boundary = None
         self.values = {}
-        self.metadata = {'mode': 'analysis', 'time':time.asctime()}
+        self.metadata = {'mode': 'analysis'}
 
     def plot_boundary(self, savefig=None, color='r'):
         """

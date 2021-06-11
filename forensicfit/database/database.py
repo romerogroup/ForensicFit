@@ -55,8 +55,20 @@ class Database:
             ret += "{:<7}    :  {}\n".format(key, self.db_info[key])
         return ret
 
-    def insert_item(self, item):
+    def insert_item(self, item, overwrite=False, skip=False):
+
         if item.metadata['mode'] == 'analysis':
+            if skip:
+                if self.gridfs_analysis.exists(
+                            {'metadata':item.metadata}):
+                    return
+            if overwrite:                
+                if self.gridfs_analysis.exists(
+                        {'metadata':item.metadata}):
+                    queries = self.gridfs_analysis.find(
+                        {'metadata':item.metadata})
+                    for iq in queries:
+                        self.gridfs_item.delete(iq._id)
             for key in item.values:
                 if type(item[key]) is np.ndarray:
                     output = io.BytesIO()
@@ -65,20 +77,27 @@ class Database:
                     metadata = item.metadata.copy()
                     # metadata['analysis'] = {}
                     metadata['analysis_mode'] = key
-                    # if key != 'image':
-
-                    #     if key in item.metadata['analysis']:
-                    #         metadata['analysis'][key] = item.metadata['analysis'][key]
-                    # metadata = item.metadata
                     self.gridfs_analysis.put(output.getvalue(), filename=item.label,
                                              metadata=metadata)
         elif item.metadata['mode'] == 'item':
+            if skip: 
+                if self.gridfs_item.exists(
+                        {'metadata':item.metadata}):
+                    return
+            if overwrite:                
+                if self.gridfs_item.exists(
+                        {'metadata':item.metadata}):
+                    queries = self.gridfs_item.find(
+                        {'metadata':item.metadata})
+                    for iq in queries:
+                        self.gridfs_item.delete(iq._id)
             for key in item.values:
                 if type(item[key]) is np.ndarray:
                     output = io.BytesIO()
                     np.save(output, item.values[key])
                     self.gridfs_item.put(output.getvalue(), filename=item.filename,
                                          metadata=item.metadata)
+        return
 
     def query(self, criteria={}, version=-1):
         ret = None
@@ -100,57 +119,57 @@ class Database:
             ret = TapeAnalyzer.from_dict(values)
         return ret
 
-    def get_item(self, filename=None, _id=None, mode='analysis', side="R", version=-1):
+    def get_ML_model(self):
+        return
+
+    def get_analysis(self, filename=None, _id=None, side="R", version=-1):
         ret = None
-        if mode == 'analysis':
-            if _id is not None:
-                iq = self.gridfs_analysis.get(ObjectId(_id), version=version)
-                ret = {'data': np.load(io.BytesIO(iq.read())),
-                       'metadata': iq.metadata}
-            else:
-                queries = self.gridfs_analysis.find(
-                    {"filename": filename, "metadata.side": side}).sort("uploadDate", version)
-                print("%d item found"%queries.count())
+        if _id is not None:
+            iq = self.gridfs_analysis.get(ObjectId(_id), version=version)
+            ret = {'data': np.load(io.BytesIO(iq.read())),
+                   'metadata': iq.metadata}
+        else:
+            queries = self.gridfs_analysis.find(
+                {"filename": filename, "metadata.side": side}).sort("uploadDate", version)
+            print("%d item found" % queries.count())
 
-                if queries.count() != 0:
-                    metadata = {}
-                    values = {}
-                    for iq in queries:
-                        # if len(metadata) == 0:
-                        #     metadata = iq.metadata
-                        # if len(iq.metadata["analysis"]) != 0:
-                        #     metadata['analysis'][iq.metadata['analysis_mode']
-                        #                          ] = iq.metadata['analysis'][iq.metadata['analysis_mode']]
-                        values[iq.metadata['analysis_mode']] = np.load(
-                            io.BytesIO(iq.read()))
-                        # values['metadata'] = metadata
-                    values['metadata'] = iq.metadata
-                    ret = TapeAnalyzer.from_dict(values)
-                    # ret = values
-        elif mode == 'item':
-            if _id is not None:
-                iq = self.gridfs_analysis.get(ObjectId(_id))
-                ret = {'data': np.load(io.BytesIO(iq.read())),
-                       'metadata': iq.metadata}
-            else:
-                queries = self.gridfs_item.find(
-                    {"filename": filename}).sort("uploadDate", version).limit(1)
-                print("%d item found"%queries.count())
-                iq = next(queries, None)
-                if iq is not None:
-
-                    metadata = {}
-                    values = {}
-                    values['image'] = np.load(
+            if queries.count() != 0:
+                metadata = {}
+                values = {}
+                for iq in queries:
+                    # if len(metadata) == 0:
+                    #     metadata = iq.metadata
+                    # if len(iq.metadata["analysis"]) != 0:
+                    #     metadata['analysis'][iq.metadata['analysis_mode']
+                    #                          ] = iq.metadata['analysis'][iq.metadata['analysis_mode']]
+                    values[iq.metadata['analysis_mode']] = np.load(
                         io.BytesIO(iq.read()))
-                    values['filename'] = filename
-                    values['label'] = iq.metadata['label']
-                    values['metadata'] = iq.metadata
+                    # values['metadata'] = metadata
+                values['metadata'] = iq.metadata
+                ret = TapeAnalyzer.from_dict(values)
+        return ret
 
-                    ret = Tape.from_dict(values=values)
-
+    def get_item(self, filename=None, _id=None, version=-1):
+        ret = None
+        if _id is not None:
+            iq = self.gridfs_analysis.get(ObjectId(_id))
+            ret = {'data': np.load(io.BytesIO(iq.read())),
+                   'metadata': iq.metadata}
+        else:
+            queries = self.gridfs_item.find(
+                {"filename": filename}).sort("uploadDate", version)
+            print("%d item found" % queries.count())
+            iq = next(queries, None)
+            if iq is not None:
+                metadata = {}
+                values = {}
+                values['image'] = np.load(
+                    io.BytesIO(iq.read()))
+                values['filename'] = filename
+                values['label'] = iq.metadata['label']
+                values['metadata'] = iq.metadata
+                ret = Tape.from_dict(values=values)
         return ret
 
     def delete_database(self):
         self.client.drop_database(self.name)
-

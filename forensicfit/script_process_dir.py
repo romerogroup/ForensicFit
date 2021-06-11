@@ -32,12 +32,14 @@ def process_directory(
         split_position=0.5,
         calculate_tilt=True,
         verbose=True,
-        update=False,
+        skip=False,
+        overwrite=False,
         db_name='forensicfit',
         host='localhost',
         port=27017,
         username="",
-        password=""):
+        password="",
+        ignore_errors=False):
     """
 
 
@@ -105,27 +107,32 @@ def process_directory(
             continue
 
         quality = ifile[0]
+
         for iside in side:
             for iflip in [True, False]:
                 print(r"Analyzing file %s, side %s, flip %r, %d/%d" %
-                      (ifile+1, iside, iflip, count, nfiles))
+                      (ifile, iside, iflip, count+1, nfiles))
                 tape = Tape(ifile, label=ifile)
                 tape.add_metadata("quality", quality)
                 if iflip:
                     if iside == 'R':
-                        db.insert_item(tape)
+                        db.insert_item(tape, overwrite=overwrite, skip=skip)
                     tape.flip_h()
                 tape.split_vertical(pixel_index=0.5)
-                try:
+                if ignore_errors:
+                    try:
+                        analyed_tape = TapeAnalyzer(
+                            tape, mask_threshold, gaussian_blur, ndivision, auto_crop, calculate_tilt, verbose)
+                    except:
+                        print("++++++++++++++++++++++++++++")
+                        print("Could not analyze file : %s" % ifile)
+                else :
                     analyed_tape = TapeAnalyzer(
                         tape, mask_threshold, gaussian_blur, ndivision, auto_crop, calculate_tilt, verbose)
-                except:
-                    print("++++++++++++++++++++++++++++")
-                    
                 analyed_tape.add_metadata("quality", quality)
                 if 'coordinate_based' in modes:
                     analyed_tape.get_coordinate_based(npoints, x_trim_param)
-                if'weft_based' in modes:
+                if 'weft_based' in modes:
                     analyed_tape.get_weft_based(window_background,
                                                 window_tape,
                                                 dynamic_window,
@@ -136,7 +143,7 @@ def process_directory(
                                                 dynamic_window,
                                                 weft_based_size,
                                                 nsegments=4)
-    
+
                 if 'max_contrast' in modes:
                     analyed_tape.get_max_contrast(
                         window_background, window_tape, max_contrast_size)

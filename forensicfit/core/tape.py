@@ -10,7 +10,6 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import math
-import time
 from ..utils import image_tools
 from . import Item, Analyzer
 
@@ -599,7 +598,9 @@ class Tape(Item):
         self.metadata['flip_h'] = False
         self.metadata['split_vertical'] = {}
         self.metadata['label'] = self.label
-
+        self.metadata['filename'] = self.filename
+        
+        
     @classmethod
     def from_dict(cls, values):
         cls = Tape()

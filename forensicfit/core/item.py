@@ -6,7 +6,6 @@ pychemia/code/codes.py
 """
 import cv2
 from matplotlib import pylab as plt
-import time
 
 from abc import ABCMeta, abstractmethod
 from collections.abc import Mapping
@@ -23,7 +22,7 @@ class Item(Mapping):
         self.image = None
         self.mode = 'item'
         self.values = {}
-        self.metadata = {'mode': 'item', 'time':time.asctime()}
+        self.metadata = {'mode': 'item'}
 
     @property
     def is_loaded(self):
