@@ -569,7 +569,7 @@ class TapeAnalyzer(Analyzer):
         return edge_bw
 
 
-class Tape(Item):
+class Tape(Material):
     def __init__(self,
                  filename=None,
                  image=None,
@@ -582,7 +582,7 @@ class Tape(Item):
 
 
         """
-        Item.__init__(self)
+        Material.__init__(self)
         self.filename = filename
         self.label = label
 
