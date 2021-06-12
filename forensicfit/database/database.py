@@ -42,7 +42,7 @@ class Database:
         self.db = self.client[name]
         self.entries = self.db.forensicfit_entries
 
-        self.gridfs_item = gridfs.GridFS(self.db, "items")
+        self.gridfs_material = gridfs.GridFS(self.db, "materials")
         self.gridfs_analysis = gridfs.GridFS(self.db, "analysis")
         self.db_info = {"Database Name": self.name,
                         "Host": self.host,
@@ -55,55 +55,55 @@ class Database:
             ret += "{:<7}    :  {}\n".format(key, self.db_info[key])
         return ret
 
-    def exists_item(self, filename):
-        return self.gridfs_item.exists({"filename":filename})
+    def exists_material(self, filename):
+        return self.gridfs_material.exists({"filename": filename})
 
     def exists_analysis(self, filename):
-        return self.gridfs_analysis.exists({"filename":filename})
+        return self.gridfs_analysis.exists({"filename": filename})
 
-    def insert_item(self, item, overwrite=False, skip=False):
+    def insert_material(self, material, overwrite=False, skip=False):
 
-        if item.metadata['mode'] == 'analysis':
+        if material.metadata['mode'] == 'analysis':
             if skip:
                 if self.gridfs_analysis.exists(
-                            {'metadata':item.metadata}):
+                        {'metadata': material.metadata}):
                     return
-            if overwrite:                
+            if overwrite:
                 if self.gridfs_analysis.exists(
-                        {'metadata':item.metadata}):
+                        {'metadata': material.metadata}):
                     queries = self.gridfs_analysis.find(
-                        {'metadata':item.metadata})
+                        {'metadata': material.metadata})
                     for iq in queries:
-                        self.gridfs_item.delete(iq._id)
-            for key in item.values:
-                if type(item[key]) is np.ndarray:
+                        self.gridfs_material.delete(iq._id)
+            for key in material.values:
+                if type(material[key]) is np.ndarray:
                     output = io.BytesIO()
-                    np.save(output, item.values[key])
+                    np.save(output, material.values[key])
                     # # This is to erase the other types of analysis
-                    metadata = item.metadata.copy()
+                    metadata = material.metadata.copy()
                     # metadata['analysis'] = {}
                     metadata['analysis_mode'] = key
-                    
-                    self.gridfs_analysis.put(output.getvalue(), filename=item.label,
+
+                    self.gridfs_analysis.put(output.getvalue(), filename=material.label,
                                              metadata=metadata)
-        elif item.metadata['mode'] == 'item':
-            if skip: 
-                if self.gridfs_item.exists(
-                        {'metadata':item.metadata}):
+        elif material.metadata['mode'] == 'material':
+            if skip:
+                if self.gridfs_material.exists(
+                        {'metadata': material.metadata}):
                     return
-            if overwrite:                
-                if self.gridfs_item.exists(
-                        {'metadata':item.metadata}):
-                    queries = self.gridfs_item.find(
-                        {'metadata':item.metadata})
+            if overwrite:
+                if self.gridfs_material.exists(
+                        {'metadata': material.metadata}):
+                    queries = self.gridfs_material.find(
+                        {'metadata': material.metadata})
                     for iq in queries:
-                        self.gridfs_item.delete(iq._id)
-            for key in item.values:
-                if type(item[key]) is np.ndarray:
+                        self.gridfs_material.delete(iq._id)
+            for key in material.values:
+                if type(material[key]) is np.ndarray:
                     output = io.BytesIO()
-                    np.save(output, item.values[key])
-                    self.gridfs_item.put(output.getvalue(), filename=item.filename,
-                                         metadata=item.metadata)
+                    np.save(output, material.values[key])
+                    self.gridfs_material.put(output.getvalue(), filename=material.filename,
+                                             metadata=material.metadata)
         return
 
     def query(self, criteria={}, version=-1):
@@ -129,16 +129,20 @@ class Database:
     def get_ML_model(self):
         return
 
-    def get_analysis(self, filename=None, _id=None, side="R", version=-1):
+    def get_analysis(self, filename=None, _id=None, side="R", flip_h=False, version=-1):
         ret = None
         if _id is not None:
             iq = self.gridfs_analysis.get(ObjectId(_id), version=version)
             ret = {'data': np.load(io.BytesIO(iq.read())),
                    'metadata': iq.metadata}
         else:
-            queries = self.gridfs_analysis.find(
-                {"filename": filename, "metadata.side": side}).sort("uploadDate", version)
-            print("%d item found" % queries.count())
+            queries = self.gridfs_analysis.find({
+                "$and": [
+                    {"filename": filename},
+                    {"metadata.side": side},
+                    {"metadata.image.flip_h": flip_h}]
+            }).sort("uploadDate", version)
+            print("%d material found" % queries.count())
 
             if queries.count() != 0:
                 metadata = {}
@@ -156,16 +160,16 @@ class Database:
                 ret = TapeAnalyzer.from_dict(values)
         return ret
 
-    def get_item(self, filename=None, _id=None, version=-1):
+    def get_material(self, filename=None, _id=None, version=-1):
         ret = None
         if _id is not None:
             iq = self.gridfs_analysis.get(ObjectId(_id))
             ret = {'data': np.load(io.BytesIO(iq.read())),
                    'metadata': iq.metadata}
         else:
-            queries = self.gridfs_item.find(
+            queries = self.gridfs_material.find(
                 {"filename": filename}).sort("uploadDate", version)
-            print("%d item found" % queries.count())
+            print("%d material found" % queries.count())
             iq = next(queries, None)
             if iq is not None:
                 metadata = {}

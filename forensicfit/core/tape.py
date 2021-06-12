@@ -11,7 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 from ..utils import image_tools
-from . import Item, Analyzer
+from . import Material, Analyzer
 
 
 class TapeAnalyzer(Analyzer):
