@@ -14,15 +14,16 @@ import os
 from ..utils import array_tools
 
 
-class Item(Mapping):
+class Material(Mapping):
     __metaclass__ = ABCMeta
 
     def __init__(self):
         self.label = None
         self.image = None
-        self.mode = 'item'
+        self.mode = 'material'
+        self.material = None
         self.values = {}
-        self.metadata = {'mode': 'item'}
+        self.metadata = {'mode': 'material'}
 
     @property
     def is_loaded(self):

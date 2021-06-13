@@ -61,49 +61,48 @@ class Database:
     def exists_analysis(self, filename):
         return self.gridfs_analysis.exists({"filename": filename})
 
-    def insert_material(self, material, overwrite=False, skip=False):
-
-        if material.metadata['mode'] == 'analysis':
-            if skip:
+    def insert(self, obj, overwrite=False, skip=False):
+        if obj.metadata['mode'] == 'analysis':
+            if skip: 
                 if self.gridfs_analysis.exists(
-                        {'metadata': material.metadata}):
+                        {'metadata': obj.metadata}):
                     return
             if overwrite:
                 if self.gridfs_analysis.exists(
-                        {'metadata': material.metadata}):
+                        {'metadata': obj.metadata}):
                     queries = self.gridfs_analysis.find(
-                        {'metadata': material.metadata})
+                        {'metadata': obj.metadata})
                     for iq in queries:
-                        self.gridfs_material.delete(iq._id)
-            for key in material.values:
-                if type(material[key]) is np.ndarray:
+                        self.gridfs_analysis.delete(iq._id)
+            for key in obj.values:
+                if type(obj[key]) is np.ndarray:
                     output = io.BytesIO()
-                    np.save(output, material.values[key])
+                    np.save(output, obj.values[key])
                     # # This is to erase the other types of analysis
-                    metadata = material.metadata.copy()
+                    metadata = obj.metadata.copy()
                     # metadata['analysis'] = {}
                     metadata['analysis_mode'] = key
 
-                    self.gridfs_analysis.put(output.getvalue(), filename=material.label,
+                    self.gridfs_analysis.put(output.getvalue(), filename=obj.label,
                                              metadata=metadata)
-        elif material.metadata['mode'] == 'material':
+        elif obj.metadata['mode'] == 'material':
             if skip:
                 if self.gridfs_material.exists(
-                        {'metadata': material.metadata}):
+                        {'metadata': obj.metadata}):
                     return
             if overwrite:
                 if self.gridfs_material.exists(
-                        {'metadata': material.metadata}):
+                        {'metadata': obj.metadata}):
                     queries = self.gridfs_material.find(
-                        {'metadata': material.metadata})
+                        {'metadata': obj.metadata})
                     for iq in queries:
                         self.gridfs_material.delete(iq._id)
-            for key in material.values:
-                if type(material[key]) is np.ndarray:
+            for key in obj.values:
+                if type(obj[key]) is np.ndarray:
                     output = io.BytesIO()
-                    np.save(output, material.values[key])
-                    self.gridfs_material.put(output.getvalue(), filename=material.filename,
-                                             metadata=material.metadata)
+                    np.save(output, obj.values[key])
+                    self.gridfs_material.put(output.getvalue(), filename=obj.filename,
+                                             metadata=obj.metadata)
         return
 
     def query(self, criteria={}, version=-1):
@@ -163,7 +162,7 @@ class Database:
     def get_material(self, filename=None, _id=None, version=-1):
         ret = None
         if _id is not None:
-            iq = self.gridfs_analysis.get(ObjectId(_id))
+            iq = self.gridfs_material.get(ObjectId(_id))
             ret = {'data': np.load(io.BytesIO(iq.read())),
                    'metadata': iq.metadata}
         else:

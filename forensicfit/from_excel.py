@@ -44,16 +44,16 @@ def analyze(db, tape,modes, iside, iflip, split_position, mask_threshold, gaussi
                                     dynamic_window,
                                     weft_based_size,
                                     nsegments[quality.lower()])
-                if 'big_picture' in modes:
-                    analyed_tape.get_weft_based(window_tape,
-                                                dynamic_window,
-                                                weft_based_size,
-                                                nsegments=4)
+    if 'big_picture' in modes:
+        analyed_tape.get_weft_based(window_tape,
+                                    dynamic_window,
+                                    weft_based_size,
+                                    nsegments=4)
 
-                if 'max_contrast' in modes:
-                    analyed_tape.get_max_contrast(
-                        window_background, window_tape, max_contrast_size)
-                db.insert_item(analyed_tape)
+    if 'max_contrast' in modes:
+        analyed_tape.get_max_contrast(
+            window_background, window_tape, max_contrast_size)
+    db.insert_item(analyed_tape)
 
     
 def from_excel(excel_file,

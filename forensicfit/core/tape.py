@@ -34,6 +34,7 @@ class TapeAnalyzer(Analyzer):
         self.gaussian_blur = gaussian_blur
         self.mask_threshold = int(mask_threshold)
         self.masked = None
+        self.material = 'tape'
         # self.colored = cv2.cvtColor(self.image, cv2.COLOR_GRAY2BGR)
         if tape is not None:
             self.image = tape.image
@@ -85,6 +86,7 @@ class TapeAnalyzer(Analyzer):
         self.values['boundary'] = self.boundary
         self.values['binarized'] = self.binarized
         self.values['gray_scale'] = self.gray_scale
+        
 
     def load_metadata(self):
         self.metadata["xmin"] = int(self.xmin)
@@ -101,6 +103,7 @@ class TapeAnalyzer(Analyzer):
         self.metadata["gaussian_blur"] = self.gaussian_blur
         self.metadata["mask_threshold"] = self.mask_threshold
         self.metadata["ndivision"] = self.ndivision
+        self.metadata["material"] = self.material
         if 'split_vertical' in self.metadata['image']:
             self.metadata['side'] = self.metadata['image']['split_vertical']['side']
         else :
@@ -585,6 +588,7 @@ class Tape(Material):
         Material.__init__(self)
         self.filename = filename
         self.label = label
+        self.material = "tape"
 
         if self.image is not None:
             self.image = image
@@ -596,12 +600,14 @@ class Tape(Material):
 
     def load_dict(self):
         self.values['image'] = self.image
+        
 
     def load_metadata(self):
         self.metadata['flip_h'] = False
         self.metadata['split_vertical'] = {}
         self.metadata['label'] = self.label
         self.metadata['filename'] = self.filename
+        self.metadata['material'] = self.material
         
         
     @classmethod

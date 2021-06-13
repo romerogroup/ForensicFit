@@ -13,6 +13,7 @@ class Analyzer:
         self.label = None
         self.image = None
         self.mode = 'analysis'
+        self.material = None
         self.boundary = None
         self.values = {}
         self.metadata = {'mode': 'analysis'}

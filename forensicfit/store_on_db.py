@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
 
 import os
-from tqdm import tqdm
-from multiprocessing import Pool
+import tqdm 
+import multiprocessing
+from multiprocessing import Pool, Process, cpu_count, current_process, freeze_support
+import sys
+import inspect
 from .core import Tape
 from .database import Database
+import readline 
+
 
 
 def chunks(files, nprocessors, db_name, host, port, username, password, overwrite, skip):
@@ -15,13 +20,20 @@ def chunks(files, nprocessors, db_name, host, port, username, password, overwrit
     end = 0
     for i in range(nprocessors):
         end = start + nchucks
-        if end >= nfiles:
-            end = nfiles-1
         ret.append([files[start:end], db_name, host, port,
-                    username, password, overwrite, skip])
+                    username, password, overwrite, skip, i])
         start = end
+    if end != nfiles-1:
+        for i in range(nfiles-end):
+            ret[i][0].append(files[end+i])
     return ret
 
+def init_child(lock):
+    """
+    Provide tqdm with the lock from the parent app.
+    This is necessary on Windows to avoid racing conditions.
+    """
+    tqdm.tqdm.set_lock(lock)
 
 def worker(args):
     files = args[0]
@@ -32,11 +44,13 @@ def worker(args):
     password = args[5]
     overwrite = args[6]
     skip = args[7]
+    pos = args[8]
     db = Database(db_name, host, port, username, password)
 
     nfiles = len(files)
     
-    for count in tqdm(range(nfiles), ascii=True, desc=("Storing ")):
+    # pbar = tqdm.tqdm(total=nfiles, position=pos, desc="storing using proccess %d"%pos, leave=True)
+    for count in tqdm.tqdm(range(nfiles), position=pos, desc="storing using proccess %d"%pos, leave=True):
         ifile = files[count]
         if ifile.split('.')[1] not in ['tif', 'jpg', 'bmp', 'png']:
             continue
@@ -55,7 +69,10 @@ def worker(args):
         tape.add_metadata("separation_method", separation_method)
         tape.add_metadata("streched", streched)
         tape.add_metadata("side", side)
-        db.insert_item(tape, overwrite, skip)
+        db.insert(tape, overwrite, skip)
+
+        
+
         
     
 
@@ -100,11 +117,23 @@ def store_on_db(
     None.
 
     """
+    
+    files = os.listdir(dir_path)[:2]
 
-    files = os.listdir(dir_path)[:30]
-    worker(chunks(files, 1,  db_name,
-                          host, port, username, password, overwrite, skip)[0])
-    # p = Pool(nprocessors)
-    # p.map(worker, chunks(files, nprocessors,  db_name,
-    #                       host, port, username, password, overwrite, skip))
-    # p.close()
+    if nprocessors == 1:
+        worker(chunks(files, 1,  db_name,
+                              host, port, username, password, overwrite, skip)[0])
+    elif nprocessors > 1:
+        freeze_support()
+        
+        lock = multiprocessing.Lock()
+        if nprocessors > cpu_count():
+            nprocessors = cpu_count()
+        p = Pool(nprocessors, initializer=init_child, initargs=(lock,))
+        args = chunks(files, nprocessors,  db_name,
+                                            host, port, username, password, overwrite, skip)
+        p.map(worker, args)
+
+        p.close()
+        p.join()
+

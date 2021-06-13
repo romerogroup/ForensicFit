@@ -1,9 +1,108 @@
 # -*- coding: utf-8 -*-
 
 import os
-from tqdm import tqdm
+import tqdm
+import multiprocessing
 from .core import Tape, TapeAnalyzer
 from .database import Database
+
+
+def chunks(files, nprocessors, args):
+    ret = []
+    nfiles = len(files)
+    nchucks = nfiles//nprocessors
+    start = 0
+    end = 0
+    for i in range(nprocessors):
+        end = start + nchucks
+        ret.append([files[start:end], i, args])
+        start = end
+    if end != nfiles-1:
+        for i in range(nfiles-end):
+            ret[i][0].append(files[end+i])
+    return ret
+
+
+def init_child(lock):
+    """
+    Provide tqdm with the lock from the parent app.
+    This is necessary on Windows to avoid racing conditions.
+    """
+    tqdm.tqdm.set_lock(lock)
+
+
+def worker(args):
+    files = args[0]
+    pos = args[1]
+    args = args[2]
+
+    db = Database(args['db_name'], args['host'], args['port'],
+                  args['username'], args['password'])
+
+    nfiles = len(files)
+
+    for count in tqdm.tqdm(range(nfiles), position=pos, desc="storing using proccess %d" % pos, leave=True):
+        ifile = files[count]
+        if ifile.split('.')[1] not in ['tif', 'jpg', 'bmp', 'png']:
+            continue
+        if db.exists_analysis(ifile) and args['skip']:
+            continue
+
+        quality = ifile.split("_")[0]
+        if len(quality) == 4:
+            if quality[-2:] == "HT":
+                separation_method = "handtorn"
+            elif quality[-2:] == "SC":
+                separation_method = "cut"
+        else:
+            separation_method = "handtorn"
+        quality = quality[0]
+        streched = False
+        # side = 'Unknown'
+
+        for iside in args['side']:
+            for iflip in [True, False]:
+
+                tape = Tape(ifile, label=ifile)
+
+                if args['split']:
+                    tape.split_vertical(
+                        pixel_index=args['split_position'], pick_side=iside)
+                if iflip:
+                    tape.flip_h()
+                if args['ignore_errors']:
+                    try:
+                        analyed_tape = TapeAnalyzer(
+                            tape, args['mask_threshold'], args['gaussian_blur'], args['ndivision'], args['auto_crop'], args['calculate_tilt'], False)
+                    except:
+                        print("Could not analyze file : %s" % ifile)
+                else:
+                    analyed_tape = TapeAnalyzer(
+                        tape, args['mask_threshold'], args['gaussian_blur'], args['ndivision'], args['auto_crop'], args['calculate_tilt'], False)
+                analyed_tape.add_metadata("quality", quality)
+                analyed_tape.add_metadata(
+                    "separation_method", separation_method)
+                analyed_tape.add_metadata("streched", streched)
+                # analyed_tape.add_metadata("side", side)
+                if 'coordinate_based' in args['modes']:
+                    analyed_tape.get_coordinate_based(
+                        args['npoints'], args['x_trim_param'])
+                if 'weft_based' in args['modes']:
+                    analyed_tape.get_weft_based(args['window_background'],
+                                                args['window_tape'],
+                                                args['dynamic_window'],
+                                                args['weft_based_size'],
+                                                args['nsegments'][quality.lower()])
+                if 'big_picture' in args['modes']:
+                    analyed_tape.get_weft_based(args['window_tape'],
+                                                args['dynamic_window'],
+                                                args['weft_based_size'],
+                                                nsegments=4)
+
+                if 'max_contrast' in args['modes']:
+                    analyed_tape.get_max_contrast(
+                        args['window_background'], args['window_tape'], args['max_contrast_size'])
+                db.insert(analyed_tape)
 
 
 def process_directory(
@@ -36,7 +135,8 @@ def process_directory(
         port=27017,
         username="",
         password="",
-        ignore_errors=False):
+        ignore_errors=False,
+        nprocessors=1):
     """
 
 
@@ -78,7 +178,7 @@ def process_directory(
     None.
 
     """
-    db = Database(db_name, host, port, username, password)
+
     if split:
         if side == 'both':
             side = ['L', 'R']
@@ -86,78 +186,47 @@ def process_directory(
             side = [side]
     else:
         side = ['L']
-    files = os.listdir(dir_path)
-    nfiles = len(files)
-    
-    output_dictionary = {}
-    if 'coordinate_based' in modes:
-        output_dictionary["coordinate_base"] = {}
-    if'weft_based' in modes:
-        output_dictionary["weft_based"] = {}
-    if 'big_picture' in modes:
-        output_dictionary["big_picture"] = {}
-    if 'max_contrast' in modes:
-        output_dictionary["max_contrast"] = {}
-    c = 1
-    for count in tqdm(range(nfiles), ascii=True, desc="Analyzing"):
-        ifile = files[count]
-        
-        if ifile.split('.')[1] not in ['tif', 'jpg', 'bmp', 'png']:
-            continue
-        if db.exists_analysis(ifile) and skip:
-            continue
+    files = os.listdir(dir_path)[:20]
+    args = dict(modes=modes,
+                dynamic_window=dynamic_window,
+                nsegments=nsegments,
+                ndivision=ndivision,
+                window_tape=window_tape,
+                window_background=window_background,
+                npoints=npoints,
+                x_trim_param=x_trim_param,
+                weft_based_size=weft_based_size,
+                big_picture_size=big_picture_size,
+                max_contrast_size=max_contrast_size,
+                split=split,
+                side=side,
+                auto_rotate=auto_rotate,
+                auto_crop=auto_crop,
+                gaussian_blur=gaussian_blur,
+                mask_threshold=mask_threshold,
+                split_position=split_position,
+                calculate_tilt=calculate_tilt,
+                skip=skip,
+                overwrite=overwrite,
+                db_name=db_name,
+                host=host,
+                port=port,
+                username=username,
+                password=password,
+                ignore_errors=ignore_errors)
 
-        quality = ifile.split("_")[0]
-        if len(quality) == 4:
-            if quality[-2:] == "HT":
-                separation_method = "handtorn"
-            elif quality[-2:] == "SC":
-                separation_method = "cut"
-        else:
-            separation_method = "handtorn"
-        quality = quality[0]
-        streched = False
-        # side = 'Unknown'
+    if nprocessors == 1:
+        worker(chunks(files, 1, args)[0])
+    elif nprocessors > 1:
+        multiprocessing.freeze_support()
 
-        for iside in side:
-            for iflip in [True, False]:
+        lock = multiprocessing.Lock()
+        if nprocessors > multiprocessing.cpu_count():
+            nprocessors = multiprocessing.cpu_count()
+        p = multiprocessing.Pool(
+            nprocessors, initializer=init_child, initargs=(lock,))
+        args = chunks(files, nprocessors, args)
+        p.map(worker, args)
 
-                tape = Tape(ifile, label=ifile)
-
-                if split:
-                    tape.split_vertical(pixel_index=split_position, pick_side=iside)
-                if iflip:
-                	tape.flip_h()
-                if ignore_errors:
-                    try:
-                        analyed_tape = TapeAnalyzer(
-                            tape, mask_threshold, gaussian_blur, ndivision, auto_crop, calculate_tilt, verbose)
-                    except:
-                        print("Could not analyze file : %s" % ifile)
-                else:
-                    analyed_tape = TapeAnalyzer(
-                        tape, mask_threshold, gaussian_blur, ndivision, auto_crop, calculate_tilt, verbose)
-                analyed_tape.add_metadata("quality", quality)
-                analyed_tape.add_metadata(
-                    "separation_method", separation_method)
-                analyed_tape.add_metadata("streched", streched)
-                # analyed_tape.add_metadata("side", side)
-                if 'coordinate_based' in modes:
-                    analyed_tape.get_coordinate_based(npoints, x_trim_param)
-                if 'weft_based' in modes:
-                    analyed_tape.get_weft_based(window_background,
-                                                window_tape,
-                                                dynamic_window,
-                                                weft_based_size,
-                                                nsegments[quality.lower()])
-                if 'big_picture' in modes:
-                    analyed_tape.get_weft_based(window_tape,
-                                                dynamic_window,
-                                                weft_based_size,
-                                                nsegments=4)
-
-                if 'max_contrast' in modes:
-                    analyed_tape.get_max_contrast(
-                        window_background, window_tape, max_contrast_size)
-                db.insert_item(analyed_tape)
-                c+=1
+        p.close()
+        p.join()
