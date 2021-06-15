@@ -59,50 +59,52 @@ def worker(args):
         quality = quality[0]
         streched = False
         # side = 'Unknown'
-
+        
         for iside in args['side']:
             for iflip in [True, False]:
-
-                tape = Tape(ifile, label=ifile)
-
-                if args['split']:
-                    tape.split_vertical(
-                        pixel_index=args['split_position'], pick_side=iside)
-                if iflip:
-                    tape.flip_h()
                 if args['ignore_errors']:
-                    try:
-                        analyed_tape = TapeAnalyzer(
-                            tape, args['mask_threshold'], args['gaussian_blur'], args['ndivision'], args['auto_crop'], args['calculate_tilt'], False)
+                    try :
+                        tape = Tape(ifile, label=ifile)
+        
+                        if args['split']:
+                            tape.split_vertical(
+                                pixel_index=args['split_position'], pick_side=iside)
+                        if iflip:
+                            tape.flip_h()
+                        
+                            
+                            analyed_tape = TapeAnalyzer(
+                                tape, args['mask_threshold'], args['gaussian_blur'], args['ndivision'], args['auto_crop'], args['calculate_tilt'], False)
+                            
+                        else:
+                            analyed_tape = TapeAnalyzer(
+                                tape, args['mask_threshold'], args['gaussian_blur'], args['ndivision'], args['auto_crop'], args['calculate_tilt'], False)
+                        analyed_tape.add_metadata("quality", quality)
+                        analyed_tape.add_metadata(
+                            "separation_method", separation_method)
+                        analyed_tape.add_metadata("streched", streched)
+                        # analyed_tape.add_metadata("side", side)
+                        if 'coordinate_based' in args['modes']:
+                            analyed_tape.get_coordinate_based(
+                                args['npoints'], args['x_trim_param'])
+                        if 'weft_based' in args['modes']:
+                            analyed_tape.get_weft_based(args['window_background'],
+                                                        args['window_tape'],
+                                                        args['dynamic_window'],
+                                                        args['weft_based_size'],
+                                                        args['nsegments'][quality.lower()])
+                        if 'big_picture' in args['modes']:
+                            analyed_tape.get_weft_based(args['window_tape'],
+                                                        args['dynamic_window'],
+                                                        args['weft_based_size'],
+                                                        nsegments=4)
+        
+                        if 'max_contrast' in args['modes']:
+                            analyed_tape.get_max_contrast(
+                                args['window_background'], args['window_tape'], args['max_contrast_size'])
+                        db.insert(analyed_tape)
                     except:
                         print("Could not analyze file : %s" % ifile)
-                else:
-                    analyed_tape = TapeAnalyzer(
-                        tape, args['mask_threshold'], args['gaussian_blur'], args['ndivision'], args['auto_crop'], args['calculate_tilt'], False)
-                analyed_tape.add_metadata("quality", quality)
-                analyed_tape.add_metadata(
-                    "separation_method", separation_method)
-                analyed_tape.add_metadata("streched", streched)
-                # analyed_tape.add_metadata("side", side)
-                if 'coordinate_based' in args['modes']:
-                    analyed_tape.get_coordinate_based(
-                        args['npoints'], args['x_trim_param'])
-                if 'weft_based' in args['modes']:
-                    analyed_tape.get_weft_based(args['window_background'],
-                                                args['window_tape'],
-                                                args['dynamic_window'],
-                                                args['weft_based_size'],
-                                                args['nsegments'][quality.lower()])
-                if 'big_picture' in args['modes']:
-                    analyed_tape.get_weft_based(args['window_tape'],
-                                                args['dynamic_window'],
-                                                args['weft_based_size'],
-                                                nsegments=4)
-
-                if 'max_contrast' in args['modes']:
-                    analyed_tape.get_max_contrast(
-                        args['window_background'], args['window_tape'], args['max_contrast_size'])
-                db.insert(analyed_tape)
 
 
 def process_directory(
@@ -186,34 +188,34 @@ def process_directory(
             side = [side]
     else:
         side = ['L']
-    files = os.listdir(dir_path)[:20]
-    args = dict(modes=modes,
-                dynamic_window=dynamic_window,
-                nsegments=nsegments,
-                ndivision=ndivision,
-                window_tape=window_tape,
-                window_background=window_background,
-                npoints=npoints,
-                x_trim_param=x_trim_param,
-                weft_based_size=weft_based_size,
-                big_picture_size=big_picture_size,
-                max_contrast_size=max_contrast_size,
-                split=split,
-                side=side,
-                auto_rotate=auto_rotate,
-                auto_crop=auto_crop,
-                gaussian_blur=gaussian_blur,
-                mask_threshold=mask_threshold,
-                split_position=split_position,
-                calculate_tilt=calculate_tilt,
-                skip=skip,
-                overwrite=overwrite,
-                db_name=db_name,
-                host=host,
-                port=port,
-                username=username,
-                password=password,
-                ignore_errors=ignore_errors)
+    files = os.listdir(dir_path)
+    args = locals() #dict(modes=modes,
+    #             dynamic_window=dynamic_window,
+    #             nsegments=nsegments,
+    #             ndivision=ndivision,
+    #             window_tape=window_tape,
+    #             window_background=window_background,
+    #             npoints=npoints,
+    #             x_trim_param=x_trim_param,
+    #             weft_based_size=weft_based_size,
+    #             big_picture_size=big_picture_size,
+    #             max_contrast_size=max_contrast_size,
+    #             split=split,
+    #             side=side,
+    #             auto_rotate=auto_rotate,
+    #             auto_crop=auto_crop,
+    #             gaussian_blur=gaussian_blur,
+    #             mask_threshold=mask_threshold,
+    #             split_position=split_position,
+    #             calculate_tilt=calculate_tilt,
+    #             skip=skip,
+    #             overwrite=overwrite,
+    #             db_name=db_name,
+    #             host=host,
+    #             port=port,
+    #             username=username,
+    #             password=password,
+    #             ignore_errors=ignore_errors)
 
     if nprocessors == 1:
         worker(chunks(files, 1, args)[0])
