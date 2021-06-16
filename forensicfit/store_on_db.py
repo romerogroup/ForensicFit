@@ -118,7 +118,7 @@ def store_on_db(
 
     """
     
-    files = os.listdir(dir_path)[:2]
+    files = os.listdir(dir_path)
 
     if nprocessors == 1:
         worker(chunks(files, 1,  db_name,
