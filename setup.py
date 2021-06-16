@@ -76,6 +76,7 @@ setup(
         "keras",
         "tensorflow",
         "scikit-learn",
+        "pymongo"
     ],
     data_files=[("", ["LICENSE.txt"])],
     package_data={"": ["setup.json"]},
