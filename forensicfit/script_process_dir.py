@@ -189,34 +189,9 @@ def process_directory(
     else:
         side = ['L']
     files = os.listdir(dir_path)
-    args = locals() #dict(modes=modes,
-    #             dynamic_window=dynamic_window,
-    #             nsegments=nsegments,
-    #             ndivision=ndivision,
-    #             window_tape=window_tape,
-    #             window_background=window_background,
-    #             npoints=npoints,
-    #             x_trim_param=x_trim_param,
-    #             weft_based_size=weft_based_size,
-    #             big_picture_size=big_picture_size,
-    #             max_contrast_size=max_contrast_size,
-    #             split=split,
-    #             side=side,
-    #             auto_rotate=auto_rotate,
-    #             auto_crop=auto_crop,
-    #             gaussian_blur=gaussian_blur,
-    #             mask_threshold=mask_threshold,
-    #             split_position=split_position,
-    #             calculate_tilt=calculate_tilt,
-    #             skip=skip,
-    #             overwrite=overwrite,
-    #             db_name=db_name,
-    #             host=host,
-    #             port=port,
-    #             username=username,
-    #             password=password,
-    #             ignore_errors=ignore_errors)
-
+    args = locals() 
+    cwd = os.getcwd()
+    os.chdir(dir_path)
     if nprocessors == 1:
         worker(chunks(files, 1, args)[0])
     elif nprocessors > 1:
@@ -232,3 +207,4 @@ def process_directory(
 
         p.close()
         p.join()
+    os.chdir(cwd)
