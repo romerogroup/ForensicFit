@@ -83,7 +83,7 @@ class Database:
                     # metadata['analysis'] = {}
                     metadata['analysis_mode'] = key
 
-                    self.gridfs_analysis.put(output.getvalue(), filename=obj.label,
+                    self.gridfs_analysis.put(output.getvalue(), filename=obj.label.split("/")[-1].split("\\")[-1],
                                              metadata=metadata)
         elif obj.metadata['mode'] == 'material':
             if skip:
@@ -101,7 +101,7 @@ class Database:
                 if type(obj[key]) is np.ndarray:
                     output = io.BytesIO()
                     np.save(output, obj.values[key])
-                    self.gridfs_material.put(output.getvalue(), filename=obj.filename,
+                    self.gridfs_material.put(output.getvalue(), filename=obj.filename.split("/")[-1].split("\\")[-1],
                                              metadata=obj.metadata)
         return
 
