@@ -6,6 +6,7 @@ from matplotlib import pylab as plt
 from abc import ABCMeta, abstractmethod
 from collections.abc import Mapping
 
+
 class Analyzer:
     __metaclass__ = ABCMeta
 
@@ -37,8 +38,12 @@ class Analyzer:
         plt.plot(self.boundary[:, 0], self.boundary[:, 1], c=color)
 
     def plot(self, which, cmap='viridis', savefig=None):
-        plt.figure()
-        if len(self[which].shape) > 2:
+        
+        if which == "coordinate_based":
+            plt.figure(figsize=(2,8))
+            plt.plot(self[which][:, 0], self[which][:, 1])
+        elif len(self[which].shape) > 2:
+            plt.figure()
             dynamic_positions = self.metadata['analysis'][which]['dynamic_positions']
 
             plt.imshow(self.image, cmap=cmap)
@@ -52,6 +57,7 @@ class Analyzer:
                 plt.plot([x1, x2], [y1, y1], color='red')
                 plt.plot([x1, x2], [y2, y2], color='red')
         else:
+            plt.figure()
             plt.imshow(self[which], cmap=cmap)
         if savefig is not None:
             plt.savefig(savefig)

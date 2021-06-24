@@ -355,7 +355,7 @@ class TapeAnalyzer(Analyzer):
         if calculate_tilte:
             self.get_image_tilt()
 
-    def get_coordinate_based(self, npoints=1000, x_trim_param=2, plot=False):
+    def get_coordinate_based(self, npoints=1000, x_trim_param=6, plot=False):
         """
         This method returns the data of the detected edge as a set of points 
         in 2d plain with (x,y)
