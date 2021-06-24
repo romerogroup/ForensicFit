@@ -410,7 +410,7 @@ class TapeAnalyzer(Analyzer):
 
         return data
 
-    def get_weft_based(self,
+    def get_bin_based(self,
                        window_background=50,
                        window_tape=200,
                        dynamic_window=False,
@@ -521,9 +521,9 @@ class TapeAnalyzer(Analyzer):
             self.values['big_picture'] = segments
             self.metadata['analysis']['big_picture'] = metadata
         else:
-            self.weft_based = segments
-            self.values['weft_based'] = segments
-            self.metadata['analysis']['weft_based'] = metadata
+            self.bin_based = segments
+            self.values['bin_based'] = segments
+            self.metadata['analysis']['bin_based'] = metadata
         return segments
 
     def get_max_contrast(self,
@@ -582,7 +582,7 @@ class Tape(Material):
         TapeImage is a class created for tape images to be preprocessed for 
         Machine Learning. This Class detects the edges, auto crops the image 
         and returns the results in 3 different method coordinate_based, 
-        weft_based and max_contrast. 
+        bin_based and max_contrast. 
 
 
         """
