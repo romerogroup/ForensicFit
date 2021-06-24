@@ -87,16 +87,16 @@ def worker(args):
                         if 'coordinate_based' in args['modes']:
                             analyed_tape.get_coordinate_based(
                                 args['npoints'], args['x_trim_param'])
-                        if 'weft_based' in args['modes']:
-                            analyed_tape.get_weft_based(args['window_background'],
+                        if 'bin_based' in args['modes']:
+                            analyed_tape.get_bin_based(args['window_background'],
                                                         args['window_tape'],
                                                         args['dynamic_window'],
-                                                        args['weft_based_size'],
+                                                        args['bin_based_size'],
                                                         args['nsegments'][quality.lower()])
                         if 'big_picture' in args['modes']:
-                            analyed_tape.get_weft_based(args['window_tape'],
+                            analyed_tape.get_bin_based(args['window_tape'],
                                                         args['dynamic_window'],
-                                                        args['weft_based_size'],
+                                                        args['bin_based_size'],
                                                         nsegments=4)
         
                         if 'max_contrast' in args['modes']:
@@ -109,16 +109,16 @@ def worker(args):
 
 def process_directory(
         dir_path='.',
-        modes=['coordinate_based', 'weft_based',
+        modes=['coordinate_based', 'bin_based',
                'big_picture', 'max_contrast'],
         dynamic_window=True,
-        nsegments={"h": 55, "m": 37, "l": 32},
+        nsegments={"h": 56, "m": 36, "l": 32},
         ndivision=6,
         window_tape=100,
         window_background=50,
         npoints=1000,
         x_trim_param=2,
-        weft_based_size=(600, 300),
+        bin_based_size=(600, 300),
         big_picture_size=(1200, 300),
         max_contrast_size=(4800, 300),
         split=True,
@@ -149,7 +149,7 @@ def process_directory(
     output_format : TYPE, optional
         DESCRIPTION. The default is 'json'.
     modes : TYPE, optional
-        DESCRIPTION. The default is ['coordinate_based','weft_based','big_picture','max_contrast'].
+        DESCRIPTION. The default is ['coordinate_based','bin_based','big_picture','max_contrast'].
     dynamic_window : TYPE, optional
         DESCRIPTION. The default is True.
     nsegments : TYPE, optional
