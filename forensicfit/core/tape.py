@@ -576,7 +576,8 @@ class Tape(Material):
     def __init__(self,
                  filename=None,
                  image=None,
-                 label=None):
+                 label=None,
+                 surface=None):
         """
         TapeImage is a class created for tape images to be preprocessed for 
         Machine Learning. This Class detects the edges, auto crops the image 
@@ -588,6 +589,7 @@ class Tape(Material):
         Material.__init__(self)
         self.filename = filename
         self.label = label
+        self.surface = surface
         self.material = "tape"
 
         if self.image is not None:
@@ -608,6 +610,7 @@ class Tape(Material):
         self.metadata['label'] = self.label
         self.metadata['filename'] = self.filename
         self.metadata['material'] = self.material
+        self.metadata['surface'] = self.surface
         
         
     @classmethod
