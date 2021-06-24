@@ -83,7 +83,7 @@ class Database:
                     # metadata['analysis'] = {}
                     metadata['analysis_mode'] = key
 
-                    self.gridfs_analysis.put(output.getvalue(), filename=obj.label.split("/")[-1].split("\\")[-1],
+                    self.gridfs_analysis.put(output.getvalue(), filename=obj.filename.split("/")[-1].split("\\")[-1],
                                              metadata=metadata)
         elif obj.metadata['mode'] == 'material':
             if skip:
@@ -141,7 +141,7 @@ class Database:
                     {"metadata.side": side},
                     {"metadata.image.flip_h": flip_h}]
             }).sort("uploadDate", version)
-            print("%d material found" % queries.count())
+
 
             if queries.count() != 0:
                 metadata = {}

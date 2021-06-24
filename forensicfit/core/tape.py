@@ -33,12 +33,13 @@ class TapeAnalyzer(Analyzer):
         self.verbose = verbose
         self.gaussian_blur = gaussian_blur
         self.mask_threshold = int(mask_threshold)
-        self.masked = None
+        self.masked = None        
         self.material = 'tape'
         # self.colored = cv2.cvtColor(self.image, cv2.COLOR_GRAY2BGR)
         if tape is not None:
             self.image = tape.image
             self.label = tape.label
+            self.filename = tape.filename
             self.metadata['image'] = tape.metadata
             self.prepeocess(calculate_tilt, auto_crop)
             self.load_dict()
@@ -104,6 +105,7 @@ class TapeAnalyzer(Analyzer):
         self.metadata["mask_threshold"] = self.mask_threshold
         self.metadata["ndivision"] = self.ndivision
         self.metadata["material"] = self.material
+        self.metadata["filename"] = self.filename
         if 'split_vertical' in self.metadata['image']:
             self.metadata['side'] = self.metadata['image']['split_vertical']['side']
         else :
