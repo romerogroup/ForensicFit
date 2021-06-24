@@ -50,7 +50,7 @@ def worker(args):
     nfiles = len(files)
     
     # pbar = tqdm.tqdm(total=nfiles, position=pos, desc="storing using proccess %d"%pos, leave=True)
-    for count in tqdm.tqdm(range(nfiles), position=pos, desc="storing using proccess %d"%pos, leave=True):
+    for count in tqdm.tqdm(range(nfiles), position=pos, desc="storing using process %d"%pos, leave=True):
         ifile = files[count]
         if ifile.split('.')[1] not in ['tif', 'jpg', 'bmp', 'png']:
             continue
@@ -119,6 +119,7 @@ def store_on_db(
     """
     
     files = os.listdir(dir_path)
+    cwd = os.getcwd()
     os.chdir(dir_path)
     if nprocessors == 1:
         worker(chunks(files, 1,  db_name,
@@ -136,4 +137,4 @@ def store_on_db(
 
         p.close()
         p.join()
-
+    os.chdir(cwd)
