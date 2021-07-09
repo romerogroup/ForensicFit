@@ -103,6 +103,7 @@ class Database:
                     np.save(output, obj.values[key])
                     self.gridfs_material.put(output.getvalue(), filename=obj.filename.split("/")[-1].split("\\")[-1],
                                              metadata=obj.metadata)
+
         return
 
     def query(self, criteria={}, version=-1):
