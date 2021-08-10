@@ -2,7 +2,7 @@
 
 import cv2
 from matplotlib import pylab as plt
-
+import numpy as np
 from abc import ABCMeta, abstractmethod
 from collections.abc import Mapping
 
@@ -37,30 +37,58 @@ class Analyzer:
             plt.savefig(savefig)
         plt.plot(self.boundary[:, 0], self.boundary[:, 1], c=color)
 
-    def plot(self, which, cmap='viridis', savefig=None):
+    def plot(self, which, cmap='viridis', savefig=None, ax=None, reverse_x=False):
         
         if which == "coordinate_based":
-            plt.figure(figsize=(2,8))
-            plt.plot(self[which][:, 0], self[which][:, 1])
+            if ax is None:
+                plt.figure(figsize=(2,8))
+                ax = plt.subplot(111)
+                
+            ax.scatter(self[which][:, 0], np.flip(self[which][:, 1]), c='red', s=1.5)
+            ax.set_ylim(min(self[which][:, 1]),max(self[which][:, 1]))
+            if reverse_x :
+                ax.set_xlim(max(self[which][:, 0])*1.1, min(self[which][:, 0])*0.9)
+            else :
+                ax.set_xlim(min(self[which][:, 0])*0.9, max(self[which][:, 0])*1.1)
         elif len(self[which].shape) > 2:
-            plt.figure()
+            if ax is None:
+                plt.figure()
+                ax = plt.subplot(111)
             dynamic_positions = self.metadata['analysis'][which]['dynamic_positions']
+            image = self.image.copy()
 
-            plt.imshow(self.image, cmap=cmap)
+            xs = []
             for iseg in dynamic_positions:
                 y1 = iseg[1][0]
                 y2 = iseg[1][1]
                 x1 = iseg[0][0]
                 x2 = iseg[0][1]
-                plt.plot([x1, x1], [y1, y2], color='red')
-                plt.plot([x2, x2], [y1, y2], color='red')
-                plt.plot([x1, x2], [y1, y1], color='red')
-                plt.plot([x1, x2], [y2, y2], color='red')
+                xs.append(x1)
+                xs.append(x2)
+                ax.plot([x1, x1], [y1, y2], color='red')
+                ax.plot([x2, x2], [y1, y2], color='red')
+                ax.plot([x1, x2], [y1, y1], color='red')
+                ax.plot([x1, x2], [y2, y2], color='red')
+                image[y1:y2, :x1]=0
+                image[y1:y2, x2:]=0
+            ax.imshow(image, cmap=cmap)
+            if reverse_x:
+                ax.set_xlim(max(xs)*1.1, min(xs)*0.9)
+            else:
+                ax.set_xlim(min(xs)*0.9, max(xs)*1.1)
         else:
-            plt.figure()
-            plt.imshow(self[which], cmap=cmap)
+            if ax is None:
+                plt.figure()
+                ax = plt.subplot(111)
+            ax.imshow(self[which], cmap=cmap)
+            if reverse_x :
+                ax.set_xlim(self[which].shape[1], 0)
+            else :
+                ax.set_xlim(0, self[which].shape[1])
+        ax.xaxis.set_visible(False)
+        ax.yaxis.set_visible(False)
         if savefig is not None:
-            plt.savefig(savefig)
+            ax.savefig(savefig)
 
     def add_metadata(self, key, value):
         self.metadata[key] = value

@@ -1,12 +1,13 @@
-# -*- coding: utf-8 -*-
+# -*- Coding: utf-8 -*-
 """
 Created on Sun Jun 28 14:11:02 2020
 
 @author: Pedram Tavadze
 """
-
+from .. import has_opencv, has_pymongo
 import os
-import cv2
+if has_opencv:
+    import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import math
@@ -23,8 +24,10 @@ class TapeAnalyzer(Analyzer):
                  auto_crop=True,
                  calculate_tilt=True,
                  verbose=True,):
+        if not has_opencv:
+            print("To enable analyzer please install opencv")
+            return
         Analyzer.__init__(self)
-
         self.image_tilt = None
         self.calculate_tilte = True
         self.crop_y_top = None
@@ -357,7 +360,7 @@ class TapeAnalyzer(Analyzer):
         if calculate_tilte:
             self.get_image_tilt()
 
-    def get_coordinate_based(self, npoints=1000, x_trim_param=6, plot=False):
+    def get_coordinate_based(self, npoints=1024, x_trim_param=2, plot=False):
         """
         This method returns the data of the detected edge as a set of points 
         in 2d plain with (x,y)
@@ -413,14 +416,15 @@ class TapeAnalyzer(Analyzer):
         return data
 
     def get_bin_based(self,
-                       window_background=50,
-                       window_tape=200,
-                       dynamic_window=False,
-                       size=(300, 30),
-                       nsegments=4,
-                       plot=False,
-                       verbose=True,
-                       ):
+                      window_background=50,
+                      window_tape=200,
+                      dynamic_window=False,
+                      size=(256, 32),
+                      nsegments=4,
+                      overlap=0,
+                      plot=False,
+                      verbose=True,
+                      ):
         """
         This method returns the detected edge as a set of croped images from 
         the edge. The number if images is defined by nsegments. The goal is 
@@ -480,8 +484,9 @@ class TapeAnalyzer(Analyzer):
                 cond1 = boundary[:, 1] >= y_start
                 cond2 = boundary[:, 1] <= y_end
                 cond_and = np.bitwise_and(cond1, cond2)
-                x_start = boundary[cond_and, 0].min()
-                x_end = x_start + window_tape
+                x_start = boundary[cond_and, 0].min() - window_background
+                x_end = boundary[cond_and, 0].min() + window_tape
+
 #            cv2.imwrite('%s_%d.tif'%(fname[:-4],iseg),im_color[y_start:y_end,x_start:x_end])
             isection = self.binarized[y_start:y_end, x_start:x_end]
             dynamic_positions.append(
@@ -494,7 +499,9 @@ class TapeAnalyzer(Analyzer):
                 isection, 1, 1, 1, 1, cv2.BORDER_CONSTANT, value=[0, 0, 0])
             plot_segmets.append(isection)
             # segments.append(cv2.cvtColor(isection,cv2.COLOR_BGR2GRAY))
+        
         segments = np.array(segments)
+        
         if plot:
             plt.figure()
             plt.imshow(cv2.vconcat(plot_segmets), cmap='gray')
@@ -529,9 +536,9 @@ class TapeAnalyzer(Analyzer):
         return segments
 
     def get_max_contrast(self,
-                         window_background=20,
-                         window_tape=300,
-                         size=None,
+                         window_background=100,
+                         window_tape=600,
+                         size=(2048, 512),
                          plot=False):
         """
         This method returns the detected image as a black image with only the 
@@ -642,3 +649,5 @@ class Tape(Material):
         self.image = image_tools.flip(self.image)
         self.values['image'] = self.image
         self.metadata['flip_h'] = True
+
+

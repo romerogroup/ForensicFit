@@ -8,7 +8,7 @@ import sys
 import inspect
 from .core import Tape
 from .database import Database
-import readline 
+ 
 
 
 
