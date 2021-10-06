@@ -88,7 +88,7 @@ class DatasetNumpy:
         if self.X is None:
             X = new.X
             y = new.y
-        elif new.X is None:
+        elif new.X is None or new.X.shape[0] == 0 :
             X = self.X
             y = self.y
         else:
