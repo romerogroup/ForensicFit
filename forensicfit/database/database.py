@@ -21,7 +21,7 @@ from ..core import Tape, TapeAnalyzer
 class Database:
     def __init__(self,
                  name='forensicfit',
-                 host='localhost',
+                 host="localhost",
                  port=27017,
                  username="",
                  password=""):

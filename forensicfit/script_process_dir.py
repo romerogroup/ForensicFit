@@ -4,6 +4,7 @@ import os
 import matplotlib.pylab as plt
 import numpy as np
 import tqdm
+from p_tqdm import p_map
 import multiprocessing
 from matplotlib.gridspec import GridSpec
 from .core import Tape, TapeAnalyzer
@@ -44,7 +45,7 @@ def worker(args):
 
     nfiles = len(files)
     errors =[]
-    for count in tqdm.tqdm(range(nfiles), position=pos, desc="storing using proccess %d" % pos, leave=True):
+    for count in range(nfiles): #tqdm.tqdm(range(nfiles), position=pos, desc="storing using proccess %d" % pos, leave=True):
         ifile = files[count]
         if len(ifile.split('.')) == 1:
 
@@ -227,19 +228,19 @@ def process_directory(
     elif nprocessors > 1:
         multiprocessing.freeze_support()
 
-        lock = multiprocessing.Lock()
+        # lock = multiprocessing.Lock()
         # if nprocessors > multiprocessing.cpu_count():
         #     nprocessors = multiprocessing.cpu_count()
-        p = multiprocessing.Pool(
-            nprocessors, initializer=init_child, initargs=(lock,))
+        # p = multiprocessing.Pool(
+        #     nprocessors, initializer=init_child, initargs=(lock,))
         args = chunks(files, nprocessors, args)
-        errors = p.map(worker, args)
+        errors = p_map(worker, args)
 
-        p.close()
-        p.join()
+        # p.close()
+        # p.join()
     os.chdir(cwd)
-    wf = open("errors.log", 'w')
-    for err in errors:
-        for i in np.unique(err):
-            wf.write(i+os.linesep)
-    wf.close
+    with open("errors.log", 'w') as wf :
+        for err in errors:
+            for i in np.unique(err):
+                wf.write(i+os.linesep)
+

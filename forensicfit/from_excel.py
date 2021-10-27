@@ -2,6 +2,7 @@
 
 import os
 from tqdm import tqdm
+from p_tqdm import p_map
 import pandas as pd
 from numpy import array
 import tqdm
@@ -60,7 +61,8 @@ def worker(args):
     pos = args[1]
     args = args[2]
     modes = args['modes']
-    ret = {key: {"X": [], "y": []} for key in modes}
+    
+    ret = {key: {"X": [], "y": [], 'x_std':[], 'y_std':[], 'quality':[], 'separation_method':[]} for key in modes}
     
     db = Database(args['db_name'], args['host'], args['port'],
                   args['username'], args['password'])
@@ -68,12 +70,13 @@ def worker(args):
     nfiles = len(df)
     errors = []
     
-    for ientry in tqdm.tqdm(
-            range(nfiles),
-            position=pos,
-            desc="assembling using process %d" %
-            pos,
-            leave=True):
+    # for ientry in tqdm.tqdm(
+    #         range(nfiles),
+    #         position=pos,
+    #         desc="assembling using process %d" %
+    #         pos,
+    #         leave=True):
+    for ientry in range(nfiles):
         _id = df.iloc[ientry]['_id']
         match = ['not_match', 'match'][df.iloc[ientry]['match']]
         query = []
@@ -120,13 +123,22 @@ def worker(args):
                         temp = [q[mode][j] for q in query]
                         ret[mode]['X'].append(temp)
                         ret[mode]['y'].append(df.iloc[ientry]['match'])
+                        ret[mode]['x_std'] = [q.metadata['x_std'] for q in query]
+                        ret[mode]['y_std'] = [q.metadata['y_std'] for q in query]
+                        ret[mode]['separation_method'] = query[0].metadata['separation_method']
+                        ret[mode]['quality'] = query[0].metadata['quality']
                 else:
                     temp = [q[mode] for q in query]
                     ret[mode]['X'].append(temp)
                     ret[mode]['y'].append(df.iloc[ientry]['match'])
+                    ret[mode]['x_std'].append([q.metadata['x_std'] for q in query])
+                    ret[mode]['y_std'].append([q.metadata['y_std'] for q in query])
+                    ret[mode]['separation_method'].append(query[0].metadata['separation_method'])
+                    ret[mode]['quality'].append(query[0].metadata['quality'])
                     
     for mode in modes:
-        ret[mode] = DatasetNumpy(array(ret[mode]['X']), ret[mode]['y'], name=mode)
+        extra = {'x_std':ret[mode]['x_std'], 'y_std':ret[mode]['y_std'], 'separation_method':ret[mode]['separation_method'], 'quality':ret[mode]['quality'] }
+        ret[mode] = DatasetNumpy(array(ret[mode]['X']), ret[mode]['y'], extra=extra,name=mode)
 
     return ret
 
@@ -149,19 +161,19 @@ def from_excel(
     if nprocessors == 1:
         worker(chunks(df, 1, args)[0])
     elif nprocessors > 1:
-        multiprocessing.freeze_support()
+        # multiprocessing.freeze_support()
 
-        lock = multiprocessing.Lock()
+        # lock = multiprocessing.Lock()
         # if nprocessors > multiprocessing.cpu_count():
         #     nprocessors = multiprocessing.cpu_count()
-        p = multiprocessing.Pool(
-            nprocessors, initializer=init_child, initargs=(lock,))
+        # p = multiprocessing.Pool(
+        #     nprocessors, initializer=init_child, initargs=(lock,))
         args = chunks(df, nprocessors, args)
         
-        rets = p.map(worker, args)
+        rets = p_map(worker, args)
         
-        p.close()
-        p.join()
+        # p.close()
+        # p.join()
     
     for mode in modes:
         data = DatasetNumpy(name=mode)
