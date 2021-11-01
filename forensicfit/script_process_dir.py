@@ -226,7 +226,7 @@ def process_directory(
     if nprocessors == 1:
         worker(chunks(files, 1, args)[0])
     elif nprocessors > 1:
-        multiprocessing.freeze_support()
+        # multiprocessing.freeze_support()
 
         # lock = multiprocessing.Lock()
         # if nprocessors > multiprocessing.cpu_count():
