@@ -1,12 +1,12 @@
 # -*- coding: utf-8
-import tensorflow as tf
+# import tensorflow as tf
 import numpy as np
 from collections.abc import Mapping
 from abc import ABCMeta, abstractmethod
 import os
 
 class DatasetNumpy:
-    def __init__(self, X=None, y=None, extra={}, name=''):
+    def __init__(self, X :np.array, y: np.array, extra={}, name=''):
         self.X = X
         self.y = y
         self.extra = {key:np.array(extra[key]) for key in extra}
@@ -18,6 +18,18 @@ class DatasetNumpy:
         self._test_indicies = None
         self.shuffle()
 
+    @property
+    def shape(self):
+        ret = {key:self.extra[key].shape for key in self.extra}
+        ret['X'] = self.X.shape
+        ret['y'] = self.y.shape
+        to_print = ''
+        for key in ret:
+            to_print += "shape of {} is {}\n".format(key, str(ret[key]))
+        print(to_print)
+        return ret
+        
+        
         
     def shuffle(self, train_size=0.8):
         indicies = np.random.randint(0, self.ndata, (self.ndata))
@@ -86,7 +98,7 @@ class DatasetNumpy:
             if ifile == "X.npy" or ifile == "y.npy":
                 continue
             elif ".npy" in ifile:
-                extra[ifile] = np.load("{}{}{}".format(filename, os.sep, ifile))
+                extra[ifile.replace('.npy','')] = np.load("{}{}{}".format(filename, os.sep, ifile))
         cls = DatasetNumpy(X, y, extra=extra, name=filename)
         return cls
 
@@ -127,6 +139,10 @@ class DatasetNumpy:
             y = self.y
             extra = self.extra
         else:
+            print('adding dataset:')
+            self.shape
+            print('to dataset:')
+            new.shape
             X = np.append(self.X, new.X, axis=0)
             y = np.append(self.y, new.y, axis=0)
             extra = {}

@@ -3,6 +3,7 @@
 import os
 import matplotlib.pylab as plt
 import numpy as np
+from tqdm import tqdm
 import tqdm
 from p_tqdm import p_map
 import multiprocessing
