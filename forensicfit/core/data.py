@@ -85,7 +85,8 @@ class DatasetNumpy:
         np.save("{}{}y.npy".format(filename, os.sep), self.y)
         for key in self.extra:
             np.save("{}{}{}.npy".format(filename, os.sep, key), self.extra[key])
-        print("file {} saved".format(filename))
+        print("files saved at {}".format(filename))
+        self.shape
 
     @classmethod
     def load(cls, filename=''):
@@ -100,6 +101,8 @@ class DatasetNumpy:
             elif ".npy" in ifile:
                 extra[ifile.replace('.npy','')] = np.load("{}{}{}".format(filename, os.sep, ifile))
         cls = DatasetNumpy(X, y, extra=extra, name=filename)
+        print('loaded {}'.format(filename))
+        cls.shape
         return cls
 
     @property
@@ -130,26 +133,11 @@ class DatasetNumpy:
         return self.values.__len__()
 
     def __add__(self, new):
-        if self.X is None:
-            X = new.X
-            y = new.y
-            extra = new.extra
-        elif new.X is None or new.X.shape[0] == 0 :
-            X = self.X
-            y = self.y
-            extra = self.extra
-        else:
-            print('adding dataset:')
-            self.shape
-            print('to dataset:')
-            new.shape
-            X = np.append(self.X, new.X, axis=0)
-            y = np.append(self.y, new.y, axis=0)
-            extra = {}
-            for key in self.extra:
-                extra[key] = np.append(self.extra[key], new.extra[key], axis=0)
-                
-                
+        X = np.append(self.X, new.X, axis=0)
+        y = np.append(self.y, new.y, axis=0)
+        extra = {}
+        for key in self.extra:
+            extra[key] = np.append(self.extra[key], new.extra[key], axis=0)    
         name = self.name
         return DatasetNumpy(X, y, extra, name)
 

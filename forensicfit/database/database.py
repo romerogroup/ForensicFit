@@ -42,7 +42,7 @@ class Database:
         self.db = self.client[name]
         self.entries = self.db.forensicfit_entries
 
-        self.gridfs_material = gridfs.GridFS(self.db, "materials")
+        self.gridfs_material = gridfs.GridFS(self.db, "material")
         self.gridfs_analysis = gridfs.GridFS(self.db, "analysis")
         self.db_info = {"Database Name": self.name,
                         "Host": self.host,
@@ -182,5 +182,38 @@ class Database:
                 ret = Tape.from_dict(values=values)
         return ret
 
+    def find_one(self, collection=None, **kwargs):
+        ret = None
+        if collection is None:
+            collection_names = self.collection_names
+            collection = collection_names[np.random.randint(0,len(collection_names))]
+        return eval('self.gridfs_{}.find_one()'.format(collection))
+
+    
+    @property
+    def count(self):
+        ret = {}
+        for coll in self.collection_names:
+            ret[coll] = eval("self.gridfs_{}.find().count()".format(coll))
+        return ret
+
+    @property
+    def collection_names(self):
+        return [x.replace(".files", '')for x in self.db.collection_names() if 'files' in x]
+        
+    
     def delete_database(self):
         self.client.drop_database(self.name)
+
+    @property
+    def connected(self):
+        try:
+            self.client.server_info()  # force connection on a request as the
+            return True
+        except pymongo.errors.ServerSelectionTimeoutError as err:
+            print(err)
+            return False
+
+    @property
+    def server_info(self):
+        return self.client.server_info()
