@@ -78,6 +78,7 @@ def worker(args):
                 tape = Tape(ifile, label=ifile)
                 if side == 'R' and flip:
                     ax = fig.add_subplot(gs[0, :])
+                    auto_axis = ax.axis()
                     tape.plot(ax=ax)
 
 

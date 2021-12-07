@@ -1,16 +1,23 @@
 # -*- coding: utf-8
 # import tensorflow as tf
+form ..database import Database
 import numpy as np
 from collections.abc import Mapping
 from abc import ABCMeta, abstractmethod
 import os
 
+"""
+TODO :
+  imbalearn
+"""
+
 class DatasetNumpy:
     def __init__(self, X :np.array, y: np.array, extra={}, name=''):
+
         self.X = X
         self.y = y
         self.extra = {key:np.array(extra[key]) for key in extra}
-        self.values = {"X": X, "y": y}
+        self.values = {"X": self.X, "y": self.y}
         self.metadata = {"mode": "data", 'name': name}
         self.name = name
 
@@ -23,13 +30,8 @@ class DatasetNumpy:
         ret = {key:self.extra[key].shape for key in self.extra}
         ret['X'] = self.X.shape
         ret['y'] = self.y.shape
-        to_print = ''
-        for key in ret:
-            to_print += "shape of {} is {}\n".format(key, str(ret[key]))
-        print(to_print)
         return ret
-        
-        
+
         
     def shuffle(self, train_size=0.8):
         indicies = np.random.randint(0, self.ndata, (self.ndata))
@@ -37,20 +39,25 @@ class DatasetNumpy:
         self._train_indicies = indicies[:train_length]
         self._test_indicies = indicies[train_length:]
 
-
-    def balance(self):
-        matches = np.sum(len(self.y) == 1)
-        non_matches = len(self.y) - matches
-        more = abs(non_matches - matches)
-        if non_matches > matches:
-            culprit = 0
-        else :
-            culprit = 1
-        idxs = np.where(self.y == culprit)
-        idxs = idxs[np.random.randint(len(idxs), size=more//2)]
         
-        self.X = np.delete(self.X, idxs, 0)
-        self.y = np.delete(self.y, idxs, 0)
+    def balance(self):
+        print("balancing the data")
+        indicies = self.indicies
+        nclasses = {key:len(indicies[key]) for key in indicies}
+        smallest_class = min(nclasses, key=nclasses.get)
+        print("class with the smallest data points {} with {} points".format(smallest_class, nclasses[smallest_class]))
+        for cl in indicies:
+            if cl == smallest_class:
+                continue
+            else:
+                nremove = nclasses[cl] - nclasses[smallest_class]
+                print(nremove, cl)
+                idxs = np.random.choice(indicies[cl], size=nremove, replace=False)
+                # indicies[cl][np.random.randint(nclasses[cl], size=nremove)]
+                self.X = np.delete(self.X, idxs, 0)
+                self.y = np.delete(self.y, idxs, 0)
+                for key in self.extra:
+                    self.extra[key] = np.delete(self.extra[key], idxs, 0)
         self.shuffle()
         
     @property
@@ -89,7 +96,7 @@ class DatasetNumpy:
         self.shape
 
     @classmethod
-    def load(cls, filename=''):
+    def load(cls, filename):
         if ".npy" in filename:
             filename = filename.split(".")[0]
         X = np.load("{}{}X.npy".format(filename, os.sep))
@@ -104,7 +111,9 @@ class DatasetNumpy:
         print('loaded {}'.format(filename))
         cls.shape
         return cls
-
+        
+    
+    
     @property
     def ndata(self):
         if self.X is not None:
@@ -119,6 +128,35 @@ class DatasetNumpy:
     @property
     def outputs(self):
         return self.y
+
+    @property
+    def nclass(self):
+        return len(self.classes)
+
+    @property
+    def classes(self):
+        return np.unique(self.y)
+
+    @property
+    def indicies(self):
+        ret = {}
+        for cl in self.classes:
+            ret[cl] = np.where(self.y == cl)[0]
+        return ret
+    
+    def __str__(self):
+        shape = self.shape
+        to_print = 'Dataset Numpy, {}\n'.format(self.name)
+        to_print += '============================\n'
+        to_print += 'number of classes {}\n'.format(self.nclass)
+        indicies = self.indicies
+        for cl in self.classes:
+            to_print += 'number of elements in class {} = {}\n'.format(cl, len(indicies[cl]))
+        to_print += '============================\n'        
+        for key in shape:
+            to_print += "shape of {:>18} = {}\n".format(key, str(shape[key]))
+        
+        return to_print
 
     def __contains__(self, x):
         return x in self.values
@@ -141,4 +179,11 @@ class DatasetNumpy:
         name = self.name
         return DatasetNumpy(X, y, extra, name)
 
+class DatasetTensorFlow(tf.data.Dataset):
+    def __init__(self, **kwargs):
+        super(DatasetTensorFlow, self).__init__(**kwargs)
 
+    def from_excel(filenames, **db_settings):
+        db = Database(**db_settings)
+        
+    

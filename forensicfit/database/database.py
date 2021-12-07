@@ -24,7 +24,8 @@ class Database:
                  host="localhost",
                  port=27017,
                  username="",
-                 password=""):
+                 password="",
+                 **kwargs):
 
         self.name = name
         self.host = host
@@ -213,7 +214,10 @@ class Database:
         except pymongo.errors.ServerSelectionTimeoutError as err:
             print(err)
             return False
-
+        
     @property
     def server_info(self):
         return self.client.server_info()
+
+    def batch_analysis(self, data_points):
+        

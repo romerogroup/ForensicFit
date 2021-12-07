@@ -13,6 +13,7 @@ except:
     has_pymongo = False
 from . import utils
 from . import core
+from . import machine_learning
 if has_opencv and has_pymongo:
     from . import database
     from .script_process_dir import process_directory
