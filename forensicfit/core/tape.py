@@ -4,10 +4,8 @@ Created on Sun Jun 28 14:11:02 2020
 
 @author: Pedram Tavadze
 """
-from .. import has_opencv, has_pymongo
 import os
-if has_opencv:
-    import cv2
+import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import math
@@ -24,10 +22,8 @@ class TapeAnalyzer(Analyzer):
                  auto_crop=True,
                  calculate_tilt=True,
                  verbose=True,):
-        if not has_opencv:
-            print("To enable analyzer please install opencv")
-            return
         Analyzer.__init__(self)
+        print("analyzing {}".format(tape.filename))
         self.image_tilt = None
         self.calculate_tilte = True
         self.crop_y_top = None
@@ -109,7 +105,7 @@ class TapeAnalyzer(Analyzer):
         self.metadata["ndivision"] = self.ndivision
         self.metadata["material"] = self.material
         self.metadata["filename"] = self.filename
-        if 'split_vertical' in self.metadata['image']:
+        if self.metadata['image']['split_vertical']:
             self.metadata['side'] = self.metadata['image']['split_vertical']['side']
         else :
             self.metadata['side'] = None
@@ -163,7 +159,8 @@ class TapeAnalyzer(Analyzer):
         x_max = self.xmax
         if plot:
             _ = plt.figure()
-
+            ax = plt.subplot(111)
+            self.plot_boundary(color='black', ax=ax)
         for idivision in range(1, self.ndivision-1):
 
             y_interval = y_max-y_min
@@ -186,7 +183,7 @@ class TapeAnalyzer(Analyzer):
 
                 continue
             if plot:
-                plt.plot(boundary[cond_and_top][:, 0],
+                ax.plot(boundary[cond_and_top][:, 0],
                          boundary[cond_and_top][:, 1], linewidth=3)
             m_top, b0_top = np.polyfit(
                 boundary[cond_and_top][:, 0], boundary[cond_and_top][:, 1], 1)
@@ -213,7 +210,7 @@ class TapeAnalyzer(Analyzer):
                 conditions_bottom.append([])
                 continue
             if plot:
-                plt.plot(
+                ax.plot(
                     boundary[cond_and_bottom][:, 0], boundary[cond_and_bottom][:, 1], linewidth=3)
             m_bottom, b0_bottom = np.polyfit(
                 boundary[cond_and_bottom][:, 0], boundary[cond_and_bottom][:, 1], 1)
@@ -319,12 +316,13 @@ class TapeAnalyzer(Analyzer):
              Y coordinate of minimum pixel of the boundary
 
         """
-        n_xsections = 6
-        cond1 = self.boundary[:, 0] >= self.xmin+self.x_interval/n_xsections*1
-        cond2 = self.boundary[:, 0] <= self.xmin+self.x_interval/n_xsections*2
-        cond_and = np.bitwise_and(cond1, cond2)
-        # using int because pixel numbers are integers
-        ymin = int(self.boundary[cond_and, 1].min())
+        # n_xsections = 6
+        # cond1 = self.boundary[:, 0] >= self.xmin+self.x_interval/n_xsections*1
+        # cond2 = self.boundary[:, 0] <= self.xmin+self.x_interval/n_xsections*2
+        # cond_and = np.bitwise_and(cond1, cond2)
+        # # using int because pixel numbers are integers
+        # ymin = int(self.boundary[cond_and, 1].min())
+        ymin = self.boundary[:, 1].min()
         return ymin
 
     @property
@@ -338,12 +336,13 @@ class TapeAnalyzer(Analyzer):
              Y coordinate of maximum pixel of the boundary
 
         """
-        n_xsections = 6
-        cond1 = self.boundary[:, 0] >= self.xmin+self.x_interval/n_xsections*1
-        cond2 = self.boundary[:, 0] <= self.xmin+self.x_interval/n_xsections*2
-        cond_and = np.bitwise_and(cond1, cond2)
-        # using int because pixel numbers are integers
-        ymax = int(self.boundary[cond_and, 1].max())
+        # n_xsections = 6
+        # cond1 = self.boundary[:, 0] >= self.xmin+self.x_interval/n_xsections*1
+        # cond2 = self.boundary[:, 0] <= self.xmin+self.x_interval/n_xsections*2
+        # cond_and = np.bitwise_and(cond1, cond2)
+        # # using int because pixel numbers are integers
+        # ymax = int(self.boundary[cond_and, 1].max())
+        ymax = self.boundary[:, 1].max()
         return ymax
 
     def auto_crop_y(self, calculate_tilte=False):
@@ -388,37 +387,47 @@ class TapeAnalyzer(Analyzer):
         cond2 = boundary[:, 0] <= x_min+x_interval/x_trim_param*1
         cond_12 = np.bitwise_and(cond1, cond2)
         # cond_12 = cond1
-        data = np.zeros((npoints, 2))
+        means = np.zeros((npoints, 2))
+        stds = np.zeros((npoints, ))
         y_min = self.ymin
         y_max = self.ymax
         y_interval = y_max - y_min
         edge = boundary[cond_12]
-
+        
         for ipoint in range(0, npoints):
             y_start = y_min+ipoint*(y_interval/npoints)
             y_end = y_min+(ipoint+1)*(y_interval/npoints)
             cond1 = edge[:, 1] >= y_start
             cond2 = edge[:, 1] <= y_end
             cond_and = np.bitwise_and(cond1, cond2)
-
-            data[ipoint, :] = np.average(edge[cond_and], axis=0)
+            points = edge[cond_and]
+            if len(points) == 0 and x_trim_param!=1:
+                if self.verbose:
+                    print('coordinate based is missing some points for {} {} {}, decreasing x_trim_param to {}'.format(
+                        self.filename,
+                        self.metadata['image']['split_vertical']['side'],
+                        ['flipped', 'not_flipped'][int(self.metadata['image']['flip_h'])],
+                        x_trim_param-1))
+                return self.get_coordinate_based(npoints=npoints, x_trim_param=x_trim_param-1, plot=plot)
+            means[ipoint, :] = np.average(points, axis=0)
+            stds[ipoint] = np.std(points[:, 0])
         if plot:
             # plt.figure(figsize=(1.65,10))
             plt.figure()
             self.show()
-            plt.scatter(data[:, 0], data[:, 1], s=1, color='red')
-            plt.xlim(data[:, 0].min()*0.9, data[:, 0].max()*1.1)
-        self.coordinate_based = data
-        self.values['coordinate_based'] = data
+            plt.scatter(means[:, 0], means[:, 1], s=1, color='red')
+            plt.xlim(means[:, 0].min()*0.9, means[:, 0].max()*1.1)
+        self.coordinate_based = {'means':means, 'stds':stds}
+        self.values['coordinate_based'] = {'means':means, 'stds':stds}
         self.metadata['analysis']['coordinate_based'] = {
             "npoints": npoints, "x_trim_param": x_trim_param}
 
-        return data
+        return self.coordinate_based
 
     def get_bin_based(self,
                       window_background=50,
                       window_tape=200,
-                      dynamic_window=False,
+                      dynamic_window=True,
                       size=(256, 32),
                       nsegments=4,
                       overlap=0,
@@ -615,7 +624,7 @@ class Tape(Material):
 
     def load_metadata(self):
         self.metadata['flip_h'] = False
-        self.metadata['split_vertical'] = {}
+        self.metadata['split_vertical'] = None
         self.metadata['label'] = self.label
         self.metadata['filename'] = self.filename
         self.metadata['material'] = self.material

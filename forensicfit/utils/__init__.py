@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from .. import has_opencv
+from .. import HAS_OPENCV
 from . import array_tools
-if has_opencv:
+if HAS_OPENCV:
     from . import image_tools

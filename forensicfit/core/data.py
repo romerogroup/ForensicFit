@@ -1,6 +1,7 @@
 # -*- coding: utf-8
 # import tensorflow as tf
-form ..database import Database
+
+from .. import HAS_TENSORFLOW
 import numpy as np
 from collections.abc import Mapping
 from abc import ABCMeta, abstractmethod
@@ -179,11 +180,12 @@ class DatasetNumpy:
         name = self.name
         return DatasetNumpy(X, y, extra, name)
 
-class DatasetTensorFlow(tf.data.Dataset):
-    def __init__(self, **kwargs):
-        super(DatasetTensorFlow, self).__init__(**kwargs)
-
-    def from_excel(filenames, **db_settings):
-        db = Database(**db_settings)
+if HAS_TENSORFLOW:
+    class DatasetTensorFlow(tf.data.Dataset):
+        def __init__(self, **kwargs):
+            super(DatasetTensorFlow, self).__init__(**kwargs)
+            
+        def from_excel(filenames, **db_settings):
+            db = Database(**db_settings)
         
     

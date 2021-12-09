@@ -218,6 +218,3 @@ class Database:
     @property
     def server_info(self):
         return self.client.server_info()
-
-    def batch_analysis(self, data_points):
-        

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import os
-from tqdm import tqdm
-from p_tqdm import p_map
+# from tqdm import tqdm
+# from p_tqdm import p_map
+# import tqdm
 import pandas as pd
 from numpy import array
-import tqdm
 import multiprocessing
 from matplotlib.gridspec import GridSpec
 import matplotlib.pylab as plt
@@ -50,12 +50,12 @@ def exists(db, filename, side="R", flip_h=False,
     )
 
 
-def init_child(lock):
-    """
-    Provide tqdm with the lock from the parent app.
-    This is necessary on Windows to avoid racing conditions.
-    """
-    tqdm.tqdm.set_lock(lock)
+# def init_child(lock):
+#     """
+#     Provide tqdm with the lock from the parent app.
+#     This is necessary on Windows to avoid racing conditions.
+#     """
+#     tqdm.tqdm.set_lock(lock)
 
 
 def worker(args):

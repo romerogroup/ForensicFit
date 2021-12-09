@@ -40,7 +40,7 @@ class Material(Mapping):
         return (self.image.shape[1]//gcd, self.image.shape[0]//gcd)
 
     
-    def plot(self, savefig=None, cmap='viridis', ax=None, rotate=0.0):
+    def plot(self, savefig=None, cmap='viridis', ax=None, rotate=0.0, show=False):
         if ax is None:
             plt.figure()
             ax = plt.subplot(111)
@@ -50,11 +50,11 @@ class Material(Mapping):
         ax.imshow(image, cmap=cmap)
         ax.xaxis.set_visible(False)
         ax.yaxis.set_visible(False)
+        if show:
+            plt.show()
         if savefig is not None:
             cv2.imwrite(savefig, self.image)
-
                 
-
     def show(self, wait=0, savefig=None):
         cv2.imshow(self.label, self.image)
         cv2.waitKey(wait)
