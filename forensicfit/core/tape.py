@@ -169,7 +169,7 @@ class TapeAnalyzer(Analyzer):
             _ = plt.figure()
             ax = plt.subplot(111)
             self.plot_boundary(color='black', ax=ax)
-        for idivision in range(0, self.ndivision-2):
+        for idivision in range(self.ndivision-2):
 
             y_interval = y_max-y_min
             cond1 = boundary[:, 1] > y_max-y_interval/self.ndivision
@@ -187,6 +187,7 @@ class TapeAnalyzer(Analyzer):
             # This part is to rotate the images
 
             if sum(cond_and_top) == 0:
+                # print('skipping bottom')
                 # conditions_top.append([])
                 # m_top.append(None)
                 continue
@@ -199,7 +200,7 @@ class TapeAnalyzer(Analyzer):
             stds[idivision, 0] = std_top
             conditions_top.append(cond_and_top)
 
-        for idivision in range(1, self.ndivision-2):
+        for idivision in range(self.ndivision-2):
 
             cond1 = boundary[:, 1] > y_min-y_interval/self.ndivision
             cond2 = boundary[:, 1] < y_min+y_interval/self.ndivision
@@ -212,9 +213,8 @@ class TapeAnalyzer(Analyzer):
             cond_12 = np.bitwise_and(cond1, cond2)
             cond_34 = np.bitwise_and(cond3, cond4)
             cond_and_bottom = np.bitwise_and(cond_12, cond_34)
-
             if sum(cond_and_bottom) == 0:
-                
+                # print('skipping bottom')
                 # conditions_bottom.append([])
                 # m_bottom.append(None)
                 continue
@@ -228,7 +228,6 @@ class TapeAnalyzer(Analyzer):
 
             stds[idivision, 1] = std_bottom
             conditions_bottom.append(cond_and_bottom)
-        
         arg_mins = np.argmin(stds, axis=0)
         m = np.average([m_top[arg_mins[0]], m_bottom[arg_mins[1]]])
         cond_and_top = conditions_top[arg_mins[0]]

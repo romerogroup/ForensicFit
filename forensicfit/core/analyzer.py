@@ -9,7 +9,9 @@ from collections.abc import Mapping
 
 class Analyzer:
     __metaclass__ = ABCMeta
-
+    """Class containing all future analyzers
+    """
+    
     def __init__(self):
         self.label = None
         self.image = None
