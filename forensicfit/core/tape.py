@@ -23,7 +23,7 @@ class TapeAnalyzer(Analyzer):
                  calculate_tilt=True,
                  verbose=True,):
         Analyzer.__init__(self)
-        print("analyzing: {}, side: {}, flipped: {}".format(tape.filename,
+        print("analyzing: {: >15}, side: {: >2}, flipped: {: >5}".format(tape.filename,
                                     tape.metadata['split_vertical']['side'],
                                     tape.metadata['flip_h']))
         self.image_tilt = None

@@ -13,17 +13,16 @@ from .database import Database
 
 
 def chunks(files, nprocessors, args):
-    
     ret = []
     nfiles = len(files)
-    nchucks = nfiles//nprocessors
+    nchucks = max(1,nfiles//nprocessors)
     start = 0
     end = 0
-    for i in range(nprocessors):
+    for i in range(min(nfiles, nprocessors)):
         end = start + nchucks
         ret.append([files[start:end], i, args])
         start = end
-    if end != nfiles-1:
+    if end < nfiles-1:
         for i in range(nfiles-end):
             ret[i][0].append(files[end+i])
     return ret
@@ -38,20 +37,20 @@ def chunks(files, nprocessors, args):
 
 
 def worker(args):
+
     files = args[0]
     pos = args[1]
     args = args[2]
-
+    
     db = Database(args['db_name'], args['host'], args['port'],
                   args['username'], args['password'])
 
     nfiles = len(files)
     nmodes = len(args['modes'])
     errors =[]
-    for count in range(nfiles): #tqdm.tqdm(range(nfiles), position=pos, desc="storing using proccess %d" % pos, leave=True):
-        ifile = files[count]
+    for count, ifile in enumerate(files): #tqdm.tqdm(range(nfiles), position=pos, desc="storing using proccess %d" % pos, leave=True):
         if len(ifile.split('.')) == 1:
-
+            
             continue
         if ifile.split('.')[1] not in ['tif', 'jpg', 'bmp', 'png']:
 
