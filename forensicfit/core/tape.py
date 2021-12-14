@@ -227,6 +227,8 @@ class TapeAnalyzer(Analyzer):
             stds[idivision, 1] = std_bottom
             conditions_bottom.append(cond_and_bottom)
         arg_mins = np.argmin(stds, axis=0)
+        m_top[arg_mins[0]] = m_bottom[arg_mins[1]] if m_top[arg_mins[0]] is None else m_top[arg_mins[0]]
+        m_bottom[arg_mins[1]] = m_top[arg_mins[0]] if m_bottom[arg_mins[1]] is None else m_bottom[arg_mins[1]]
         m = np.average([m_top[arg_mins[0]], m_bottom[arg_mins[1]]])
         cond_and_top = conditions_top[arg_mins[0]]
         cond_and_bottom = conditions_bottom[arg_mins[1]]
