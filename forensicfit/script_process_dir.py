@@ -249,7 +249,7 @@ def process_directory(
     if isinstance(dir_path, str):
         dir_path=[dir_path]
     for ipath in dir_path:
-        files = os.listdir(ipath)[:4]
+        files = os.listdir(ipath)
         args = locals() 
         cwd = os.getcwd()
         os.chdir(ipath)
