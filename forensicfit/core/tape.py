@@ -27,7 +27,7 @@ class TapeAnalyzer(Analyzer):
                                     tape.metadata['split_vertical']['side'],
                                     tape.metadata['flip_h']))
         self.image_tilt = None
-        self.calculate_tilte = True
+        self.calculate_tilt = calculate_tilt
         self.crop_y_top = None
         self.crop_y_bottom = None
         self.ndivision = ndivision
@@ -36,6 +36,7 @@ class TapeAnalyzer(Analyzer):
         self.mask_threshold = int(mask_threshold)
         self.masked = None        
         self.material = 'tape'
+        self.image_tilt = None
         # self.colored = cv2.cvtColor(self.image, cv2.COLOR_GRAY2BGR)
         if tape is not None:
             self.image = tape.image
@@ -97,7 +98,7 @@ class TapeAnalyzer(Analyzer):
         self.metadata["ymin"] = int(self.ymin)
         self.metadata["ymax"] = int(self.ymax)
         self.metadata["y_interval"] = int(self.ymax-self.ymin)
-        self.metadata["image_tilt"] = float(self.image_tilt)
+        self.metadata["image_tilt"] = float(self.image_tilt) if self.image_tilt is not None else None
         self.metadata["x_std"] = float(np.std(self.boundary[:, 0]))
         self.metadata["y_std"] = float(np.std(self.boundary[:, 1]))
         self.metadata["x_mean"] = float(np.mean(self.boundary[:, 0]))
@@ -153,6 +154,7 @@ class TapeAnalyzer(Analyzer):
         conditions_top.append([])
         conditions_bottom = []
         conditions_bottom.append([])
+        
         boundary = self.boundary
         y_min = self.ymin
         y_max = self.ymax
@@ -160,7 +162,9 @@ class TapeAnalyzer(Analyzer):
         x_min = self.xmin
         x_max = self.xmax
         m_top = []
+        m_top.append(None)
         m_bottom = []
+        m_bottom.append(None)
         if plot:
             _ = plt.figure()
             ax = plt.subplot(111)
@@ -184,7 +188,7 @@ class TapeAnalyzer(Analyzer):
 
             if sum(cond_and_top) == 0:
                 conditions_top.append([])
-
+                m_top.append(None)
                 continue
             if plot:
                 ax.plot(boundary[cond_and_top][:, 0],
@@ -210,8 +214,9 @@ class TapeAnalyzer(Analyzer):
             cond_and_bottom = np.bitwise_and(cond_12, cond_34)
 
             if sum(cond_and_bottom) == 0:
-
+                
                 conditions_bottom.append([])
+                m_bottom.append(None)
                 continue
             if plot:
                 ax.plot(
@@ -225,7 +230,6 @@ class TapeAnalyzer(Analyzer):
             conditions_bottom.append(cond_and_bottom)
         
         arg_mins = np.argmin(stds, axis=0)
-        
         m = np.average([m_top[arg_mins[0]], m_bottom[arg_mins[1]]])
         cond_and_top = conditions_top[arg_mins[0]]
         cond_and_bottom = conditions_bottom[arg_mins[1]]
@@ -349,7 +353,7 @@ class TapeAnalyzer(Analyzer):
         ymax = self.boundary[:, 1].max()
         return ymax
 
-    def auto_crop_y(self, calculate_tilte=False):
+    def auto_crop_y(self, calculate_tilt=False):
         """
         This method automatically crops the image in y direction (top and bottom)
 
@@ -360,7 +364,7 @@ class TapeAnalyzer(Analyzer):
         """
         self.image = self.image[int(
             self.crop_y_bottom):int(self.crop_y_top), :]
-        if calculate_tilte:
+        if calculate_tilt:
             self.get_image_tilt()
 
     def get_coordinate_based(self, npoints=1024, x_trim_param=2, plot=False):
