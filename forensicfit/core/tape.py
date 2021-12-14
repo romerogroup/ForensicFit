@@ -23,7 +23,9 @@ class TapeAnalyzer(Analyzer):
                  calculate_tilt=True,
                  verbose=True,):
         Analyzer.__init__(self)
-        print("analyzing {}".format(tape.filename))
+        print("analyzing: {}, side: {}, flipped: {}".format(tape.filename,
+                                    tape.metadata['split_vertical']['side'],
+                                    tape.metadata['flip_h']))
         self.image_tilt = None
         self.calculate_tilte = True
         self.crop_y_top = None
@@ -157,6 +159,8 @@ class TapeAnalyzer(Analyzer):
 
         x_min = self.xmin
         x_max = self.xmax
+        m_top = []
+        m_bottom = []
         if plot:
             _ = plt.figure()
             ax = plt.subplot(111)
@@ -185,8 +189,8 @@ class TapeAnalyzer(Analyzer):
             if plot:
                 ax.plot(boundary[cond_and_top][:, 0],
                          boundary[cond_and_top][:, 1], linewidth=3)
-            m_top, b0_top = np.polyfit(
-                boundary[cond_and_top][:, 0], boundary[cond_and_top][:, 1], 1)
+            m_top.append(np.polyfit(
+                boundary[cond_and_top][:, 0], boundary[cond_and_top][:, 1], 1)[0])
             std_top = np.std(boundary[cond_and_top][:, 1])
             stds[idivision, 0] = std_top
             conditions_top.append(cond_and_top)
@@ -212,18 +216,17 @@ class TapeAnalyzer(Analyzer):
             if plot:
                 ax.plot(
                     boundary[cond_and_bottom][:, 0], boundary[cond_and_bottom][:, 1], linewidth=3)
-            m_bottom, b0_bottom = np.polyfit(
-                boundary[cond_and_bottom][:, 0], boundary[cond_and_bottom][:, 1], 1)
-
-            m = np.average([m_top, m_bottom])
+            m_bottom.append(np.polyfit(
+                boundary[cond_and_bottom][:, 0], boundary[cond_and_bottom][:, 1], 1)[0])
 
             std_bottom = np.std(boundary[cond_and_bottom][:, 1])
 
             stds[idivision, 1] = std_bottom
             conditions_bottom.append(cond_and_bottom)
-
+        
         arg_mins = np.argmin(stds, axis=0)
-
+        
+        m = np.average([m_top[arg_mins[0]], m_bottom[arg_mins[1]]])
         cond_and_top = conditions_top[arg_mins[0]]
         cond_and_bottom = conditions_bottom[arg_mins[1]]
         if plot:
@@ -241,6 +244,7 @@ class TapeAnalyzer(Analyzer):
             self.crop_y_top = y_max
         if np.min(stds, axis=0)[1] > 10:
             self.crop_y_bottom = y_min
+            
         angle = np.arctan(m)
         angle_d = np.rad2deg(angle)
         self.image_tilt = angle_d
@@ -624,7 +628,8 @@ class Tape(Material):
 
     def load_metadata(self):
         self.metadata['flip_h'] = False
-        self.metadata['split_vertical'] = None
+        self.metadata['split_vertical'] = {
+            "side": None, "pixel_index": None}
         self.metadata['label'] = self.label
         self.metadata['filename'] = self.filename
         self.metadata['material'] = self.material

@@ -50,6 +50,10 @@ class Database:
                         "Port": self.port,
                         "User": self.username}
 
+
+    def disconnect(self):
+        self.client.close()
+
     def __str__(self):
         ret = ""
         for key in self.db_info:
@@ -62,8 +66,14 @@ class Database:
     def exists_analysis(self, filename):
         return self.gridfs_analysis.exists({"filename": filename})
 
-    def insert(self, obj, overwrite=False, skip=False):
+    def insert(self, obj, overwrite=False, skip=False, save_minimal=True):
         if obj.metadata['mode'] == 'analysis':
+            # if save_minimal:
+            #     obj.values['image'] = {}
+            #     obj.values['masked'] = {}
+            #     obj.values['boundary'] = {}
+            #     obj.values['binarized'] = {}
+            #     obj.values['gray_scale'] = {}
             if skip: 
                 if self.gridfs_analysis.exists(
                         {'metadata': obj.metadata}):

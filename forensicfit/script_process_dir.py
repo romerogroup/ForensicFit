@@ -58,8 +58,10 @@ def worker(args):
             continue
         if db.exists_analysis(ifile) and args['skip']:
             continue
-
-        quality = ifile.split("_")[0]
+        if 'NoString' in ifile:
+            quality = ifile.split("_")[1]
+        else :
+            quality = ifile.split("_")[0]
         if len(quality) == 4:
             if quality[-2:] == "HT":
                 separation_method = "handtorn"
@@ -90,9 +92,10 @@ def worker(args):
                     tape.flip_h()
                 pos = ([0,2][iside]+[0, 1][iflip])*4
                 ax = fig.add_subplot(gs[1, pos:pos+4])
-                try:
+                for i in range(1):
+                # try:
                     analyed_tape = TapeAnalyzer(
-                        tape, args['mask_threshold'], args['gaussian_blur'], args['ndivision'], args['auto_crop'], args['calculate_tilt'], False)
+                        tape, args['mask_threshold'], args['gaussian_blur'], args['ndivision'], args['auto_crop'], args['calculate_tilt'], verbose=False)
                     analyed_tape.plot_boundary(ax=ax)
                     analyed_tape.plot('image', ax=ax)
                     ax.set_title('{}_{}_{}'.format(ifile.split('.')[0], side, ['flipped', 'not_flipped'][iflip]))
@@ -130,11 +133,11 @@ def worker(args):
                         ax = fig.add_subplot(gs[2,pos+2])
                         analyed_tape.plot('max_contrast', ax=ax)
                         # ax.set_title('max_contrast')
-                    db.insert(analyed_tape)
+                    db.insert(analyed_tape, save_minimal=args['save_minimal'])
                     control_name = ifile.split('.')[0]+'.png'
-                except:
-                    errors.append(ifile.split('.')[0]+'-'+side+'-'+str(flip))
-                    control_name = "__error_"+ifile.split('.')[0]+'.png'
+                # except:
+                #     errors.append(ifile.split('.')[0]+'-'+side+'-'+str(flip))
+                #     control_name = "__error_"+ifile.split('.')[0]+'.png'
         # draw the boxes
         # margin = 0.02
         # rect = plt.Rectangle(
@@ -156,6 +159,7 @@ def worker(args):
         # plt.show()
         plt.savefig(control_name)
         plt.close()
+    db.disconnect()
     return errors
 
 
@@ -190,6 +194,7 @@ def process_directory(
         port=27017,
         username="",
         password="",
+        save_minimal=False,
         ignore_errors=False,
         nprocessors=1):
     """
@@ -237,7 +242,7 @@ def process_directory(
     if split:
         if side == 'both':
             side = ['L', 'R']
-        else:
+        elif isinstance(side, str):
             side = [side]
     else:
         side = ['L']
@@ -254,12 +259,11 @@ def process_directory(
             # multiprocessing.freeze_support()
 
             # lock = multiprocessing.Lock()
-            # if nprocessors > multiprocessing.cpu_count():
-            #     nprocessors = multiprocessing.cpu_count()
-            # p = multiprocessing.Pool(
-            #     nprocessors, initializer=init_child, initargs=(lock,))
+            if nprocessors > multiprocessing.cpu_count():
+                nprocessors = multiprocessing.cpu_count()
+            p = multiprocessing.Pool(nprocessors, )
             args = chunks(files, nprocessors, args)
-            errors = p_map(worker, args)
+            errors = p.map(worker, args)
 
             # p.close()
             # p.join()
