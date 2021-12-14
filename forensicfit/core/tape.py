@@ -239,10 +239,10 @@ class TapeAnalyzer(Analyzer):
                         boundary[cond_and_top][:, 1], color='blue')
             plt.scatter(boundary[cond_and_bottom][:, 0],
                         boundary[cond_and_bottom][:, 1], color='red')
-
-        self.crop_y_top = np.average(boundary[cond_and_top][:, 1])
-        self.crop_y_bottom = np.average(boundary[cond_and_bottom][:, 1])
-
+        top = boundary[cond_and_top][:, 1]
+        bottom = boundary[cond_and_bottom][:, 1]
+        self.crop_y_top = np.average(top) if len(top) != 0 else self.ymax
+        self.crop_y_bottom = np.average(bottom) if len(bottom) !=0 else self.ymin
         if np.min(stds, axis=0)[0] > 10:
             self.crop_y_top = y_max
         if np.min(stds, axis=0)[1] > 10:
@@ -391,7 +391,7 @@ class TapeAnalyzer(Analyzer):
         boundary = self.boundary
 
         cond1 = boundary[:, 0] >= x_min+x_interval/x_trim_param*0
-        cond2 = boundary[:, 0] <= x_min+x_interval/x_trim_param*1
+        cond2 = boundary[:, 0] <= x_min+x_interval/x_trim_param*0.95
         cond_12 = np.bitwise_and(cond1, cond2)
         # cond_12 = cond1
         means = np.zeros((npoints, 2))
