@@ -23,9 +23,9 @@ class TapeAnalyzer(Analyzer):
                  calculate_tilt=True,
                  verbose=True,):
         Analyzer.__init__(self)
-        print(" {: <15}  | {: ^5} | {: >11}".format(tape.filename,
+        print(" {: <20}  | {: ^5} | {: >11}".format(tape.filename,
                                                     str(tape.metadata['split_vertical']['side']),
-                                                    ['flipped', 'not flipped'][int(tape.metadata['flip_h'])]))
+                                                    ['not flipped', 'flipped'][int(tape.metadata['flip_h'])]))
         self.image_tilt = None
         self.calculate_tilt = calculate_tilt
         self.crop_y_top = None
