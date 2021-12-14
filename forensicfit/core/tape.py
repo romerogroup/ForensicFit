@@ -149,11 +149,11 @@ class TapeAnalyzer(Analyzer):
             DESCRIPTION.
 
         """
-        stds = np.ones((self.ndivision-1, 2))*1000
+        stds = np.ones((self.ndivision-2, 2))*1000
         conditions_top = []
-        conditions_top.append([])
+        # conditions_top.append([])
         conditions_bottom = []
-        conditions_bottom.append([])
+        # conditions_bottom.append([])
         
         boundary = self.boundary
         y_min = self.ymin
@@ -162,23 +162,23 @@ class TapeAnalyzer(Analyzer):
         x_min = self.xmin
         x_max = self.xmax
         m_top = []
-        m_top.append(None)
+        # m_top.append(None)
         m_bottom = []
-        m_bottom.append(None)
+        # m_bottom.append(None)
         if plot:
             _ = plt.figure()
             ax = plt.subplot(111)
             self.plot_boundary(color='black', ax=ax)
-        for idivision in range(1, self.ndivision-1):
+        for idivision in range(0, self.ndivision-2):
 
             y_interval = y_max-y_min
             cond1 = boundary[:, 1] > y_max-y_interval/self.ndivision
             cond2 = boundary[:, 1] < y_max+y_interval/self.ndivision
 
             x_interval = x_max-x_min
-            cond3 = boundary[:, 0] >= x_min+x_interval/self.ndivision*idivision
+            cond3 = boundary[:, 0] >= x_min+x_interval/self.ndivision*(idivision+1)
             cond4 = boundary[:, 0] <= x_min + \
-                x_interval/self.ndivision*(idivision+1)
+                x_interval/self.ndivision*(idivision+2)
 
             cond_12 = np.bitwise_and(cond1, cond2)
             cond_34 = np.bitwise_and(cond3, cond4)
@@ -187,8 +187,8 @@ class TapeAnalyzer(Analyzer):
             # This part is to rotate the images
 
             if sum(cond_and_top) == 0:
-                conditions_top.append([])
-                m_top.append(None)
+                # conditions_top.append([])
+                # m_top.append(None)
                 continue
             if plot:
                 ax.plot(boundary[cond_and_top][:, 0],
@@ -199,15 +199,15 @@ class TapeAnalyzer(Analyzer):
             stds[idivision, 0] = std_top
             conditions_top.append(cond_and_top)
 
-        for idivision in range(1, self.ndivision-1):
+        for idivision in range(1, self.ndivision-2):
 
             cond1 = boundary[:, 1] > y_min-y_interval/self.ndivision
             cond2 = boundary[:, 1] < y_min+y_interval/self.ndivision
 
             x_interval = x_max-x_min
-            cond3 = boundary[:, 0] >= x_min+x_interval/self.ndivision*idivision
+            cond3 = boundary[:, 0] >= x_min+x_interval/self.ndivision*(idivision+1)
             cond4 = boundary[:, 0] <= x_min + \
-                x_interval/self.ndivision*(idivision+1)
+                x_interval/self.ndivision*(idivision+2)
 
             cond_12 = np.bitwise_and(cond1, cond2)
             cond_34 = np.bitwise_and(cond3, cond4)
@@ -215,8 +215,8 @@ class TapeAnalyzer(Analyzer):
 
             if sum(cond_and_bottom) == 0:
                 
-                conditions_bottom.append([])
-                m_bottom.append(None)
+                # conditions_bottom.append([])
+                # m_bottom.append(None)
                 continue
             if plot:
                 ax.plot(
