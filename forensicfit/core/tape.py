@@ -23,9 +23,9 @@ class TapeAnalyzer(Analyzer):
                  calculate_tilt=True,
                  verbose=True,):
         Analyzer.__init__(self)
-        print("analyzing: {: >15}, side: {: >2}, flipped: {: >5}".format(tape.filename,
-                                    tape.metadata['split_vertical']['side'],
-                                    tape.metadata['flip_h']))
+        print(" {: <15}  | {: ^5} | {: >11}".format(tape.filename,
+                                                    str(tape.metadata['split_vertical']['side']),
+                                                    ['flipped', 'not flipped'][int(tape.metadata['flip_h'])]))
         self.image_tilt = None
         self.calculate_tilt = calculate_tilt
         self.crop_y_top = None
@@ -187,9 +187,8 @@ class TapeAnalyzer(Analyzer):
             # This part is to rotate the images
 
             if sum(cond_and_top) == 0:
-                # print('skipping bottom')
-                # conditions_top.append([])
-                # m_top.append(None)
+                conditions_top.append([])
+                m_top.append(None)
                 continue
             if plot:
                 ax.plot(boundary[cond_and_top][:, 0],
@@ -214,9 +213,8 @@ class TapeAnalyzer(Analyzer):
             cond_34 = np.bitwise_and(cond3, cond4)
             cond_and_bottom = np.bitwise_and(cond_12, cond_34)
             if sum(cond_and_bottom) == 0:
-                # print('skipping bottom')
-                # conditions_bottom.append([])
-                # m_bottom.append(None)
+                conditions_bottom.append([])
+                m_bottom.append(None)
                 continue
             if plot:
                 ax.plot(
