@@ -39,6 +39,7 @@ class Material(Mapping):
         gcd = np.gcd(self.image.shape[0], self.image.shape[1])
         return (self.image.shape[1]//gcd, self.image.shape[0]//gcd)
 
+
     
     def plot(self, savefig=None, cmap='viridis', ax=None, rotate=0.0, show=False):
         if ax is None:
@@ -84,3 +85,4 @@ class Material(Mapping):
 
     def __len__(self):
         return self.values.__len__()
+

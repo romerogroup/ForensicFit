@@ -23,9 +23,6 @@ class TapeAnalyzer(Analyzer):
                  calculate_tilt=True,
                  verbose=True,):
         Analyzer.__init__(self)
-        print(" {: <20}  | {: ^5} | {: >11}".format(tape.filename,
-                                                    str(tape.metadata['split_vertical']['side']),
-                                                    ['not flipped', 'flipped'][int(tape.metadata['flip_h'])]))
         self.image_tilt = None
         self.calculate_tilt = calculate_tilt
         self.crop_y_top = None
@@ -39,6 +36,9 @@ class TapeAnalyzer(Analyzer):
         self.image_tilt = None
         # self.colored = cv2.cvtColor(self.image, cv2.COLOR_GRAY2BGR)
         if tape is not None:
+            print(" {: <25}  | {: ^5} | {: >11}".format(tape.filename,
+                                                        str(tape.metadata['split_vertical']['side']),
+                                                        ['not flipped', 'flipped'][int(tape.metadata['flip_h'])]))
             self.image = tape.image
             self.label = tape.label
             self.filename = tape.filename
@@ -115,7 +115,7 @@ class TapeAnalyzer(Analyzer):
         self.metadata["analysis"] = {}
 
     @classmethod
-    def from_dict(cls, values):
+    def from_dict(cls, values, metadata):
         if values is None:
             raise Exception(
                 "The provided dictionary was empty. Maybe change the query criteria")
@@ -123,14 +123,26 @@ class TapeAnalyzer(Analyzer):
         for key in values:
             if not isinstance(getattr(type(cls), key, None), property):
                 setattr(cls, key, values[key])
-        cls.binarized = image_tools.binerized_mask(
-            cls.image, cls.masked)
-        cls.gray_scale = image_tools.gray_scale(cls.image)
-        cls.load_dict()
-        for key in cls.metadata['analysis']:
-            cls.values[key] = eval("cls.%s" % key)
-
+                cls.values[key] = values[key]
+                
+        cls.metadata = metadata
+        for key in metadata:
+            if key in ['filename', 'material', 'ndivision', 'mask_threshold', 'gaussian_blur', 'image_tilt']:
+                setattr(cls, key, metadata[key])
+        print(" {: <25}  | {: ^5} | {: >11}".format(cls.filename,
+                                                    str(cls.metadata['image']['split_vertical']['side']),
+                                                    ['not flipped', 'flipped'][int(cls.metadata['image']['flip_h'])]))
+        # cls.binarized = image_tools.binerized_mask(
+        #     cls.image, cls.masked)
+        # cls.gray_scale = image_tools.gray_scale(cls.image)
+        # cls.load_dict()
+        # for key in cls.metadata['analysis']:
+            # cls.values[key] = eval("cls.%s" % key)
+        # print(" {: <25}  | {: ^5} | {: >11}".format(cls.filename,
+                                                    # str(cls.metadata['image']['split_vertical']['side']),
+                                                    # ['not flipped', 'flipped'][int(cls.metadata['image']['flip_h'])]))
         return cls
+    
 
     def get_image_tilt(self, plot=False):
         """
@@ -251,7 +263,6 @@ class TapeAnalyzer(Analyzer):
         angle = np.arctan(m)
         angle_d = np.rad2deg(angle)
         self.image_tilt = angle_d
-        self.values['image_tilt'] = angle_d
         return angle_d
 
     @property
@@ -366,7 +377,13 @@ class TapeAnalyzer(Analyzer):
         if calculate_tilt:
             self.get_image_tilt()
 
-    def get_coordinate_based(self, npoints=1024, x_trim_param=2, plot=False):
+    def get_coordinate_based(self,
+                             npoints=64,
+                             x_trim_param=6,
+                             normalize=True,
+                             standardize=False,
+                             shift=True,
+                             plot=False):
         """
         This method returns the data of the detected edge as a set of points 
         in 2d plain with (x,y)
@@ -394,7 +411,7 @@ class TapeAnalyzer(Analyzer):
         cond2 = boundary[:, 0] <= x_min+x_interval/x_trim_param*0.95
         cond_12 = np.bitwise_and(cond1, cond2)
         # cond_12 = cond1
-        means = np.zeros((npoints, 2))
+        data = np.zeros((npoints, 3))
         stds = np.zeros((npoints, ))
         y_min = self.ymin
         y_max = self.ymax
@@ -416,16 +433,20 @@ class TapeAnalyzer(Analyzer):
                         ['flipped', 'not_flipped'][int(self.metadata['image']['flip_h'])],
                         x_trim_param-1))
                 return self.get_coordinate_based(npoints=npoints, x_trim_param=x_trim_param-1, plot=plot)
-            means[ipoint, :] = np.average(points, axis=0)
-            stds[ipoint] = np.std(points[:, 0])
+            data[ipoint, :2] = np.average(points, axis=0)
+            data[ipoint, 2] = np.std(points[:, 0])
+        if shift:
+            data[:,0]-=np.average(data[:,0
+                                       ])
+
         if plot:
             # plt.figure(figsize=(1.65,10))
             plt.figure()
             self.show()
-            plt.scatter(means[:, 0], means[:, 1], s=1, color='red')
-            plt.xlim(means[:, 0].min()*0.9, means[:, 0].max()*1.1)
-        self.coordinate_based = {'means':means, 'stds':stds}
-        self.values['coordinate_based'] = {'means':means, 'stds':stds}
+            plt.scatter(data[:, 0], data[:, 1], s=1, color='red')
+            plt.xlim(data[:, 0].min()*0.9, data[:, 0].max()*1.1)
+        self.coordinate_based = data
+        self.values['coordinate_based'] = data
         self.metadata['analysis']['coordinate_based'] = {
             "npoints": npoints, "x_trim_param": x_trim_param}
 
@@ -640,14 +661,17 @@ class Tape(Material):
         
         
     @classmethod
-    def from_dict(cls, values):
+    def from_dict(cls, values, metadata):
         cls = Tape()
-        cls.filename = values['filename']
+        cls.values = values
+        cls.metadata = metadata
+        cls.filename = metadata['filename']
         cls.image = values['image']
-        cls.label = values['label']
-        cls.metadata = values['metadata']
-        cls.load_dict()
-        cls.load_metadata()
+        cls.label = metadata['label']
+        cls.surface = metadata['surface']
+        cls.material = metadata['material']
+        # cls.load_dict()
+        # cls.load_metadata()
         return cls
 
     def split_vertical(self, pixel_index=None, pick_side='L'):

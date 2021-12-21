@@ -19,6 +19,7 @@ class DatasetNumpy:
         self.y = y
         self.extra = {key:np.array(extra[key]) for key in extra}
         self.values = {"X": self.X, "y": self.y}
+        self.values.update(self.extra)
         self.metadata = {"mode": "data", 'name': name}
         self.name = name
 
@@ -78,42 +79,38 @@ class DatasetNumpy:
         return self.y[self._test_indicies]
     
     def save(self, filename=''):
-        if ".npy" in filename:
-            filename = filename.split(".")[0]
         if len(filename) == 0:
             filename = self.name
+        if ".npy" not in filename:
+            filename +='.npz'
         i = 1
-        dir_name = filename
-        while os.path.isdir(dir_name):
-            dir_name = filename+str(i)
+        fp = filename
+        while os.path.isdir(fp):
+            fp = filename+str(i)
             i += 1
-        filename = dir_name
-        os.mkdir(filename)
-        np.save("{}{}X.npy".format(filename, os.sep), self.X)
-        np.save("{}{}y.npy".format(filename, os.sep), self.y)
-        for key in self.extra:
-            np.save("{}{}{}.npy".format(filename, os.sep, key), self.extra[key])
+        filename = fp
+        np.savez(filename, **self.values)
         print("files saved at {}".format(filename))
         self.shape
 
     @classmethod
     def load(cls, filename):
-        if ".npy" in filename:
-            filename = filename.split(".")[0]
-        X = np.load("{}{}X.npy".format(filename, os.sep))
-        y = np.load("{}{}y.npy".format(filename, os.sep))
+        if ".npz" not in filename:
+            filename +='.npz'
+        values = np.load(filename)
+        X = values['X']
+        y = values['y']
         extra = {}
-        for ifile in os.listdir(filename):
-            if ifile == "X.npy" or ifile == "y.npy":
+        for ifile in values.files:
+            if ifile in ["X", "y"]:
                 continue
-            elif ".npy" in ifile:
-                extra[ifile.replace('.npy','')] = np.load("{}{}{}".format(filename, os.sep, ifile))
-        cls = DatasetNumpy(X, y, extra=extra, name=filename)
+            else:
+                extra[ifile] = values[ifile]
+        cls = DatasetNumpy(X, y, extra=extra, name=filename[:-4])
         print('loaded {}'.format(filename))
         cls.shape
         return cls
         
-    
     
     @property
     def ndata(self):
@@ -181,6 +178,8 @@ class DatasetNumpy:
         return DatasetNumpy(X, y, extra, name)
 
 if HAS_TENSORFLOW:
+    
+    import tensorflow as tf
     class DatasetTensorFlow(tf.data.Dataset):
         def __init__(self, **kwargs):
             super(DatasetTensorFlow, self).__init__(**kwargs)

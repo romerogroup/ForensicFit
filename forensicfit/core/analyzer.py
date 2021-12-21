@@ -51,23 +51,23 @@ class Analyzer:
             if ax is None:
                 plt.figure(figsize=(2,8))
                 ax = plt.subplot(111)
-                
+
             # ax.scatter(self[which]['means'][:, 0],
             #            np.flip(self[which]['means'][:, 1]),
             #            c='red',
             #            s=1)
-            ax.errorbar(self[which]['means'][:, 0],
-                        np.flip(self[which]['means'][:, 1]),
-                        xerr= self[which]['stds'],
+            ax.errorbar(self[which][:, 0],
+                        np.flip(self[which][:, 1]),
+                        xerr= self[which][:, 2],
                         ecolor='blue',
                         color='red',
                         markersize=0.5,
                         fmt='o')
-            ax.set_ylim(min(self[which]['means'][:, 1]),max(self[which]['means'][:, 1]))
+            ax.set_ylim(min(self[which][:, 1]),max(self[which][:, 1]))
             if reverse_x :
-                ax.set_xlim(max(self[which]['means'][:, 0])*1.1, min(self[which]['means'][:, 0])*0.9)
+                ax.set_xlim(max(self[which][:, 0])*1.1, min(self[which][:, 0])*0.9)
             else :
-                ax.set_xlim(min(self[which]['means'][:, 0])*0.9, max(self[which]['means'][:, 0])*1.1)
+                ax.set_xlim(min(self[which][:, 0])*0.9, max(self[which][:, 0])*1.1)
         elif len(self[which].shape) > 2:
             if ax is None:
                 plt.figure()
@@ -106,7 +106,7 @@ class Analyzer:
         ax.xaxis.set_visible(False)
         ax.yaxis.set_visible(False)
         if savefig is not None:
-            ax.savefig(savefig)
+            plt.savefig(savefig)
 
     def add_metadata(self, key, value):
         self.metadata[key] = value
@@ -124,6 +124,7 @@ class Analyzer:
     def from_dict(self):
         pass
 
+    
     def __contains__(self, x):
         return x in self.values
 

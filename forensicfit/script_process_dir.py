@@ -21,19 +21,16 @@ def chunks(files, nprocessors, args):
     for i in range(min(nfiles, nprocessors)):
         end = start + nchucks
         ret.append([files[start:end], i, args])
+        print(
+            "cpu #{: >4} - from {: >4} to {: >4} - total {: >4}".format(i, start, end, nchucks))
         start = end
     if end < nfiles-1:
         for i in range(nfiles-end):
             ret[i][0].append(files[end+i])
+        print("cpu #{: >4} - from {: >4} to {: >4} - total {: >4}".format(i +
+                                                                    1, end, nfiles, nfiles - end))
+
     return ret
-
-
-# def init_child(lock):
-#     """
-#     Provide tqdm with the lock from the parent app.
-#     This is necessary on Windows to avoid racing conditions.
-#     """
-#     tqdm.tqdm.set_lock(lock)
 
 
 def worker(args):
@@ -43,20 +40,19 @@ def worker(args):
     args = args[2]
     
     db = Database(args['db_name'], args['host'], args['port'],
-                  args['username'], args['password'])
-
+                  args['username'], args['password'], verbose=False)
+    
     nfiles = len(files)
-    nmodes = len(args['modes'])
     errors =[]
-    for count, ifile in enumerate(files): #tqdm.tqdm(range(nfiles), position=pos, desc="storing using proccess %d" % pos, leave=True):
+    for count, ifile in enumerate(files):
         if len(ifile.split('.')) == 1:
-            
             continue
         if ifile.split('.')[1] not in ['tif', 'jpg', 'bmp', 'png']:
-
             continue
-        if db.exists_analysis(ifile) and args['skip']:
-            continue
+        
+        if args['skip']:
+            if db.exists(criteria={'filename': ifile}, mode='analysis'):
+                continue
         if 'NoString' in ifile:
             quality = ifile.split("_")[1]
         else :
@@ -91,8 +87,8 @@ def worker(args):
                     tape.flip_h()
                 pos = ([0,2][iside]+[0, 1][iflip])*4
                 ax = fig.add_subplot(gs[1, pos:pos+4])
-                for i in range(1):
-                # try:
+                # for i in range(1):
+                try:
                     analyed_tape = TapeAnalyzer(
                         tape, args['mask_threshold'], args['gaussian_blur'], args['ndivision'], args['auto_crop'], args['calculate_tilt'], verbose=False)
                     analyed_tape.plot_boundary(ax=ax)
@@ -132,11 +128,11 @@ def worker(args):
                         ax = fig.add_subplot(gs[2,pos+2])
                         analyed_tape.plot('max_contrast', ax=ax)
                         # ax.set_title('max_contrast')
-                    db.insert(analyed_tape, save_minimal=args['save_minimal'])
+                    db.insert(analyed_tape)
                     control_name = ifile.split('.')[0]+'.png'
-                # except:
-                #     errors.append(ifile.split('.')[0]+'-'+side+'-'+str(flip))
-                #     control_name = "__error_"+ifile.split('.')[0]+'.png'
+                except:
+                    errors.append(ifile.split('.')[0]+'-'+side+'-'+str(flip))
+                    control_name = "__error_"+ifile.split('.')[0]+'.png'
         # draw the boxes
         # margin = 0.02
         # rect = plt.Rectangle(
@@ -193,7 +189,6 @@ def process_directory(
         port=27017,
         username="",
         password="",
-        save_minimal=False,
         ignore_errors=False,
         nprocessors=1):
     """
@@ -255,21 +250,17 @@ def process_directory(
         if nprocessors == 1:
             errors = worker(chunks(files, 1, args)[0])
         elif nprocessors > 1:
-            # multiprocessing.freeze_support()
-
-            # lock = multiprocessing.Lock()
             if nprocessors > multiprocessing.cpu_count():
                 nprocessors = multiprocessing.cpu_count()
             p = multiprocessing.Pool(nprocessors, )
             args = chunks(files, nprocessors, args)
             errors = p.map(worker, args)
-
-            # p.close()
-            # p.join()
+            p.close()
+            p.join()
         os.chdir(cwd)
         with open("errors.log", 'w') as wf :
             for err in errors:
                 for i in np.unique(err):
                     wf.write(i+os.linesep)
-
+    
                     

@@ -30,6 +30,8 @@ class SiameseModel2(tf.keras.models.Model):
         super(SiameseModel2, self).__init__()
 
         self._input_shape = input_shape
+
+
         t1f_input = tf.keras.Input(name="tape1_front", shape=input_shape + (color_channels,))
         t2f_input = tf.keras.Input(name="tape2_front", shape=input_shape + (color_channels,))
         t1b_input = tf.keras.Input(name="tape1_back", shape=input_shape + (color_channels,))
@@ -66,6 +68,8 @@ class SiameseModel2(tf.keras.models.Model):
         """
         pass
 
+    
+    
     # def train_step(self, data):
     #     # GradientTape is a context manager that records every operation that
     #     # you do inside. We are using it here to compute the loss so we can get
