@@ -47,7 +47,7 @@ class Analyzer:
             plt.show()
 
         
-    def plot(self, which, cmap='viridis', savefig=None, ax=None, reverse_x=False, **kwargs):
+    def plot(self, which, cmap='viridis', savefig=None, ax=None, reverse_x=False, show = False, **kwargs):
         
         if which == "coordinate_based":
             if ax is None:
@@ -80,8 +80,8 @@ class Analyzer:
                                 fmt='o')
 
             else :
-                ax.scatter(self[which]['means'][:, 0],
-                           np.flip(self[which]['means'][:, 1]),
+                ax.scatter(self[which][:, 0],
+                           np.flip(self[which][:, 1]),
                            c='red',
                            s=1)
             ax.set_ylim(min(self[which][:, 1]),max(self[which][:, 1]))            
@@ -128,6 +128,9 @@ class Analyzer:
         ax.yaxis.set_visible(False)
         if savefig is not None:
             plt.savefig(savefig)
+
+        if show:
+            plt.show()
 
     def add_metadata(self, key, value):
         self.metadata[key] = value
