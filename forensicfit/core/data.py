@@ -18,7 +18,7 @@ class DatasetNumpy:
         self.X = X
         self.y = y
         self.extra = {key:np.array(extra[key]) for key in extra}
-        self.values = {"X": self.X, "y": self.y}
+        self.values = {"X": self.X, "y": self.y, "extra": self.extra}
         self.values.update(self.extra)
         self.metadata = {"mode": "data", 'name': name}
         self.name = name
@@ -56,6 +56,7 @@ class DatasetNumpy:
                 print(nremove, cl)
                 idxs = np.random.choice(indicies[cl], size=nremove, replace=False)
                 # indicies[cl][np.random.randint(nclasses[cl], size=nremove)]
+
                 self.X = np.delete(self.X, idxs, 0)
                 self.y = np.delete(self.y, idxs, 0)
                 for key in self.extra:

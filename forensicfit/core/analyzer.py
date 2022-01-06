@@ -2,7 +2,9 @@
 
 import cv2
 from matplotlib import pylab as plt
+from matplotlib.colors import Normalize
 import numpy as np
+from scipy.stats import norm
 from abc import ABCMeta, abstractmethod
 from collections.abc import Mapping
 
@@ -45,25 +47,44 @@ class Analyzer:
             plt.show()
 
         
-    def plot(self, which, cmap='viridis', savefig=None, ax=None, reverse_x=False):
+    def plot(self, which, cmap='viridis', savefig=None, ax=None, reverse_x=False, **kwargs):
         
         if which == "coordinate_based":
             if ax is None:
                 plt.figure(figsize=(2,8))
                 ax = plt.subplot(111)
+                
+            if "plot_gaussian" in kwargs:
+                dy = (self.ymax-self.ymin)/len(self[which])
+                if kwargs["plot_gaussian"]:
+                    # norm = Normalize(vmin, vmax)
+                    cmap=plt.get_cmap('gray')
+                    for ig in self[which]:
+                        x = np.linspace(ig[0]-3*ig[2], ig[0]+3*ig[2])
+                        dx = x[2]-x[1]
+                        y = np.ones_like(x)*ig[1]
+                        y_prime = norm.pdf(x, ig[0], ig[2])
+                        y_prime /= sum(y_prime)/dx
+                        colors = cmap(y_prime)
+                        y_prime*=dy
+                        ax.fill_between(x, y, y+y_prime, cmap='gray')
+            
+            elif "plot_errorbar" in kwargs:
+                if kwargs["plot_errorbar"]:
+                    ax.errorbar(self[which][:, 0],
+                                np.flip(self[which][:, 1]),
+                                xerr= self[which][:, 2],
+                                ecolor='blue',
+                                color='red',
+                                markersize=0.5,
+                                fmt='o')
 
-            # ax.scatter(self[which]['means'][:, 0],
-            #            np.flip(self[which]['means'][:, 1]),
-            #            c='red',
-            #            s=1)
-            ax.errorbar(self[which][:, 0],
-                        np.flip(self[which][:, 1]),
-                        xerr= self[which][:, 2],
-                        ecolor='blue',
-                        color='red',
-                        markersize=0.5,
-                        fmt='o')
-            ax.set_ylim(min(self[which][:, 1]),max(self[which][:, 1]))
+            else :
+                ax.scatter(self[which]['means'][:, 0],
+                           np.flip(self[which]['means'][:, 1]),
+                           c='red',
+                           s=1)
+            ax.set_ylim(min(self[which][:, 1]),max(self[which][:, 1]))            
             if reverse_x :
                 ax.set_xlim(max(self[which][:, 0])*1.1, min(self[which][:, 0])*0.9)
             else :

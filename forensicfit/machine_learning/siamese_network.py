@@ -1,4 +1,6 @@
-import pymongo
+from .. import HAS_PYMONGO
+if HAS_PYMONGO:
+    import pymongo
 import tensorflow as tf
 # from tensorflow.keras import layers
 # import keras

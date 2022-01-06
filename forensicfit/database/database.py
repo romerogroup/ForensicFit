@@ -7,8 +7,6 @@ used PyChemia Database class as a guide
 https://github.com/MaterialsDiscovery/PyChemia/blob/master/pychemia/db/db.py
 """
 import os
-# import h5py
-import pandas as pd
 import numpy as np
 import pymongo
 import gridfs
