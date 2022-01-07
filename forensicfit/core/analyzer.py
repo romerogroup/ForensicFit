@@ -31,6 +31,17 @@ class Analyzer:
         ----------
         savefig : str, optional
             path to save the plot. The default is None.
+        
+        color : str, optional
+            Color of the boundary. The default is 'r'
+
+        ax : str, optional
+            Re. The default is None
+
+        show: bool
+            Controls whether to show the image. Default is False
+
+        
 
         Returns
         -------
@@ -48,6 +59,40 @@ class Analyzer:
 
         
     def plot(self, which, cmap='viridis', savefig=None, ax=None, reverse_x=False, show = False, **kwargs):
+        """
+        This is a general plot method for the analyzer 
+
+        Parameters
+        ----------
+        which : str
+            Chooses which method to plot. Default
+            Options : [ "coordinate_based"]
+
+        cmap : str
+            Chooses the color map to be used Default is 'viridis'.
+
+        savefig : str
+            Path and name to save the image. Default is None
+
+        ax : str
+            Path and name to save the image. Default is None
+
+        revere_x: bool
+
+        show: bool
+            Controls whether to show the image. Default is False
+
+        plot_gaussian: bool
+            plots the gaussian smearing method. Default is False
+
+        plot_errorbar: bool
+            plots the gaussian smearing method. Default is False
+
+        Returns
+        -------
+        None.
+
+        """
         
         if which == "coordinate_based":
             if ax is None:
@@ -69,7 +114,7 @@ class Analyzer:
                         y_prime*=dy
                         ax.fill_between(x, y, y+y_prime, cmap='gray')
             
-            elif "plot_errorbar" in kwargs:
+            if "plot_errorbar" in kwargs:
                 if kwargs["plot_errorbar"]:
                     ax.errorbar(self[which][:, 0],
                                 np.flip(self[which][:, 1]),
@@ -79,11 +124,12 @@ class Analyzer:
                                 markersize=0.5,
                                 fmt='o')
 
-            else :
-                ax.scatter(self[which][:, 0],
-                           np.flip(self[which][:, 1]),
-                           c='red',
-                           s=1)
+            if "plot_scatter" in kwargs:
+                if kwargs["plot_scatter"]:
+                    ax.scatter(self[which][:, 0],
+                            np.flip(self[which][:, 1]),
+                            c='red',
+                            s=1)
             ax.set_ylim(min(self[which][:, 1]),max(self[which][:, 1]))            
             if reverse_x :
                 ax.set_xlim(max(self[which][:, 0])*1.1, min(self[which][:, 0])*0.9)

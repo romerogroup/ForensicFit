@@ -103,7 +103,7 @@ def worker(args):
                         analyed_tape.get_coordinate_based(
                             args['npoints'], args['x_trim_param'])
                         ax = fig.add_subplot(gs[2,pos])
-                        analyed_tape.plot("coordinate_based", ax=ax)
+                        analyed_tape.plot("coordinate_based", ax=ax, plot_scatter = True)
                         # ax.set_title("coordinate_based")
                     if 'bin_based' in args['modes']:
                         analyed_tape.get_bin_based(args['window_background'],
@@ -152,7 +152,7 @@ def worker(args):
         #         )
         #         fig.patches.extend([rect])
         # plt.show()
-        plt.savefig(control_name)
+        plt.savefig(f"PNG{os.sep}{control_name}")
         plt.close()
     db.disconnect()
     return errors
@@ -232,7 +232,8 @@ def process_directory(
     None.
 
     """
-
+    if not os.path.exists(f"{dir_path}{os.sep}PNG"):
+        os.mkdir(f"{dir_path}{os.sep}PNG")
     if split:
         if side == 'both':
             side = ['L', 'R']

@@ -108,7 +108,7 @@ def worker(args):
 
         if not all(all_exists):
             for mode in modes:
-                figs[mode]['fig'].savefig("_error_{}_{}.png".format(mode, _id_excel, match))
+                figs[mode]['fig'].savefig("PNG{os.sep}_error_{mode}_{_id_excel}_{match}.png")
                 plt.close(figs[mode]['fig'])
             continue
         
@@ -124,7 +124,7 @@ def worker(args):
                 ax.set_title("{}_{}".format(name.split(".")[0], side))
 
         for mode in modes:
-            figs[mode]['fig'].savefig("_{}_{}_{}.png".format(mode, _id_excel, match))
+            figs[mode]['fig'].savefig(f"PNG{os.sep}{mode}_{_id_excel}_{match}.png")
             plt.close(figs[mode]['fig'])
     
         for mode in modes:
@@ -190,9 +190,10 @@ def from_excel(
     df = pd.read_excel(excel_file)
     ndata = len(df)
     args = locals()
-
+    if not os.path.exists("PNG"):
+        os.mkdir("PNG")
     if nprocessors == 1:
-        worker(chunks(df, 1, args)[0])
+        rets = worker(chunks(df, 1, args)[0])
     elif nprocessors > 1:
         # multiprocessing.freeze_support()
 

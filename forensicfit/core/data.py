@@ -98,7 +98,7 @@ class DatasetNumpy:
     def load(cls, filename):
         if ".npz" not in filename:
             filename +='.npz'
-        values = np.load(filename)
+        values = np.load(filename, allow_pickle=True)
         X = values['X']
         y = values['y']
         extra = {}
