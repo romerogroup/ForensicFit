@@ -193,7 +193,7 @@ def from_excel(
     if not os.path.exists("PNG"):
         os.mkdir("PNG")
     if nprocessors == 1:
-        rets = worker(chunks(df, 1, args)[0])
+        rets = [worker(chunks(df, 1, args)[0])]
     elif nprocessors > 1:
         # multiprocessing.freeze_support()
 
