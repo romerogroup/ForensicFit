@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-from .. import has_opencv
-from . import array_tools
-if has_opencv:
+from .. import HAS_OPENCV
+from .. import HAS_PYMONGO
+if HAS_PYMONGO:
+    from . import array_tools
+if HAS_OPENCV:
     from . import image_tools

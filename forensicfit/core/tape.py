@@ -4,10 +4,8 @@ Created on Sun Jun 28 14:11:02 2020
 
 @author: Pedram Tavadze
 """
-from .. import has_opencv, has_pymongo
 import os
-if has_opencv:
-    import cv2
+import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import math
@@ -54,7 +52,7 @@ class TapeAnalyzer(Analyzer):
             return
         Analyzer.__init__(self)
         self.image_tilt = None
-        self.calculate_tilte = True
+        self.calculate_tilt = calculate_tilt
         self.crop_y_top = None
         self.crop_y_bottom = None
         self.ndivision = ndivision
@@ -63,8 +61,12 @@ class TapeAnalyzer(Analyzer):
         self.mask_threshold = int(mask_threshold)
         self.masked = None        
         self.material = 'tape'
+        self.image_tilt = None
         # self.colored = cv2.cvtColor(self.image, cv2.COLOR_GRAY2BGR)
         if tape is not None:
+            print(" {: <25}  | {: ^5} | {: >11}".format(tape.filename,
+                                                        str(tape.metadata['split_vertical']['side']),
+                                                        ['not flipped', 'flipped'][int(tape.metadata['flip_h'])]))
             self.image = tape.image
             self.label = tape.label
             self.filename = tape.filename
@@ -155,7 +157,7 @@ class TapeAnalyzer(Analyzer):
         self.metadata["ymin"] = int(self.ymin)
         self.metadata["ymax"] = int(self.ymax)
         self.metadata["y_interval"] = int(self.ymax-self.ymin)
-        self.metadata["image_tilt"] = float(self.image_tilt)
+        self.metadata["image_tilt"] = float(self.image_tilt) if self.image_tilt is not None else None
         self.metadata["x_std"] = float(np.std(self.boundary[:, 0]))
         self.metadata["y_std"] = float(np.std(self.boundary[:, 1]))
         self.metadata["x_mean"] = float(np.mean(self.boundary[:, 0]))
@@ -165,14 +167,14 @@ class TapeAnalyzer(Analyzer):
         self.metadata["ndivision"] = self.ndivision
         self.metadata["material"] = self.material
         self.metadata["filename"] = self.filename
-        if 'split_vertical' in self.metadata['image']:
+        if self.metadata['image']['split_vertical']:
             self.metadata['side'] = self.metadata['image']['split_vertical']['side']
         else :
             self.metadata['side'] = None
         self.metadata["analysis"] = {}
 
     @classmethod
-    def from_dict(cls, values):
+    def from_dict(cls, values, metadata):
         """
         
 
@@ -201,14 +203,26 @@ class TapeAnalyzer(Analyzer):
         for key in values:
             if not isinstance(getattr(type(cls), key, None), property):
                 setattr(cls, key, values[key])
-        cls.binarized = image_tools.binerized_mask(
-            cls.image, cls.masked)
-        cls.gray_scale = image_tools.gray_scale(cls.image)
-        cls.load_dict()
-        for key in cls.metadata['analysis']:
-            cls.values[key] = eval("cls.%s" % key)
-
+                cls.values[key] = values[key]
+                
+        cls.metadata = metadata
+        for key in metadata:
+            if key in ['filename', 'material', 'ndivision', 'mask_threshold', 'gaussian_blur', 'image_tilt']:
+                setattr(cls, key, metadata[key])
+        print(" {: <25}  | {: ^5} | {: >11}".format(cls.filename,
+                                                    str(cls.metadata['image']['split_vertical']['side']),
+                                                    ['not flipped', 'flipped'][int(cls.metadata['image']['flip_h'])]))
+        # cls.binarized = image_tools.binerized_mask(
+        #     cls.image, cls.masked)
+        # cls.gray_scale = image_tools.gray_scale(cls.image)
+        # cls.load_dict()
+        # for key in cls.metadata['analysis']:
+            # cls.values[key] = eval("cls.%s" % key)
+        # print(" {: <25}  | {: ^5} | {: >11}".format(cls.filename,
+                                                    # str(cls.metadata['image']['split_vertical']['side']),
+                                                    # ['not flipped', 'flipped'][int(cls.metadata['image']['flip_h'])]))
         return cls
+    
 
     def get_image_tilt(self, plot=False):
         """
@@ -225,30 +239,36 @@ class TapeAnalyzer(Analyzer):
             DESCRIPTION.
 
         """
-        stds = np.ones((self.ndivision-1, 2))*1000
+        stds = np.ones((self.ndivision-2, 2))*1000
         conditions_top = []
-        conditions_top.append([])
+        # conditions_top.append([])
         conditions_bottom = []
-        conditions_bottom.append([])
+        # conditions_bottom.append([])
+        
         boundary = self.boundary
         y_min = self.ymin
         y_max = self.ymax
 
         x_min = self.xmin
         x_max = self.xmax
+        m_top = []
+        # m_top.append(None)
+        m_bottom = []
+        # m_bottom.append(None)
         if plot:
             _ = plt.figure()
-
-        for idivision in range(1, self.ndivision-1):
+            ax = plt.subplot(111)
+            self.plot_boundary(color='black', ax=ax)
+        for idivision in range(self.ndivision-2):
 
             y_interval = y_max-y_min
             cond1 = boundary[:, 1] > y_max-y_interval/self.ndivision
             cond2 = boundary[:, 1] < y_max+y_interval/self.ndivision
 
             x_interval = x_max-x_min
-            cond3 = boundary[:, 0] >= x_min+x_interval/self.ndivision*idivision
+            cond3 = boundary[:, 0] >= x_min+x_interval/self.ndivision*(idivision+1)
             cond4 = boundary[:, 0] <= x_min + \
-                x_interval/self.ndivision*(idivision+1)
+                x_interval/self.ndivision*(idivision+2)
 
             cond_12 = np.bitwise_and(cond1, cond2)
             cond_34 = np.bitwise_and(cond3, cond4)
@@ -258,50 +278,48 @@ class TapeAnalyzer(Analyzer):
 
             if sum(cond_and_top) == 0:
                 conditions_top.append([])
-
+                m_top.append(None)
                 continue
             if plot:
-                plt.plot(boundary[cond_and_top][:, 0],
+                ax.plot(boundary[cond_and_top][:, 0],
                          boundary[cond_and_top][:, 1], linewidth=3)
-            m_top, b0_top = np.polyfit(
-                boundary[cond_and_top][:, 0], boundary[cond_and_top][:, 1], 1)
+            m_top.append(np.polyfit(
+                boundary[cond_and_top][:, 0], boundary[cond_and_top][:, 1], 1)[0])
             std_top = np.std(boundary[cond_and_top][:, 1])
             stds[idivision, 0] = std_top
             conditions_top.append(cond_and_top)
 
-        for idivision in range(1, self.ndivision-1):
+        for idivision in range(self.ndivision-2):
 
             cond1 = boundary[:, 1] > y_min-y_interval/self.ndivision
             cond2 = boundary[:, 1] < y_min+y_interval/self.ndivision
 
             x_interval = x_max-x_min
-            cond3 = boundary[:, 0] >= x_min+x_interval/self.ndivision*idivision
+            cond3 = boundary[:, 0] >= x_min+x_interval/self.ndivision*(idivision+1)
             cond4 = boundary[:, 0] <= x_min + \
-                x_interval/self.ndivision*(idivision+1)
+                x_interval/self.ndivision*(idivision+2)
 
             cond_12 = np.bitwise_and(cond1, cond2)
             cond_34 = np.bitwise_and(cond3, cond4)
             cond_and_bottom = np.bitwise_and(cond_12, cond_34)
-
             if sum(cond_and_bottom) == 0:
-
                 conditions_bottom.append([])
+                m_bottom.append(None)
                 continue
             if plot:
-                plt.plot(
+                ax.plot(
                     boundary[cond_and_bottom][:, 0], boundary[cond_and_bottom][:, 1], linewidth=3)
-            m_bottom, b0_bottom = np.polyfit(
-                boundary[cond_and_bottom][:, 0], boundary[cond_and_bottom][:, 1], 1)
-
-            m = np.average([m_top, m_bottom])
+            m_bottom.append(np.polyfit(
+                boundary[cond_and_bottom][:, 0], boundary[cond_and_bottom][:, 1], 1)[0])
 
             std_bottom = np.std(boundary[cond_and_bottom][:, 1])
 
             stds[idivision, 1] = std_bottom
             conditions_bottom.append(cond_and_bottom)
-
         arg_mins = np.argmin(stds, axis=0)
-
+        m_top[arg_mins[0]] = m_bottom[arg_mins[1]] if m_top[arg_mins[0]] is None else m_top[arg_mins[0]]
+        m_bottom[arg_mins[1]] = m_top[arg_mins[0]] if m_bottom[arg_mins[1]] is None else m_bottom[arg_mins[1]]
+        m = np.average([m_top[arg_mins[0]], m_bottom[arg_mins[1]]])
         cond_and_top = conditions_top[arg_mins[0]]
         cond_and_bottom = conditions_bottom[arg_mins[1]]
         if plot:
@@ -311,18 +329,18 @@ class TapeAnalyzer(Analyzer):
                         boundary[cond_and_top][:, 1], color='blue')
             plt.scatter(boundary[cond_and_bottom][:, 0],
                         boundary[cond_and_bottom][:, 1], color='red')
-
-        self.crop_y_top = np.average(boundary[cond_and_top][:, 1])
-        self.crop_y_bottom = np.average(boundary[cond_and_bottom][:, 1])
-
+        top = boundary[cond_and_top][:, 1]
+        bottom = boundary[cond_and_bottom][:, 1]
+        self.crop_y_top = np.average(top) if len(top) != 0 else self.ymax
+        self.crop_y_bottom = np.average(bottom) if len(bottom) !=0 else self.ymin
         if np.min(stds, axis=0)[0] > 10:
             self.crop_y_top = y_max
         if np.min(stds, axis=0)[1] > 10:
             self.crop_y_bottom = y_min
+            
         angle = np.arctan(m)
         angle_d = np.rad2deg(angle)
         self.image_tilt = angle_d
-        self.values['image_tilt'] = angle_d
         return angle_d
 
     @property
@@ -394,12 +412,13 @@ class TapeAnalyzer(Analyzer):
              Y coordinate of minimum pixel of the boundary
 
         """
-        n_xsections = 6
-        cond1 = self.boundary[:, 0] >= self.xmin+self.x_interval/n_xsections*1
-        cond2 = self.boundary[:, 0] <= self.xmin+self.x_interval/n_xsections*2
-        cond_and = np.bitwise_and(cond1, cond2)
-        # using int because pixel numbers are integers
-        ymin = int(self.boundary[cond_and, 1].min())
+        # n_xsections = 6
+        # cond1 = self.boundary[:, 0] >= self.xmin+self.x_interval/n_xsections*1
+        # cond2 = self.boundary[:, 0] <= self.xmin+self.x_interval/n_xsections*2
+        # cond_and = np.bitwise_and(cond1, cond2)
+        # # using int because pixel numbers are integers
+        # ymin = int(self.boundary[cond_and, 1].min())
+        ymin = self.boundary[:, 1].min()
         return ymin
 
     @property
@@ -413,15 +432,16 @@ class TapeAnalyzer(Analyzer):
              Y coordinate of maximum pixel of the boundary
 
         """
-        n_xsections = 6
-        cond1 = self.boundary[:, 0] >= self.xmin+self.x_interval/n_xsections*1
-        cond2 = self.boundary[:, 0] <= self.xmin+self.x_interval/n_xsections*2
-        cond_and = np.bitwise_and(cond1, cond2)
-        # using int because pixel numbers are integers
-        ymax = int(self.boundary[cond_and, 1].max())
+        # n_xsections = 6
+        # cond1 = self.boundary[:, 0] >= self.xmin+self.x_interval/n_xsections*1
+        # cond2 = self.boundary[:, 0] <= self.xmin+self.x_interval/n_xsections*2
+        # cond_and = np.bitwise_and(cond1, cond2)
+        # # using int because pixel numbers are integers
+        # ymax = int(self.boundary[cond_and, 1].max())
+        ymax = self.boundary[:, 1].max()
         return ymax
 
-    def auto_crop_y(self, calculate_tilte=False):
+    def auto_crop_y(self, calculate_tilt=False):
         """
         This method automatically crops the image in y direction (top and bottom)
 
@@ -438,10 +458,16 @@ class TapeAnalyzer(Analyzer):
         """
         self.image = self.image[int(
             self.crop_y_bottom):int(self.crop_y_top), :]
-        if calculate_tilte:
+        if calculate_tilt:
             self.get_image_tilt()
 
-    def get_coordinate_based(self, npoints=1024, x_trim_param=2, plot=False):
+    def get_coordinate_based(self,
+                             npoints=64,
+                             x_trim_param=6,
+                             normalize=True,
+                             standardize=False,
+                             shift=True,
+                             plot=False):
         """
         This method returns the data of the detected edge as a set of points 
         in 2d plain with (x,y)
@@ -468,23 +494,37 @@ class TapeAnalyzer(Analyzer):
         boundary = self.boundary
 
         cond1 = boundary[:, 0] >= x_min+x_interval/x_trim_param*0
-        cond2 = boundary[:, 0] <= x_min+x_interval/x_trim_param*1
+        cond2 = boundary[:, 0] <= x_min+x_interval/x_trim_param*0.95
         cond_12 = np.bitwise_and(cond1, cond2)
         # cond_12 = cond1
-        data = np.zeros((npoints, 2))
+        data = np.zeros((npoints, 3))
+        stds = np.zeros((npoints, ))
         y_min = self.ymin
         y_max = self.ymax
         y_interval = y_max - y_min
         edge = boundary[cond_12]
-
+        
         for ipoint in range(0, npoints):
             y_start = y_min+ipoint*(y_interval/npoints)
             y_end = y_min+(ipoint+1)*(y_interval/npoints)
             cond1 = edge[:, 1] >= y_start
             cond2 = edge[:, 1] <= y_end
             cond_and = np.bitwise_and(cond1, cond2)
+            points = edge[cond_and]
+            if len(points) == 0 and x_trim_param!=1:
+                if self.verbose:
+                    print('coordinate based is missing some points for {} {} {}, decreasing x_trim_param to {}'.format(
+                        self.filename,
+                        self.metadata['image']['split_vertical']['side'],
+                        ['flipped', 'not_flipped'][int(self.metadata['image']['flip_h'])],
+                        x_trim_param-1))
+                return self.get_coordinate_based(npoints=npoints, x_trim_param=x_trim_param-1, plot=plot)
+            data[ipoint, :2] = np.average(points, axis=0)
+            data[ipoint, 2] = np.std(points[:, 0])
+        if shift:
+            data[:,0]-=np.average(data[:,0
+                                       ])
 
-            data[ipoint, :] = np.average(edge[cond_and], axis=0)
         if plot:
             # plt.figure(figsize=(1.65,10))
             plt.figure()
@@ -496,12 +536,12 @@ class TapeAnalyzer(Analyzer):
         self.metadata['analysis']['coordinate_based'] = {
             "npoints": npoints, "x_trim_param": x_trim_param}
 
-        return data
+        return self.coordinate_based
 
     def get_bin_based(self,
                       window_background=50,
                       window_tape=200,
-                      dynamic_window=False,
+                      dynamic_window=True,
                       size=(256, 32),
                       nsegments=4,
                       overlap=0,
@@ -698,7 +738,8 @@ class Tape(Material):
 
     def load_metadata(self):
         self.metadata['flip_h'] = False
-        self.metadata['split_vertical'] = {}
+        self.metadata['split_vertical'] = {
+            "side": None, "pixel_index": None}
         self.metadata['label'] = self.label
         self.metadata['filename'] = self.filename
         self.metadata['material'] = self.material
@@ -706,14 +747,17 @@ class Tape(Material):
         
         
     @classmethod
-    def from_dict(cls, values):
+    def from_dict(cls, values, metadata):
         cls = Tape()
-        cls.filename = values['filename']
+        cls.values = values
+        cls.metadata = metadata
+        cls.filename = metadata['filename']
         cls.image = values['image']
-        cls.label = values['label']
-        cls.metadata = values['metadata']
-        cls.load_dict()
-        cls.load_metadata()
+        cls.label = metadata['label']
+        cls.surface = metadata['surface']
+        cls.material = metadata['material']
+        # cls.load_dict()
+        # cls.load_metadata()
         return cls
 
     def split_vertical(self, pixel_index=None, pick_side='L'):

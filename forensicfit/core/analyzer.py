@@ -2,7 +2,9 @@
 
 import cv2
 from matplotlib import pylab as plt
+from matplotlib.colors import Normalize
 import numpy as np
+from scipy.stats import norm
 from abc import ABCMeta, abstractmethod
 from collections.abc import Mapping
 
@@ -10,7 +12,9 @@ from collections.abc import Mapping
 class Analyzer:
     
     __metaclass__ = ABCMeta
-
+    """Class containing all future analyzers
+    """
+    
     def __init__(self):
         """
         
@@ -28,7 +32,7 @@ class Analyzer:
         self.values = {}
         self.metadata = {'mode': 'analysis'}
 
-    def plot_boundary(self, savefig=None, color='r'):
+    def plot_boundary(self, savefig=None, color='r', ax=None, show=False):
         """
         This function plots the detected boundary of the image. 
 
@@ -36,20 +40,36 @@ class Analyzer:
         ----------
         savefig : str, optional
             path to save the plot. The default is None.
+        
+        color : str, optional
+            Color of the boundary. The default is 'r'
+
+        ax : str, optional
+            Re. The default is None
+
+        show: bool
+            Controls whether to show the image. Default is False
+
+        
 
         Returns
         -------
         None.
 
         """
+        if ax is None:
+            plt.figure()
+            ax = plt.subplot(111)
+        ax.plot(self.boundary[:, 0], self.boundary[:, 1], c=color)
         if savefig is not None:
             plt.savefig(savefig)
-        plt.plot(self.boundary[:, 0], self.boundary[:, 1], c=color)
+        elif show:
+            plt.show()
 
-    def plot(self, which, cmap='viridis', savefig=None, ax=None, reverse_x=False):
-        """
         
-
+    def plot(self, which, cmap='viridis', savefig=None, ax=None, reverse_x=False, show = False, **kwargs):
+       
+        """
         Parameters
         ----------
         which : TYPE
@@ -62,7 +82,22 @@ class Analyzer:
             DESCRIPTION. The default is None.
         reverse_x : TYPE, optional
             DESCRIPTION. The default is False.
+        savefig : str
+            Path and name to save the image. Default is None
 
+        ax : str
+            Path and name to save the image. Default is None
+
+        revere_x: bool
+
+        show: bool
+            Controls whether to show the image. Default is False
+
+        plot_gaussian: bool
+            plots the gaussian smearing method. Default is False
+
+        plot_errorbar: bool
+            plots the gaussian smearing method. Default is False
         Returns
         -------
         None.
@@ -74,8 +109,38 @@ class Analyzer:
                 plt.figure(figsize=(2,8))
                 ax = plt.subplot(111)
                 
-            ax.scatter(self[which][:, 0], np.flip(self[which][:, 1]), c='red', s=1.5)
-            ax.set_ylim(min(self[which][:, 1]),max(self[which][:, 1]))
+            if "plot_gaussian" in kwargs:
+                dy = (self.ymax-self.ymin)/len(self[which])
+                if kwargs["plot_gaussian"]:
+                    # norm = Normalize(vmin, vmax)
+                    cmap=plt.get_cmap('gray')
+                    for ig in self[which]:
+                        x = np.linspace(ig[0]-3*ig[2], ig[0]+3*ig[2])
+                        dx = x[2]-x[1]
+                        y = np.ones_like(x)*ig[1]
+                        y_prime = norm.pdf(x, ig[0], ig[2])
+                        y_prime /= sum(y_prime)/dx
+                        colors = cmap(y_prime)
+                        y_prime*=dy
+                        ax.fill_between(x, y, y+y_prime, cmap='gray')
+            
+            if "plot_errorbar" in kwargs:
+                if kwargs["plot_errorbar"]:
+                    ax.errorbar(self[which][:, 0],
+                                np.flip(self[which][:, 1]),
+                                xerr= self[which][:, 2],
+                                ecolor='blue',
+                                color='red',
+                                markersize=0.5,
+                                fmt='o')
+
+            if "plot_scatter" in kwargs:
+                if kwargs["plot_scatter"]:
+                    ax.scatter(self[which][:, 0],
+                            np.flip(self[which][:, 1]),
+                            c='red',
+                            s=1)
+            ax.set_ylim(min(self[which][:, 1]),max(self[which][:, 1]))            
             if reverse_x :
                 ax.set_xlim(max(self[which][:, 0])*1.1, min(self[which][:, 0])*0.9)
             else :
@@ -118,7 +183,10 @@ class Analyzer:
         ax.xaxis.set_visible(False)
         ax.yaxis.set_visible(False)
         if savefig is not None:
-            ax.savefig(savefig)
+            plt.savefig(savefig)
+
+        if show:
+            plt.show()
 
     def add_metadata(self, key, value):
         """
@@ -166,6 +234,7 @@ class Analyzer:
     def from_dict(self):
         pass
 
+    
     def __contains__(self, x):
         return x in self.values
 

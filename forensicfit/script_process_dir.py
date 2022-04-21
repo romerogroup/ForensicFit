@@ -3,7 +3,9 @@
 import os
 import matplotlib.pylab as plt
 import numpy as np
-import tqdm
+# from tqdm import tqdm
+# import tqdm
+# from p_tqdm import p_map
 import multiprocessing
 from matplotlib.gridspec import GridSpec
 from .core import Tape, TapeAnalyzer
@@ -13,49 +15,48 @@ from .database import Database
 def chunks(files, nprocessors, args):
     ret = []
     nfiles = len(files)
-    nchucks = nfiles//nprocessors
+    nchucks = max(1,nfiles//nprocessors)
     start = 0
     end = 0
-    for i in range(nprocessors):
+    for i in range(min(nfiles, nprocessors)):
         end = start + nchucks
         ret.append([files[start:end], i, args])
+        print(
+            "cpu #{: >4} - from {: >4} to {: >4} - total {: >4}".format(i, start, end, nchucks))
         start = end
-    if end != nfiles-1:
+    if end < nfiles-1:
         for i in range(nfiles-end):
             ret[i][0].append(files[end+i])
+        print("cpu #{: >4} - from {: >4} to {: >4} - total {: >4}".format(i +
+                                                                    1, end, nfiles, nfiles - end))
+
     return ret
 
 
-def init_child(lock):
-    """
-    Provide tqdm with the lock from the parent app.
-    This is necessary on Windows to avoid racing conditions.
-    """
-    tqdm.tqdm.set_lock(lock)
-
-
 def worker(args):
+
     files = args[0]
     pos = args[1]
     args = args[2]
-
+    
     db = Database(args['db_name'], args['host'], args['port'],
-                  args['username'], args['password'])
-
+                  args['username'], args['password'], verbose=False)
+    
     nfiles = len(files)
     errors =[]
-    for count in tqdm.tqdm(range(nfiles), position=pos, desc="storing using proccess %d" % pos, leave=True):
-        ifile = files[count]
+    for count, ifile in enumerate(files):
         if len(ifile.split('.')) == 1:
-
             continue
         if ifile.split('.')[1] not in ['tif', 'jpg', 'bmp', 'png']:
-
             continue
-        if db.exists_analysis(ifile) and args['skip']:
-            continue
-
-        quality = ifile.split("_")[0]
+        
+        if args['skip']:
+            if db.exists(criteria={'filename': ifile}, mode='analysis'):
+                continue
+        if 'NoString' in ifile:
+            quality = ifile.split("_")[1]
+        else :
+            quality = ifile.split("_")[0]
         if len(quality) == 4:
             if quality[-2:] == "HT":
                 separation_method = "handtorn"
@@ -66,9 +67,8 @@ def worker(args):
         quality = quality[0]
         streched = False
         # side = 'Unknown'
-
-        fig = plt.figure(constrained_layout=True, figsize=(21,9))
-        gs = GridSpec(3, 16, figure=fig, width_ratios=[1]*16, height_ratios=[3]*3)
+        fig = plt.figure(constrained_layout=True, figsize=(16, 9))
+        gs = GridSpec(3, 16, figure=fig, width_ratios=[1]*16, height_ratios=[3]*3, hspace=0, wspace=0)
 
         for iside, side in enumerate(args['side']):
             for iflip, flip in enumerate([True, False]):
@@ -85,23 +85,25 @@ def worker(args):
 
                 if flip:
                     tape.flip_h()
-                pos = ([2,0][iside]+[1, 0][iflip])*4
+                pos = ([0,2][iside]+[0, 1][iflip])*4
                 ax = fig.add_subplot(gs[1, pos:pos+4])
-                tape.plot(ax=ax)
+                # for i in range(1):
                 try:
                     analyed_tape = TapeAnalyzer(
-                            tape, args['mask_threshold'], args['gaussian_blur'], args['ndivision'], args['auto_crop'], args['calculate_tilt'], False)
+                        tape, args['mask_threshold'], args['gaussian_blur'], args['ndivision'], args['auto_crop'], args['calculate_tilt'], verbose=False)
+                    analyed_tape.plot_boundary(ax=ax)
+                    analyed_tape.plot('image', ax=ax)
+                    ax.set_title('{}_{}_{}'.format(ifile.split('.')[0], side, ['flipped', 'not_flipped'][iflip]))
                     analyed_tape.add_metadata("quality", quality)
                     analyed_tape.add_metadata(
                             "separation_method", separation_method)
                     analyed_tape.add_metadata("streched", streched)
                     # analyed_tape.add_metadata("side", side)
-
                     if 'coordinate_based' in args['modes']:
                         analyed_tape.get_coordinate_based(
                             args['npoints'], args['x_trim_param'])
                         ax = fig.add_subplot(gs[2,pos])
-                        analyed_tape.plot("coordinate_based", ax=ax)
+                        analyed_tape.plot("coordinate_based", ax=ax, plot_scatter = True)
                         # ax.set_title("coordinate_based")
                     if 'bin_based' in args['modes']:
                         analyed_tape.get_bin_based(args['window_background'],
@@ -117,13 +119,13 @@ def worker(args):
                                                    args['dynamic_window'],
                                                    args['big_picture'],
                                                    nsegments=4)
-                        ax = fig.add_subplot(gs[2,pos+2])
+                        ax = fig.add_subplot(gs[2,pos+3])
                         analyed_tape.plot('big_picture', ax=ax)
                         # ax.set_title('big_picture')
                     if 'max_contrast' in args['modes']:
                         analyed_tape.get_max_contrast(
                             args['window_background'], 800, size=args['max_contrast_size'])
-                        ax = fig.add_subplot(gs[2,pos+3])
+                        ax = fig.add_subplot(gs[2,pos+2])
                         analyed_tape.plot('max_contrast', ax=ax)
                         # ax.set_title('max_contrast')
                     db.insert(analyed_tape)
@@ -131,8 +133,28 @@ def worker(args):
                 except:
                     errors.append(ifile.split('.')[0]+'-'+side+'-'+str(flip))
                     control_name = "__error_"+ifile.split('.')[0]+'.png'
-        plt.savefig(control_name)
+        # draw the boxes
+        # margin = 0.02
+        # rect = plt.Rectangle(
+        #     # (lower-left corner), width, height
+        #     (0, 2/3), 1, 1/3,
+        #     fill=False, color="k", lw=1,
+        #     zorder=1000, transform=fig.transFigure, figure=fig
+        # )
+        # fig.patches.extend([rect])
+        # # for i in range(2):
+        #     for j in range(4):
+        #         rect = plt.Rectangle(
+        #             # (lower-left corner), width, height
+        #             (j/4, i/3), 1/4, 1/3,
+        #             fill=False, color="k", lw=1,
+        #             zorder=1000, figure=fig, transform=fig.transFigure,
+        #         )
+        #         fig.patches.extend([rect])
+        # plt.show()
+        plt.savefig(f"PNG{os.sep}{control_name}")
         plt.close()
+    db.disconnect()
     return errors
 
 
@@ -210,36 +232,36 @@ def process_directory(
     None.
 
     """
-
+    if not os.path.exists(f"{dir_path}{os.sep}PNG"):
+        os.mkdir(f"{dir_path}{os.sep}PNG")
     if split:
         if side == 'both':
             side = ['L', 'R']
-        else:
+        elif isinstance(side, str):
             side = [side]
     else:
         side = ['L']
-    files = os.listdir(dir_path)
-    args = locals() 
-    cwd = os.getcwd()
-    os.chdir(dir_path)
-    if nprocessors == 1:
-        worker(chunks(files, 1, args)[0])
-    elif nprocessors > 1:
-        multiprocessing.freeze_support()
-
-        lock = multiprocessing.Lock()
-        # if nprocessors > multiprocessing.cpu_count():
-        #     nprocessors = multiprocessing.cpu_count()
-        p = multiprocessing.Pool(
-            nprocessors, initializer=init_child, initargs=(lock,))
-        args = chunks(files, nprocessors, args)
-        errors = p.map(worker, args)
-
-        p.close()
-        p.join()
-    os.chdir(cwd)
-    wf = open("errors.log", 'w')
-    for err in errors:
-        for i in np.unique(err):
-            wf.write(i+os.linesep)
-    wf.close
+    if isinstance(dir_path, str):
+        dir_path=[dir_path]
+    for ipath in dir_path:
+        files = os.listdir(ipath)
+        args = locals() 
+        cwd = os.getcwd()
+        os.chdir(ipath)
+        if nprocessors == 1:
+            errors = worker(chunks(files, 1, args)[0])
+        elif nprocessors > 1:
+            if nprocessors > multiprocessing.cpu_count():
+                nprocessors = multiprocessing.cpu_count()
+            p = multiprocessing.Pool(nprocessors, )
+            args = chunks(files, nprocessors, args)
+            errors = p.map(worker, args)
+            p.close()
+            p.join()
+        os.chdir(cwd)
+        with open("errors.log", 'w') as wf :
+            for err in errors:
+                for i in np.unique(err):
+                    wf.write(i+os.linesep)
+    
+                    

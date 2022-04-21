@@ -7,8 +7,6 @@ all/*
 HQHT-Set_1/*
 HQHT-Set_C/*
 MQHT/*
-*~
-.gitignore~
 
 .spyproject
 __pycache__
@@ -31,3 +29,9 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+*.pyc
+
+# emacs
+*~
+.*~
+\#.*
