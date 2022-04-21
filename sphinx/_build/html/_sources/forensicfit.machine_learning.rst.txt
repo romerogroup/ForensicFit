@@ -1,0 +1,21 @@
+forensicfit.machine\_learning package
+=====================================
+
+Submodules
+----------
+
+forensicfit.machine\_learning.siamese\_network module
+-----------------------------------------------------
+
+.. automodule:: forensicfit.machine_learning.siamese_network
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: forensicfit.machine_learning
+   :members:
+   :undoc-members:
+   :show-inheritance:

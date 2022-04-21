@@ -18,6 +18,14 @@ class Material(Mapping):
     __metaclass__ = ABCMeta
 
     def __init__(self):
+        """
+        
+
+        Returns
+        -------
+        None.
+
+        """
         self.label = None
         self.image = None
         self.mode = 'material'
@@ -27,20 +35,77 @@ class Material(Mapping):
 
     @property
     def is_loaded(self):
+        """
+        
+
+        Returns
+        -------
+        TYPE
+            DESCRIPTION.
+
+        """
         return not self.values == {}
 
     def read(self, filename):
+        """
+        
+
+        Parameters
+        ----------
+        filename : TYPE
+            DESCRIPTION.
+
+        Raises
+        ------
+        Exception
+            DESCRIPTION.
+
+        Returns
+        -------
+        None.
+
+        """
         if not os.path.exists(filename):
             raise Exception("File %s does not exist" % filename)
         self.image = cv2.imread(filename, 0)
         
     @property
     def aspect_ratio(self):
+        """
+        
+
+        Returns
+        -------
+        TYPE
+            DESCRIPTION.
+        TYPE
+            DESCRIPTION.
+
+        """
         gcd = np.gcd(self.image.shape[0], self.image.shape[1])
         return (self.image.shape[1]//gcd, self.image.shape[0]//gcd)
 
     
     def plot(self, savefig=None, cmap='viridis', ax=None, rotate=0.0):
+        """
+        
+
+        Parameters
+        ----------
+        savefig : TYPE, optional
+            DESCRIPTION. The default is None.
+        cmap : TYPE, optional
+            DESCRIPTION. The default is 'viridis'.
+        ax : TYPE, optional
+            DESCRIPTION. The default is None.
+        rotate : TYPE, optional
+            DESCRIPTION. The default is 0.0.
+
+        Returns
+        -------
+        None.
+
+        """
         if ax is None:
             plt.figure()
             ax = plt.subplot(111)
@@ -56,6 +121,21 @@ class Material(Mapping):
                 
 
     def show(self, wait=0, savefig=None):
+        """
+        
+
+        Parameters
+        ----------
+        wait : TYPE, optional
+            DESCRIPTION. The default is 0.
+        savefig : TYPE, optional
+            DESCRIPTION. The default is None.
+
+        Returns
+        -------
+        None.
+
+        """
         cv2.imshow(self.label, self.image)
         cv2.waitKey(wait)
         cv2.destroyAllWindows()
@@ -63,6 +143,21 @@ class Material(Mapping):
             cv2.imwrite(savefig, self.image)
             
     def add_metadata(self, key, value):
+        """
+        
+
+        Parameters
+        ----------
+        key : TYPE
+            DESCRIPTION.
+        value : TYPE
+            DESCRIPTION.
+
+        Returns
+        -------
+        None.
+
+        """
         self.metadata[key] = value
 
     @abstractmethod

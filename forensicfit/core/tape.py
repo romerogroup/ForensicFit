@@ -24,6 +24,31 @@ class TapeAnalyzer(Analyzer):
                  auto_crop=True,
                  calculate_tilt=True,
                  verbose=True,):
+        """
+        
+
+        Parameters
+        ----------
+        tape : TYPE, optional
+            DESCRIPTION. The default is None.
+        mask_threshold : TYPE, optional
+            DESCRIPTION. The default is 60.
+        gaussian_blur : TYPE, optional
+            DESCRIPTION. The default is (15, 15).
+        ndivision : TYPE, optional
+            DESCRIPTION. The default is 6.
+        auto_crop : TYPE, optional
+            DESCRIPTION. The default is True.
+        calculate_tilt : TYPE, optional
+            DESCRIPTION. The default is True.
+        verbose : TYPE, optional
+            DESCRIPTION. The default is True.
+
+        Returns
+        -------
+        None.
+
+        """
         if not has_opencv:
             print("To enable analyzer please install opencv")
             return
@@ -50,6 +75,21 @@ class TapeAnalyzer(Analyzer):
         return
 
     def prepeocess(self, calculate_tilt=True, auto_crop=True):
+        """
+        
+
+        Parameters
+        ----------
+        calculate_tilt : TYPE, optional
+            DESCRIPTION. The default is True.
+        auto_crop : TYPE, optional
+            DESCRIPTION. The default is True.
+
+        Returns
+        -------
+        None.
+
+        """
         if self.gaussian_blur is not None:
             if self.verbose:
                 print("applying Gaussian Blur")
@@ -85,6 +125,14 @@ class TapeAnalyzer(Analyzer):
             self.gray_scale = image_tools.gray_scale(self.image)
 
     def load_dict(self):
+        """
+        
+
+        Returns
+        -------
+        None.
+
+        """
         self.values['image'] = self.image
         self.values['masked'] = self.masked
         self.values['boundary'] = self.boundary
@@ -93,6 +141,14 @@ class TapeAnalyzer(Analyzer):
         
 
     def load_metadata(self):
+        """
+        
+
+        Returns
+        -------
+        None.
+
+        """
         self.metadata["xmin"] = int(self.xmin)
         self.metadata["xmax"] = int(self.xmax)
         self.metadata["x_interval"] = int(self.x_interval)
@@ -117,6 +173,27 @@ class TapeAnalyzer(Analyzer):
 
     @classmethod
     def from_dict(cls, values):
+        """
+        
+
+        Parameters
+        ----------
+        cls : TYPE
+            DESCRIPTION.
+        values : TYPE
+            DESCRIPTION.
+
+        Raises
+        ------
+        Exception
+            DESCRIPTION.
+
+        Returns
+        -------
+        TYPE
+            DESCRIPTION.
+
+        """
         if values is None:
             raise Exception(
                 "The provided dictionary was empty. Maybe change the query criteria")
@@ -135,14 +212,12 @@ class TapeAnalyzer(Analyzer):
 
     def get_image_tilt(self, plot=False):
         """
-        This function calculates the degree in which the tape is tilted with
-        respect to the horizontal line.
+        
 
         Parameters
         ----------
-        plot : bool, optional
-            Plot the segmentation as the image tilt is being calculated. The
-            default is False.
+        plot : TYPE, optional
+            DESCRIPTION. The default is False.
 
         Returns
         -------
@@ -350,6 +425,12 @@ class TapeAnalyzer(Analyzer):
         """
         This method automatically crops the image in y direction (top and bottom)
 
+
+        Parameters
+        ----------
+        calculate_tilte : TYPE, optional
+            DESCRIPTION. The default is False.
+
         Returns
         -------
         None.
@@ -367,18 +448,20 @@ class TapeAnalyzer(Analyzer):
 
         Parameters
         ----------
-        npoints int, optional
-                Number of points to be selected on the edge. The default is 
-                1000.
-        x_trim_param int, optional
-                The x direction of the edge will be divided by this number and
-                only the first one is selected. The default is 2.
+        npoints : TYPE, optional
+            DESCRIPTION. The default is 1024.
+        x_trim_param : TYPE, optional
+            DESCRIPTION. The default is 2.
+        plot : TYPE, optional
+            DESCRIPTION. The default is False.
 
-        Returns:
-
-            None.
+        Returns
+        -------
+        data : TYPE
+            DESCRIPTION.
 
         """
+
         x_min = self.xmin
         x_max = self.xmax
         x_interval = x_max-x_min

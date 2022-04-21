@@ -8,9 +8,18 @@ from collections.abc import Mapping
 
 
 class Analyzer:
+    
     __metaclass__ = ABCMeta
 
     def __init__(self):
+        """
+        
+
+        Returns
+        -------
+        None.
+
+        """
         self.label = None
         self.image = None
         self.mode = 'analysis'
@@ -38,6 +47,27 @@ class Analyzer:
         plt.plot(self.boundary[:, 0], self.boundary[:, 1], c=color)
 
     def plot(self, which, cmap='viridis', savefig=None, ax=None, reverse_x=False):
+        """
+        
+
+        Parameters
+        ----------
+        which : TYPE
+            DESCRIPTION.
+        cmap : TYPE, optional
+            DESCRIPTION. The default is 'viridis'.
+        savefig : TYPE, optional
+            DESCRIPTION. The default is None.
+        ax : TYPE, optional
+            DESCRIPTION. The default is None.
+        reverse_x : TYPE, optional
+            DESCRIPTION. The default is False.
+
+        Returns
+        -------
+        None.
+
+        """
         
         if which == "coordinate_based":
             if ax is None:
@@ -91,9 +121,39 @@ class Analyzer:
             ax.savefig(savefig)
 
     def add_metadata(self, key, value):
+        """
+        
+
+        Parameters
+        ----------
+        key : TYPE
+            DESCRIPTION.
+        value : TYPE
+            DESCRIPTION.
+
+        Returns
+        -------
+        None.
+
+        """
         self.metadata[key] = value
 
     def show(self, which, wait=0):
+        """
+        
+
+        Parameters
+        ----------
+        which : TYPE
+            DESCRIPTION.
+        wait : TYPE, optional
+            DESCRIPTION. The default is 0.
+
+        Returns
+        -------
+        None.
+
+        """
         cv2.imshow(which, self[which])
         cv2.waitKey(wait)
         cv2.destroyAllWindows()

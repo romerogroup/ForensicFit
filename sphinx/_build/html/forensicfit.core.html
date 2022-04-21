@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>forensicfit.preprocess package &mdash; Forensic Fit  documentation</title>
+  <title>forensicfit.core package &mdash; Forensic Fit  documentation</title>
   
 
   
@@ -39,6 +39,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="forensicfit.database package" href="forensicfit.database.html" />
     <link rel="prev" title="forensicfit package" href="forensicfit.html" /> 
 </head>
 
@@ -92,13 +93,19 @@
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">Package API</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="forensicfit.html">forensicfit package</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="forensicfit.html#subpackages">Subpackages</a><ul class="current">
-<li class="toctree-l4 current"><a class="current reference internal" href="#">forensicfit.preprocess package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">forensicfit.core package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="forensicfit.database.html">forensicfit.database package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="forensicfit.machine_learning.html">forensicfit.machine_learning package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="forensicfit.utils.html">forensicfit.utils package</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="forensicfit.html#submodules">Submodules</a></li>
 <li class="toctree-l3"><a class="reference internal" href="forensicfit.html#forensicfit-module">forensicfit module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="forensicfit.html#id1">forensicfit module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="forensicfit.html#forensicfit-from-excel-module">forensicfit.from_excel module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="forensicfit.html#forensicfit-script-process-dir-module">forensicfit.script_process_dir module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="forensicfit.html#forensicfit-store-on-db-module">forensicfit.store_on_db module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="forensicfit.html#forensicfit-version-module">forensicfit.version module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="forensicfit.html#module-contents">Module contents</a></li>
 </ul>
 </li>
@@ -156,13 +163,13 @@
         
           <li><a href="forensicfit.html">forensicfit package</a> &raquo;</li>
         
-      <li>forensicfit.preprocess package</li>
+      <li>forensicfit.core package</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/forensicfit.preprocess.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/forensicfit.core.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -175,13 +182,25 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="forensicfit-preprocess-package">
-<h1>forensicfit.preprocess package<a class="headerlink" href="#forensicfit-preprocess-package" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="forensicfit-core-package">
+<h1>forensicfit.core package<a class="headerlink" href="#forensicfit-core-package" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="forensicfit-preprocess-tape-image-module">
-<h2>forensicfit.preprocess.tape_image module<a class="headerlink" href="#forensicfit-preprocess-tape-image-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="forensicfit-core-analyzer-module">
+<h2>forensicfit.core.analyzer module<a class="headerlink" href="#forensicfit-core-analyzer-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="forensicfit-core-data-module">
+<h2>forensicfit.core.data module<a class="headerlink" href="#forensicfit-core-data-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="forensicfit-core-material-module">
+<h2>forensicfit.core.material module<a class="headerlink" href="#forensicfit-core-material-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="forensicfit-core-tape-module">
+<h2>forensicfit.core.tape module<a class="headerlink" href="#forensicfit-core-tape-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="forensicfit-core-train-test-data-module">
+<h2>forensicfit.core.train_test_data module<a class="headerlink" href="#forensicfit-core-train-test-data-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-contents">
 <h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
@@ -194,6 +213,7 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="forensicfit.database.html" class="btn btn-neutral float-right" title="forensicfit.database package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="forensicfit.html" class="btn btn-neutral float-left" title="forensicfit package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 

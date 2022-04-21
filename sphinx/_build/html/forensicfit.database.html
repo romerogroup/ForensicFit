@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Preprocessing &mdash; Forensic Fit  documentation</title>
+  <title>forensicfit.database package &mdash; Forensic Fit  documentation</title>
   
 
   
@@ -39,8 +39,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="&lt;no title&gt;" href="preprocess_dir.html" />
-    <link rel="prev" title="Tutorials" href="tutorials.html" /> 
+    <link rel="next" title="forensicfit.machine_learning package" href="forensicfit.machine_learning.html" />
+    <link rel="prev" title="forensicfit.core package" href="forensicfit.core.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -89,25 +89,28 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="developers.html">Developers</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Tutorials</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="tutorials.html#preprocessing">Preprocessing</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="tutorials.html#single-image-processing">1. Single image processing</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="tutorials.html#loading-the-image-and-show">1.1. Loading the image and show</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorials.html#splitting-the-image-vertically">1.2. Splitting the image vertically</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorials.html#finding-the-tilt-of-the-image">1.3. Finding the tilt of the image</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorials.html#plot-boundaries">1.4. Plot Boundaries</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorials.html#auto-crop-in-y-direction">1.5. Auto Crop in Y direction</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorials.html#rotate-image">1.6. Rotate Image</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorials.html#coordinate-based">1.7. Coordinate Based</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorials.html#weft-based">1.8. Weft based</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="tutorials.html#max-contrast">1.9. Max Contrast</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Package API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="forensicfit.html">forensicfit package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="forensicfit.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="forensicfit.core.html">forensicfit.core package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">forensicfit.database package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="forensicfit.machine_learning.html">forensicfit.machine_learning package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="forensicfit.utils.html">forensicfit.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="forensicfit.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="forensicfit.html#forensicfit-module">forensicfit module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="forensicfit.html#id1">forensicfit module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="forensicfit.html#forensicfit-from-excel-module">forensicfit.from_excel module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="forensicfit.html#forensicfit-script-process-dir-module">forensicfit.script_process_dir module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="forensicfit.html#forensicfit-store-on-db-module">forensicfit.store_on_db module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="forensicfit.html#forensicfit-version-module">forensicfit.version module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="forensicfit.html#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>
 </li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">Package API</a></li>
 </ul>
 
             
@@ -156,15 +159,17 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-          <li><a href="tutorials.html">Tutorials</a> &raquo;</li>
+          <li><a href="modules.html">Package API</a> &raquo;</li>
         
-      <li>Preprocessing</li>
+          <li><a href="forensicfit.html">forensicfit package</a> &raquo;</li>
+        
+      <li>forensicfit.database package</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/preprocess.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/forensicfit.database.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -177,8 +182,17 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="preprocessing">
-<h1>Preprocessing<a class="headerlink" href="#preprocessing" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="forensicfit-database-package">
+<h1>forensicfit.database package<a class="headerlink" href="#forensicfit-database-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="forensicfit-database-database-module">
+<h2>forensicfit.database.database module<a class="headerlink" href="#forensicfit-database-database-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+</div>
 </div>
 
 
@@ -187,8 +201,8 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="preprocess_dir.html" class="btn btn-neutral float-right" title="&lt;no title&gt;" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="tutorials.html" class="btn btn-neutral float-left" title="Tutorials" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="forensicfit.machine_learning.html" class="btn btn-neutral float-right" title="forensicfit.machine_learning package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="forensicfit.core.html" class="btn btn-neutral float-left" title="forensicfit.core package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
