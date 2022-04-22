@@ -25,5 +25,6 @@ if HAS_TENSORFLOW:
 if HAS_OPENCV and HAS_PYMONGO:
     from . import database
     from .script_process_dir import process_directory
+    from .store_on_db import store_on_db
     from .from_excel import from_excel
 
