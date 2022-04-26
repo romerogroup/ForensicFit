@@ -43,7 +43,7 @@ def gaussian_blur(image, window=(15, 15)):
     image = cv2.GaussianBlur(image, window, 0)
     return image
 
-def split_vertical(image, pixel_index=None,pick_side='L'):
+def split_vertical(image, pixel_index=None,pick_side='L', flip=True):
     """
     This method splits the image in 2 images based on the fraction that is 
     given in pixel_index
@@ -63,6 +63,7 @@ def split_vertical(image, pixel_index=None,pick_side='L'):
 
     """
     width = image.shape[1]
+    
     if pixel_index is None:
         pixel_index = width//2
     if pixel_index<1:
@@ -70,7 +71,10 @@ def split_vertical(image, pixel_index=None,pick_side='L'):
     if pick_side == 'L':
         image = image[:, 0:pixel_index]
     else : 
-        image = cv2.flip(image[:,pixel_index:width],1)
+        if flip:
+            image = cv2.flip(image[:,pixel_index:width],1)
+        else:
+            image = image[:, pixel_index:width]
     return image
 
 def gray_scale(image):
@@ -173,6 +177,9 @@ def binerized_mask(image, masked):
         .
 
     """
+    image = cv2.bitwise_and(image,
+                           image,
+                           mask=masked)
     return cv2.bitwise_and(image,
                            image,
                            mask=masked)

@@ -5,12 +5,16 @@ Created on Sun Jun 28 14:11:02 2020
 @author: Pedram Tavadze
 """
 import os
-import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import math
 from ..utils import image_tools
 from . import Material, Analyzer
+from . import HAS_OPENCV
+if not HAS_OPENCV:
+    print("To enable analyzer please install opencv")
+else:
+    import cv2
 
 
 class TapeAnalyzer(Analyzer):
@@ -47,9 +51,7 @@ class TapeAnalyzer(Analyzer):
         None.
 
         """
-        if not has_opencv:
-            print("To enable analyzer please install opencv")
-            return
+
         Analyzer.__init__(self)
         self.image_tilt = None
         self.calculate_tilt = calculate_tilt
@@ -95,17 +97,17 @@ class TapeAnalyzer(Analyzer):
         if self.gaussian_blur is not None:
             if self.verbose:
                 print("applying Gaussian Blur")
-            self.image = image_tools.gaussian_blur(
+            image = image_tools.gaussian_blur(
                 self.image, window=self.gaussian_blur)
         if self.verbose:
             print("getting the mask")
-        self.masked = image_tools.get_masked(self.image, self.mask_threshold)
+        self.masked = image_tools.get_masked(image, self.mask_threshold)
         self.binarized = image_tools.binerized_mask(
-            self.image, self.masked)
-        self.gray_scale = image_tools.gray_scale(self.image)
+            image, self.masked)
+        self.gray_scale = image_tools.gray_scale(image)
         if self.verbose:
             print("calculating the tilt")
-        self.contours = image_tools.contours(self.image, self.mask_threshold)
+        self.contours = image_tools.contours(image, self.mask_threshold)
         self.largest_contour = image_tools.largest_contour(self.contours)
         self.boundary = self.largest_contour.reshape(
             self.largest_contour.shape[0], 2)
@@ -115,16 +117,59 @@ class TapeAnalyzer(Analyzer):
         if auto_crop:
             self.metadata['cropped'] = True
             self.auto_crop_y()
+            image = image_tools.gaussian_blur(
+                self.image, window=self.gaussian_blur)
             self.contours = image_tools.contours(
-                self.image, self.mask_threshold)
+                image, self.mask_threshold)
             self.largest_contour = image_tools.largest_contour(self.contours)
             self.boundary = self.largest_contour.reshape(
                 self.largest_contour.shape[0], 2)
             self.masked = image_tools.get_masked(
-                self.image, self.mask_threshold)
+                image, self.mask_threshold)
             self.binarized = image_tools.binerized_mask(
-                self.image, self.masked)
+                image, self.masked)
             self.gray_scale = image_tools.gray_scale(self.image)
+
+    def flip_v(self):
+        self.image = np.fliplr(self.image)
+        self.masked = np.fliplr(self.masked)
+        self.binarized = np.fliplr(self.binarized)
+        self.gray_scale = np.fliplr(self.gray_scale)
+        self.boundary[:, 0] = self.boundary[:, 0]*-1 + self.image.shape[1]
+        self.load_dict()
+        for key in ['bin_based', 'big_picture']:
+            if key in self.values:
+                temp = np.flip(self[key],axis=2)
+                setattr(self, key, temp)
+                self.values[key] = temp
+                dynamic_positions = self.metadata['analysis'][key]['dynamic_positions']
+                for iseg, pos in enumerate(dynamic_positions):
+                    for ix in range(2):
+                        dynamic_positions[iseg][0][ix] = pos[0][ix]*-1 + self.image.shape[1]
+                self.metadata['analysis'][key]['dynamic_positions'] = dynamic_positions
+
+
+
+
+    def flip_h(self):
+        self.image = np.flipud(self.image)
+        self.masked = np.flipud(self.masked)
+        self.binarized = np.flipud(self.binarized)
+        self.gray_scale = np.flipud(self.gray_scale)
+        self.boundary[:, 1] = self.boundary[:, 1]*-1 + self.image.shape[0]
+        self.load_dict()
+        for key in ['bin_based', 'big_picture']:
+            if key in self.values:
+                temp = np.flip(self[key],axis=2)
+                setattr(self, key, temp)
+                self.values[key] = temp
+                dynamic_positions = self.metadata['analysis'][key]['dynamic_positions']
+                for iseg, pos in enumerate(dynamic_positions):
+                    for ix in range(2):
+                        dynamic_positions[iseg][1][ix] = pos[1][ix]*-1 + self.image.shape[0]
+                self.metadata['analysis'][key]['dynamic_positions'] = dynamic_positions
+
+        self.load_dict()
 
     def load_dict(self):
         """
@@ -543,6 +588,7 @@ class TapeAnalyzer(Analyzer):
                       window_tape=200,
                       dynamic_window=True,
                       size=(256, 32),
+                      resize=True,
                       nsegments=4,
                       overlap=0,
                       plot=False,
@@ -614,8 +660,8 @@ class TapeAnalyzer(Analyzer):
             isection = self.binarized[y_start:y_end, x_start:x_end]
             dynamic_positions.append(
                 [[int(x_start), int(x_end)], [int(y_start), int(y_end)]])
-
-            isection = cv2.resize(isection, (size[1], size[0]))
+            if resize:
+                isection = cv2.resize(isection, (size[1], size[0]))
             segments.append(isection)
 
             isection = cv2.copyMakeBorder(
@@ -626,11 +672,11 @@ class TapeAnalyzer(Analyzer):
         segments = np.array(segments)
         
         if plot:
-            plt.figure()
-            plt.imshow(cv2.vconcat(plot_segmets), cmap='gray')
-            plt.figure()
+            # plt.figure()
+            # plt.imshow(cv2.vconcat(plot_segmets), cmap='gray')
+            # plt.figure()
 
-            self.show(cmap='gray')
+            self.plot(cmap='gray', which='image')
             for iseg in dynamic_positions:
                 y1 = iseg[1][0]
                 y2 = iseg[1][1]
@@ -642,6 +688,7 @@ class TapeAnalyzer(Analyzer):
                 plt.plot([x1, x2], [y2, y2], color='red')
 
                 # plt.plot(iseg[0],[y,y],color='red')
+            plt.show()
         metadata = {"dynamic_positions": dynamic_positions,
                     "nsegments": nsegments,
                     "dynamic_window": dynamic_window,
@@ -704,6 +751,8 @@ class TapeAnalyzer(Analyzer):
         return edge_bw
 
 
+
+
 class Tape(Material):
     def __init__(self,
                  filename=None,
@@ -715,9 +764,8 @@ class Tape(Material):
         Machine Learning. This Class detects the edges, auto crops the image 
         and returns the results in 3 different method coordinate_based, 
         bin_based and max_contrast. 
-
-
         """
+        
         Material.__init__(self)
         self.filename = filename
         self.label = label
@@ -749,7 +797,7 @@ class Tape(Material):
     @classmethod
     def from_dict(cls, values, metadata):
         cls = Tape()
-        cls.values = values
+        cls.values = dict(values)
         cls.metadata = metadata
         cls.filename = metadata['filename']
         cls.image = values['image']
@@ -760,12 +808,16 @@ class Tape(Material):
         # cls.load_metadata()
         return cls
 
-    def split_vertical(self, pixel_index=None, pick_side='L'):
+    def split_vertical(self, pixel_index=None, side='L', flip=True):
+        if pixel_index is None:
+            tape_analyzer = TapeAnalyzer(self)
+            x = tape_analyzer.boundary[:, 0]
+            pixel_index = int((x.max()-x.min())/2)+x.min()
         self.image = image_tools.split_vertical(
-            self.image, pixel_index, pick_side)
+            self.image, pixel_index, side, flip)
         self.values['image'] = self.image
         self.metadata['split_vertical'] = {
-            "side": pick_side, "pixel_index": pixel_index}
+            "side": side, "pixel_index": pixel_index}
 
     def resize(self, size):
         self.image = image_tools.resize(self.image, size)

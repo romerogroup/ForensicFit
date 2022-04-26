@@ -63,8 +63,11 @@ class Analyzer:
         ax.plot(self.boundary[:, 0], self.boundary[:, 1], c=color)
         if savefig is not None:
             plt.savefig(savefig)
+            return ax
         elif show:
             plt.show()
+        else:
+            return ax
 
         
     def plot(self, which, cmap='viridis', savefig=None, ax=None, reverse_x=False, show = False, **kwargs):
@@ -145,6 +148,9 @@ class Analyzer:
                 ax.set_xlim(max(self[which][:, 0])*1.1, min(self[which][:, 0])*0.9)
             else :
                 ax.set_xlim(min(self[which][:, 0])*0.9, max(self[which][:, 0])*1.1)
+        elif which == 'boundary':
+            ax = self.plot('image', cmap=cmap, ax=ax)
+            ax = self.plot_boundary(ax=ax)
         elif len(self[which].shape) > 2:
             if ax is None:
                 plt.figure()
@@ -164,13 +170,13 @@ class Analyzer:
                 ax.plot([x2, x2], [y1, y2], color='red')
                 ax.plot([x1, x2], [y1, y1], color='red')
                 ax.plot([x1, x2], [y2, y2], color='red')
-                image[y1:y2, :x1]=0
-                image[y1:y2, x2:]=0
+                # image[y1:y2, :x1]=0
+                # image[y1:y2, x2:]=0
             ax.imshow(image, cmap=cmap)
-            if reverse_x:
-                ax.set_xlim(max(xs)*1.1, min(xs)*0.9)
-            else:
-                ax.set_xlim(min(xs)*0.9, max(xs)*1.1)
+            # if reverse_x:
+            #     ax.set_xlim(max(xs)*1.1, min(xs)*0.9)
+            # else:
+            #     ax.set_xlim(min(xs)*0.9, max(xs)*1.1)
         else:
             if ax is None:
                 plt.figure()
@@ -184,9 +190,11 @@ class Analyzer:
         ax.yaxis.set_visible(False)
         if savefig is not None:
             plt.savefig(savefig)
-
+            return ax
         if show:
             plt.show()
+        else:
+            return ax
 
     def add_metadata(self, key, value):
         """

@@ -38,14 +38,24 @@ def worker(args):
         if ifile.split('.')[1] not in ['tif', 'jpg', 'bmp', 'png']:
             continue
         tape = Tape(ifile, label=ifile)
-        quality = ifile.split("_")[0]
-        if len(quality) == 4:
-            if quality[-2:] == "HT":
-                separation_method = "handtorn"
-            elif quality[-2:] == "SC":
-                separation_method = "cut"
+        print(ifile)
+        tag = ifile.split("_")[0]
+
+        if len(tag) == 4:
+            if tag[-2:] == "HT":
+                separation_method = "Hand Torn"
+            elif tag[-2:] == "SC":
+                separation_method = "Scissor Cut"
         else:
-            separation_method = "handtorn"
+            separation_method = "Hand Torn"
+        if tag[0] == "M":
+            quality = "Medium Quality"
+        elif tag[0] == "H":
+            quality = "High Quality"
+        elif tag[0] == "L":
+            quality = "Low Quality"
+        if tag == "MQHT":
+            streched = True
         streched = False
         side = 'Unknown'
         tape.add_metadata("quality", quality)
