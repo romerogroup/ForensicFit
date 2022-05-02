@@ -66,22 +66,20 @@ class TapeAnalyzer(Analyzer):
         self.image_tilt = None
         # self.colored = cv2.cvtColor(self.image, cv2.COLOR_GRAY2BGR)
         if tape is not None:
-            print(" {: <25}  | {: ^5} | {: >11}".format(tape.filename,
-                                                        str(tape.metadata['split_vertical']['side']),
-                                                        ['not flipped', 'flipped'][int(tape.metadata['flip_h'])]))
+            print(f" {tape.filename: <25}|{str(tape.metadata['split_v']['side']): ^5}|{['not flipped', 'flipped'][int(tape.metadata['flip_h'])]: >11}"                                                        ,
+                                                        )
             self.image = tape.image
             self.label = tape.label
             self.filename = tape.filename
             self.metadata['image'] = tape.metadata
-            self.prepeocess(calculate_tilt, auto_crop)
+            self.preprocess(calculate_tilt, auto_crop)
             self.load_dict()
             self.load_metadata()
         return
 
-    def prepeocess(self, calculate_tilt=True, auto_crop=True):
+    def preprocess(self, calculate_tilt=True, auto_crop=True):
         """
         
-
         Parameters
         ----------
         calculate_tilt : TYPE, optional
@@ -212,8 +210,8 @@ class TapeAnalyzer(Analyzer):
         self.metadata["ndivision"] = self.ndivision
         self.metadata["material"] = self.material
         self.metadata["filename"] = self.filename
-        if self.metadata['image']['split_vertical']:
-            self.metadata['side'] = self.metadata['image']['split_vertical']['side']
+        if self.metadata['image']['split_v']:
+            self.metadata['side'] = self.metadata['image']['split_v']['side']
         else :
             self.metadata['side'] = None
         self.metadata["analysis"] = {}
@@ -254,9 +252,7 @@ class TapeAnalyzer(Analyzer):
         for key in metadata:
             if key in ['filename', 'material', 'ndivision', 'mask_threshold', 'gaussian_blur', 'image_tilt']:
                 setattr(cls, key, metadata[key])
-        print(" {: <25}  | {: ^5} | {: >11}".format(cls.filename,
-                                                    str(cls.metadata['image']['split_vertical']['side']),
-                                                    ['not flipped', 'flipped'][int(cls.metadata['image']['flip_h'])]))
+        print(f" {cls.filename: <25}  | {str(cls.metadata['image']['split_v']['side']): ^5} | {['not flipped', 'flipped'][int(cls.metadata['image']['flip_h'])]: >11}")
         # cls.binarized = image_tools.binerized_mask(
         #     cls.image, cls.masked)
         # cls.gray_scale = image_tools.gray_scale(cls.image)
@@ -264,7 +260,7 @@ class TapeAnalyzer(Analyzer):
         # for key in cls.metadata['analysis']:
             # cls.values[key] = eval("cls.%s" % key)
         # print(" {: <25}  | {: ^5} | {: >11}".format(cls.filename,
-                                                    # str(cls.metadata['image']['split_vertical']['side']),
+                                                    # str(cls.metadata['image']['split_v']['side']),
                                                     # ['not flipped', 'flipped'][int(cls.metadata['image']['flip_h'])]))
         return cls
     
@@ -560,7 +556,7 @@ class TapeAnalyzer(Analyzer):
                 if self.verbose:
                     print('coordinate based is missing some points for {} {} {}, decreasing x_trim_param to {}'.format(
                         self.filename,
-                        self.metadata['image']['split_vertical']['side'],
+                        self.metadata['image']['split_v']['side'],
                         ['flipped', 'not_flipped'][int(self.metadata['image']['flip_h'])],
                         x_trim_param-1))
                 return self.get_coordinate_based(npoints=npoints, x_trim_param=x_trim_param-1, plot=plot)
@@ -708,7 +704,7 @@ class TapeAnalyzer(Analyzer):
     def get_max_contrast(self,
                          window_background=100,
                          window_tape=600,
-                         size=(2048, 512),
+                         size=None,
                          plot=False):
         """
         This method returns the detected image as a black image with only the 
@@ -786,7 +782,7 @@ class Tape(Material):
 
     def load_metadata(self):
         self.metadata['flip_h'] = False
-        self.metadata['split_vertical'] = {
+        self.metadata['split_v'] = {
             "side": None, "pixel_index": None}
         self.metadata['label'] = self.label
         self.metadata['filename'] = self.filename
@@ -808,15 +804,15 @@ class Tape(Material):
         # cls.load_metadata()
         return cls
 
-    def split_vertical(self, pixel_index=None, side='L', flip=True):
+    def split_v(self, pixel_index=None, side='L', flip=True):
         if pixel_index is None:
             tape_analyzer = TapeAnalyzer(self)
             x = tape_analyzer.boundary[:, 0]
             pixel_index = int((x.max()-x.min())/2)+x.min()
-        self.image = image_tools.split_vertical(
+        self.image = image_tools.split_v(
             self.image, pixel_index, side, flip)
         self.values['image'] = self.image
-        self.metadata['split_vertical'] = {
+        self.metadata['split_v'] = {
             "side": side, "pixel_index": pixel_index}
 
     def resize(self, size):

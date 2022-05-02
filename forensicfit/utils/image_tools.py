@@ -43,7 +43,7 @@ def gaussian_blur(image, window=(15, 15)):
     image = cv2.GaussianBlur(image, window, 0)
     return image
 
-def split_vertical(image, pixel_index=None,pick_side='L', flip=True):
+def split_v(image, pixel_index=None,pick_side='L', flip=True):
     """
     This method splits the image in 2 images based on the fraction that is 
     given in pixel_index

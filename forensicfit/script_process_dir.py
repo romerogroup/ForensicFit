@@ -77,7 +77,7 @@ def worker(args):
 
 
                 if args['split']:
-                    tape.split_vertical(
+                    tape.split_v(
                         pixel_index=args['split_position'], pick_side=side)
 
                 if flip:
