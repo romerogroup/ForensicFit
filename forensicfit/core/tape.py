@@ -782,6 +782,9 @@ class Tape(Material):
         
     @classmethod
     def from_dict(cls, values, metadata):
+        # this is temperory 
+        if "split_vertical" in metadata:
+            metadata["split_v"] = metadata["split_vertical"]
         cls = Tape()
         cls.values = dict(values)
         cls.metadata = metadata
@@ -804,6 +807,8 @@ class Tape(Material):
         self.values['image'] = self.image
         self.metadata['split_v'] = {
             "side": side, "pixel_index": pixel_index}
+        # this is temporary
+
 
     def resize(self, size):
         self.image = image_tools.resize(self.image, size)
