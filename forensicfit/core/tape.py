@@ -22,7 +22,7 @@ class TapeAnalyzer(Analyzer):
                  tape=None,
                  mask_threshold=60,
                  gaussian_blur=(15, 15),
-                 ndivision=6,
+                 n_divisions=6,
                  auto_crop=True,
                  calculate_tilt=True,
                  verbose=True,):
@@ -37,7 +37,7 @@ class TapeAnalyzer(Analyzer):
             DESCRIPTION. The default is 60.
         gaussian_blur : TYPE, optional
             DESCRIPTION. The default is (15, 15).
-        ndivision : TYPE, optional
+        n_divisions : TYPE, optional
             DESCRIPTION. The default is 6.
         auto_crop : TYPE, optional
             DESCRIPTION. The default is True.
@@ -57,7 +57,7 @@ class TapeAnalyzer(Analyzer):
         self.calculate_tilt = calculate_tilt
         self.crop_y_top = None
         self.crop_y_bottom = None
-        self.ndivision = ndivision
+        self.n_divisions = n_divisions
         self.verbose = verbose
         self.gaussian_blur = gaussian_blur
         self.mask_threshold = int(mask_threshold)
@@ -66,8 +66,8 @@ class TapeAnalyzer(Analyzer):
         self.image_tilt = None
         # self.colored = cv2.cvtColor(self.image, cv2.COLOR_GRAY2BGR)
         if tape is not None:
-            print(f" {tape.filename: <25}|{str(tape.metadata['split_v']['side']): ^5}|{['not flipped', 'flipped'][int(tape.metadata['flip_h'])]: >11}"                                                        ,
-                                                        )
+            if self.verbose:
+                print(f" {tape.filename: <25}|{str(tape.metadata['split_v']['side']): ^5}|{['not flipped', 'flipped'][int(tape.metadata['flip_h'])]: >11}")
             self.image = tape.image
             self.label = tape.label
             self.filename = tape.filename
@@ -207,7 +207,7 @@ class TapeAnalyzer(Analyzer):
         self.metadata["y_mean"] = float(np.mean(self.boundary[:, 1]))
         self.metadata["gaussian_blur"] = self.gaussian_blur
         self.metadata["mask_threshold"] = self.mask_threshold
-        self.metadata["ndivision"] = self.ndivision
+        self.metadata["n_divisions"] = self.n_divisions
         self.metadata["material"] = self.material
         self.metadata["filename"] = self.filename
         if self.metadata['image']['split_v']:
@@ -250,7 +250,7 @@ class TapeAnalyzer(Analyzer):
                 
         cls.metadata = metadata
         for key in metadata:
-            if key in ['filename', 'material', 'ndivision', 'mask_threshold', 'gaussian_blur', 'image_tilt']:
+            if key in ['filename', 'material', 'n_divisions', 'mask_threshold', 'gaussian_blur', 'image_tilt']:
                 setattr(cls, key, metadata[key])
         print(f" {cls.filename: <25}  | {str(cls.metadata['image']['split_v']['side']): ^5} | {['not flipped', 'flipped'][int(cls.metadata['image']['flip_h'])]: >11}")
         # cls.binarized = image_tools.binerized_mask(
@@ -280,7 +280,7 @@ class TapeAnalyzer(Analyzer):
             DESCRIPTION.
 
         """
-        stds = np.ones((self.ndivision-2, 2))*1000
+        stds = np.ones((self.n_divisions-2, 2))*1000
         conditions_top = []
         # conditions_top.append([])
         conditions_bottom = []
@@ -300,16 +300,16 @@ class TapeAnalyzer(Analyzer):
             _ = plt.figure()
             ax = plt.subplot(111)
             self.plot_boundary(color='black', ax=ax)
-        for idivision in range(self.ndivision-2):
+        for idivision in range(self.n_divisions-2):
 
             y_interval = y_max-y_min
-            cond1 = boundary[:, 1] > y_max-y_interval/self.ndivision
-            cond2 = boundary[:, 1] < y_max+y_interval/self.ndivision
+            cond1 = boundary[:, 1] > y_max-y_interval/self.n_divisions
+            cond2 = boundary[:, 1] < y_max+y_interval/self.n_divisions
 
             x_interval = x_max-x_min
-            cond3 = boundary[:, 0] >= x_min+x_interval/self.ndivision*(idivision+1)
+            cond3 = boundary[:, 0] >= x_min+x_interval/self.n_divisions*(idivision+1)
             cond4 = boundary[:, 0] <= x_min + \
-                x_interval/self.ndivision*(idivision+2)
+                x_interval/self.n_divisions*(idivision+2)
 
             cond_12 = np.bitwise_and(cond1, cond2)
             cond_34 = np.bitwise_and(cond3, cond4)
@@ -330,15 +330,15 @@ class TapeAnalyzer(Analyzer):
             stds[idivision, 0] = std_top
             conditions_top.append(cond_and_top)
 
-        for idivision in range(self.ndivision-2):
+        for idivision in range(self.n_divisions-2):
 
-            cond1 = boundary[:, 1] > y_min-y_interval/self.ndivision
-            cond2 = boundary[:, 1] < y_min+y_interval/self.ndivision
+            cond1 = boundary[:, 1] > y_min-y_interval/self.n_divisions
+            cond2 = boundary[:, 1] < y_min+y_interval/self.n_divisions
 
             x_interval = x_max-x_min
-            cond3 = boundary[:, 0] >= x_min+x_interval/self.ndivision*(idivision+1)
+            cond3 = boundary[:, 0] >= x_min+x_interval/self.n_divisions*(idivision+1)
             cond4 = boundary[:, 0] <= x_min + \
-                x_interval/self.ndivision*(idivision+2)
+                x_interval/self.n_divisions*(idivision+2)
 
             cond_12 = np.bitwise_and(cond1, cond2)
             cond_34 = np.bitwise_and(cond3, cond4)
@@ -581,18 +581,18 @@ class TapeAnalyzer(Analyzer):
 
     def get_bin_based(self,
                       window_background=50,
-                      window_tape=200,
+                      window_tape=1000,
                       dynamic_window=True,
-                      size=(256, 32),
-                      resize=True,
-                      nsegments=4,
-                      overlap=0,
+                      size=None,
+                      resize=False,
+                      n_segments=10,
+                      overlap=100,
                       plot=False,
                       verbose=True,
                       ):
         """
         This method returns the detected edge as a set of croped images from 
-        the edge. The number if images is defined by nsegments. The goal is 
+        the edge. The number if images is defined by n_segments. The goal is 
         to try to match the segmentation to the wefts of the tape. 
         In the future this method will try to detecte the wefts automatically.
 
@@ -609,7 +609,7 @@ class TapeAnalyzer(Analyzer):
             Whether the windows move in each segment. The default is False.
         size : 2d tuple integers, optional
             The size of each segment in pixels. The default is (300,30).
-        nsegments : int, optional
+        n_segments : int, optional
             Number of segments that the tape is going to divided into. The 
             default is 4.
         plot : bool, optional
@@ -628,70 +628,58 @@ class TapeAnalyzer(Analyzer):
 
         y_min = self.ymin
         y_max = self.ymax
-        y_min = 0
-        y_max = self.image.shape[0]
+        # y_min = 0
+        # y_max = self.image.shape[0]
 
         x_start = x_min-window_background
-        x_end = x_min+window_tape
+        x_end = min(x_min+window_tape, self.binarized.shape[1])
+        
+        
 
-        seg_len = (y_max-y_min)//(nsegments)
-        seg_len = (y_max-y_min)/(nsegments)
+        seg_len = (y_max-y_min)//(n_segments)
+        seg_len = (y_max-y_min)/(n_segments)
 
         segments = []
-        plot_segmets = []
         dynamic_positions = []
-        y_end = 0
-        for iseg in range(0, nsegments):
+        y_end = y_min
+        for iseg in range(0, n_segments):
             # y_start = y_min+iseg*seg_len
             y_start = y_end
             y_end = math.ceil(y_min+(iseg+1)*seg_len)
             if dynamic_window:
-                cond1 = boundary[:, 1] >= y_start
-                cond2 = boundary[:, 1] <= y_end
+                cond1 = boundary[:, 1] >= y_start - overlap
+                cond2 = boundary[:, 1] <= y_end + overlap
                 cond_and = np.bitwise_and(cond1, cond2)
                 x_start = boundary[cond_and, 0].min() - window_background
                 x_end = boundary[cond_and, 0].min() + window_tape
-
+                if self.binarized.shape[1] < x_end:
+                    diff =  self.binarized.shape[1] - x_end
+                    x_start += diff
+                    x_end = self.binarized.shape[1]
 #            cv2.imwrite('%s_%d.tif'%(fname[:-4],iseg),im_color[y_start:y_end,x_start:x_end])
-            isection = self.binarized[y_start:y_end, x_start:x_end]
+            isection = self.binarized[y_start-overlap:y_end+overlap, x_start:x_end]
             dynamic_positions.append(
-                [[int(x_start), int(x_end)], [int(y_start), int(y_end)]])
+                [[int(x_start), int(x_end)], [int(y_start-overlap), int(y_end+overlap)]])
             if resize:
                 isection = cv2.resize(isection, (size[1], size[0]))
             segments.append(isection)
 
             isection = cv2.copyMakeBorder(
                 isection, 1, 1, 1, 1, cv2.BORDER_CONSTANT, value=[0, 0, 0])
-            plot_segmets.append(isection)
-            # segments.append(cv2.cvtColor(isection,cv2.COLOR_BGR2GRAY))
-        
+
+        sy = min([seg.shape[0] for seg in segments])
+        for i, seg in enumerate(segments):
+            if seg.shape[0] != sy:
+                segments[i] = segments[i][:sy, :]
+
         segments = np.array(segments)
-        
-        if plot:
-            # plt.figure()
-            # plt.imshow(cv2.vconcat(plot_segmets), cmap='gray')
-            # plt.figure()
-
-            self.plot(cmap='gray', which='image')
-            for iseg in dynamic_positions:
-                y1 = iseg[1][0]
-                y2 = iseg[1][1]
-                x1 = iseg[0][0]
-                x2 = iseg[0][1]
-                plt.plot([x1, x1], [y1, y2], color='red')
-                plt.plot([x2, x2], [y1, y2], color='red')
-                plt.plot([x1, x2], [y1, y1], color='red')
-                plt.plot([x1, x2], [y2, y2], color='red')
-
-                # plt.plot(iseg[0],[y,y],color='red')
-            plt.show()
         metadata = {"dynamic_positions": dynamic_positions,
-                    "nsegments": nsegments,
+                    "n_segments": n_segments,
                     "dynamic_window": dynamic_window,
                     "window_background": window_background,
                     "window_tape": window_tape,
                     "size": size}
-        if nsegments < 10:
+        if n_segments < 10:
             self.big_picture = segments
             self.values['big_picture'] = segments
             self.metadata['analysis']['big_picture'] = metadata
@@ -699,6 +687,8 @@ class TapeAnalyzer(Analyzer):
             self.bin_based = segments
             self.values['bin_based'] = segments
             self.metadata['analysis']['bin_based'] = metadata
+        if plot:
+            self.plot('bin_based', cmap='gray', show=True)
         return segments
 
     def get_max_contrast(self,
@@ -806,7 +796,7 @@ class Tape(Material):
 
     def split_v(self, pixel_index=None, side='L', flip=True):
         if pixel_index is None:
-            tape_analyzer = TapeAnalyzer(self)
+            tape_analyzer = TapeAnalyzer(self, verbose=False)
             x = tape_analyzer.boundary[:, 0]
             pixel_index = int((x.max()-x.min())/2)+x.min()
         self.image = image_tools.split_v(

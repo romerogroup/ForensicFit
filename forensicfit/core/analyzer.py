@@ -70,7 +70,7 @@ class Analyzer:
             return ax
 
         
-    def plot(self, which, cmap='viridis', savefig=None, ax=None, reverse_x=False, show = False, **kwargs):
+    def plot(self, which, cmap='gray', savefig=None, ax=None, reverse_x=False, show = True, **kwargs):
        
         """
         Parameters
@@ -151,32 +151,27 @@ class Analyzer:
         elif which == 'boundary':
             ax = self.plot('image', cmap=cmap, ax=ax)
             ax = self.plot_boundary(ax=ax)
-        elif len(self[which].shape) > 2:
+        elif which in ['bin_based', 'big_picture']:
             if ax is None:
                 plt.figure()
                 ax = plt.subplot(111)
             dynamic_positions = self.metadata['analysis'][which]['dynamic_positions']
-            image = self.image.copy()
-
+            
+            colors = ['red', 'blue', 'green', 'cyan', 'magenta']*len(dynamic_positions)
+            styles = ['solid', 'dashed', 'dotted', 'dashdot']*len(dynamic_positions)
             xs = []
-            for iseg in dynamic_positions:
-                y1 = iseg[1][0]
-                y2 = iseg[1][1]
-                x1 = iseg[0][0]
-                x2 = iseg[0][1]
+            for i, seg in enumerate(dynamic_positions):
+                y1 = seg[1][0]
+                y2 = seg[1][1]
+                x1 = seg[0][0]
+                x2 = seg[0][1]
                 xs.append(x1)
                 xs.append(x2)
-                ax.plot([x1, x1], [y1, y2], color='red')
-                ax.plot([x2, x2], [y1, y2], color='red')
-                ax.plot([x1, x2], [y1, y1], color='red')
-                ax.plot([x1, x2], [y2, y2], color='red')
-                # image[y1:y2, :x1]=0
-                # image[y1:y2, x2:]=0
-            ax.imshow(image, cmap=cmap)
-            # if reverse_x:
-            #     ax.set_xlim(max(xs)*1.1, min(xs)*0.9)
-            # else:
-            #     ax.set_xlim(min(xs)*0.9, max(xs)*1.1)
+                ax.plot([x1, x1], [y1, y2], color=colors[i], linestyle=styles[i], linewidth=1)
+                ax.plot([x2, x2], [y1, y2], color=colors[i], linestyle=styles[i], linewidth=1)
+                ax.plot([x1, x2], [y1, y1], color=colors[i], linestyle=styles[i], linewidth=1)
+                ax.plot([x1, x2], [y2, y2], color=colors[i], linestyle=styles[i], linewidth=1)
+            ax = self.plot('image', ax=ax, cmap=cmap)
         else:
             if ax is None:
                 plt.figure()
