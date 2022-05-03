@@ -171,7 +171,7 @@ class Analyzer:
                 ax.plot([x2, x2], [y1, y2], color=colors[i], linestyle=styles[i], linewidth=1)
                 ax.plot([x1, x2], [y1, y1], color=colors[i], linestyle=styles[i], linewidth=1)
                 ax.plot([x1, x2], [y2, y2], color=colors[i], linestyle=styles[i], linewidth=1)
-            ax = self.plot('image', ax=ax, cmap=cmap)
+            self.plot('image', ax=ax, cmap=cmap)
         else:
             if ax is None:
                 plt.figure()
