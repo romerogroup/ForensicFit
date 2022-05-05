@@ -135,6 +135,19 @@ class Database:
 
     
     def find_one(self, mode: str = None, **kwargs) -> object:
+        """finds one entry that matches the criteria. 
+        kwargs must be chosen by filter=
+
+        Parameters
+        ----------
+        mode : str, optional
+            material or analysis, if none is chose it will be selected randomly, by default None
+
+        Returns
+        -------
+        object
+            ForensicFit object e.g. Tape
+        """        
         if mode is None :
             mode = choice(list(self.fs))
         CLASS = CoreClass[mode]        
@@ -143,7 +156,28 @@ class Database:
         metadata = iq.metadata
         values = read_bytes_io(iq)
         return CLASS.from_dict(values, metadata)
-      
+    
+    def find_with_id(self, _id: str, mode: str) -> object:
+        """Retrieves core object based on the MongoDB _id
+
+        Parameters
+        ----------
+        _id : str
+            MongoDB _id
+        mode : str
+            'material' or 'analysis'
+
+        Returns
+        -------
+        object
+            ForensicFit object e.g. Tape
+        """        
+        CLASS = CoreClass[mode]
+        fs = self.fs[mode]
+        iq = fs.find_one({'_id':_id if type(_id) is ObjectId else ObjectId(_id)})
+        metadata = iq.metadata
+        values = read_bytes_io(iq)
+        return CLASS.from_dict(values, metadata)
     
     @property
     def count(self):

@@ -76,7 +76,7 @@ class Analyzer:
         which : TYPE
             DESCRIPTION.
         cmap : TYPE, optional
-            DESCRIPTION. The default is 'viridis'.
+            DESCRIPTION. The default is 'gray'.
         savefig : TYPE, optional
             DESCRIPTION. The default is None.
         ax : TYPE, optional

@@ -85,7 +85,7 @@ class Material(Mapping):
         gcd = np.gcd(self.image.shape[0], self.image.shape[1])
         return (self.image.shape[1]//gcd, self.image.shape[0]//gcd)
 
-    def plot(self, savefig=None, cmap='viridis', ax=None, rotate=0.0, show=False):
+    def plot(self, savefig=None, cmap='gray', ax=None, rotate=0.0, show=False):
         """
         
 
@@ -94,7 +94,7 @@ class Material(Mapping):
         savefig : TYPE, optional
             DESCRIPTION. The default is None.
         cmap : TYPE, optional
-            DESCRIPTION. The default is 'viridis'.
+            DESCRIPTION. The default is 'gray'.
         ax : TYPE, optional
             DESCRIPTION. The default is None.
         rotate : TYPE, optional
