@@ -63,14 +63,12 @@ class Analyzer:
         ax.plot(self.boundary[:, 0], self.boundary[:, 1], c=color)
         if savefig is not None:
             plt.savefig(savefig)
-            return ax
         elif show:
             plt.show()
-        else:
-            return ax
+        return ax
 
         
-    def plot(self, which, cmap='gray', savefig=None, ax=None, reverse_x=False, show = True, **kwargs):
+    def plot(self, which, cmap='gray', savefig=None, ax=None, reverse_x=False, show = False, **kwargs):
        
         """
         Parameters
@@ -171,7 +169,7 @@ class Analyzer:
                 ax.plot([x2, x2], [y1, y2], color=colors[i], linestyle=styles[i], linewidth=1)
                 ax.plot([x1, x2], [y1, y1], color=colors[i], linestyle=styles[i], linewidth=1)
                 ax.plot([x1, x2], [y2, y2], color=colors[i], linestyle=styles[i], linewidth=1)
-            self.plot('image', ax=ax, cmap=cmap)
+            ax = self.plot('image', ax=ax, cmap=cmap)
         else:
             if ax is None:
                 plt.figure()

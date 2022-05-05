@@ -119,6 +119,7 @@ class Material(Mapping):
             plt.show()
         if savefig is not None:
             cv2.imwrite(savefig, self.image)
+        return ax
                 
     def show(self, wait=0, savefig=None):
         """
