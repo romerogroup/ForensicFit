@@ -2,3 +2,4 @@
 
 from .database import Database
 from .database import list_databases
+from .database import dict2mongo_query

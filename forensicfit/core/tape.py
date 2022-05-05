@@ -4,6 +4,7 @@ Created on Sun Jun 28 14:11:02 2020
 
 @author: Pedram Tavadze
 """
+import warnings
 import os
 import numpy as np
 import matplotlib.pyplot as plt
@@ -23,7 +24,7 @@ class TapeAnalyzer(Analyzer):
                  mask_threshold=60,
                  gaussian_blur=(15, 15),
                  n_divisions=6,
-                 auto_crop=True,
+                 auto_crop=False,
                  calculate_tilt=True,
                  verbose=True,):
         """
@@ -61,8 +62,9 @@ class TapeAnalyzer(Analyzer):
         self.verbose = verbose
         self.gaussian_blur = gaussian_blur
         self.mask_threshold = int(mask_threshold)
-        self.masked = None        
+        self.masked = None
         self.material = 'tape'
+        self.cropped=False
         self.image_tilt = None
         # self.colored = cv2.cvtColor(self.image, cv2.COLOR_GRAY2BGR)
         if tape is not None:
@@ -115,6 +117,7 @@ class TapeAnalyzer(Analyzer):
         if auto_crop:
             self.metadata['cropped'] = True
             self.auto_crop_y()
+            self.cropped=True
             image = image_tools.gaussian_blur(
                 self.image, window=self.gaussian_blur)
             self.contours = image_tools.contours(
@@ -208,6 +211,7 @@ class TapeAnalyzer(Analyzer):
         self.metadata["gaussian_blur"] = self.gaussian_blur
         self.metadata["mask_threshold"] = self.mask_threshold
         self.metadata["n_divisions"] = self.n_divisions
+        self.metadata["cropped"] = self.cropped
         self.metadata["material"] = self.material
         self.metadata["filename"] = self.filename
         if self.metadata['image']['split_v']:
@@ -585,14 +589,14 @@ class TapeAnalyzer(Analyzer):
                       dynamic_window=True,
                       size=None,
                       resize=False,
-                      n_segments=10,
+                      n_bins=10,
                       overlap=100,
                       plot=False,
                       verbose=True,
                       ):
         """
         This method returns the detected edge as a set of croped images from 
-        the edge. The number if images is defined by n_segments. The goal is 
+        the edge. The number if images is defined by n_bins. The goal is 
         to try to match the segmentation to the wefts of the tape. 
         In the future this method will try to detecte the wefts automatically.
 
@@ -609,7 +613,7 @@ class TapeAnalyzer(Analyzer):
             Whether the windows move in each segment. The default is False.
         size : 2d tuple integers, optional
             The size of each segment in pixels. The default is (300,30).
-        n_segments : int, optional
+        n_bins : int, optional
             Number of segments that the tape is going to divided into. The 
             default is 4.
         plot : bool, optional
@@ -621,7 +625,9 @@ class TapeAnalyzer(Analyzer):
         An array of 2d numpy arrays with images of each segment.
 
         """
-
+        overlap = abs(overlap)
+        if self.cropped and overlap!=0:
+            warnings.warn("You have selected an overlap larger than 0 with an autocrop option.\n This might result in errors in finding overlap on the side edges of the tape.")
         boundary = self.boundary
         x_min = self.xmin
         x_max = self.xmax
@@ -636,13 +642,13 @@ class TapeAnalyzer(Analyzer):
         
         
 
-        seg_len = (y_max-y_min)//(n_segments)
-        seg_len = (y_max-y_min)/(n_segments)
+        seg_len = (y_max-y_min)//(n_bins)
+        seg_len = (y_max-y_min)/(n_bins)
 
         segments = []
         dynamic_positions = []
         y_end = y_min
-        for iseg in range(0, n_segments):
+        for iseg in range(0, n_bins):
             # y_start = y_min+iseg*seg_len
             y_start = y_end
             y_end = math.ceil(y_min+(iseg+1)*seg_len)
@@ -674,12 +680,12 @@ class TapeAnalyzer(Analyzer):
 
         segments = np.array(segments)
         metadata = {"dynamic_positions": dynamic_positions,
-                    "n_segments": n_segments,
+                    "n_bins": n_bins,
                     "dynamic_window": dynamic_window,
                     "window_background": window_background,
                     "window_tape": window_tape,
                     "size": size}
-        if n_segments < 10:
+        if n_bins < 10:
             self.big_picture = segments
             self.values['big_picture'] = segments
             self.metadata['analysis']['big_picture'] = metadata
@@ -703,7 +709,7 @@ class TapeAnalyzer(Analyzer):
         Parameters
         ----------
         window_background : int, optional
-            Number of pixels to be included in each segment in the backgroung side of the image. The default is 20.
+            Number of pixels to be included in each segment in the background side of the image. The default is 20.
         window_tape : int, optional
             Number of pixels to be included in each segment in the tape side of the image. The default is 300.
         plot : bool, optional
@@ -801,7 +807,7 @@ class Tape(Material):
         if pixel_index is None:
             tape_analyzer = TapeAnalyzer(self, verbose=False)
             x = tape_analyzer.boundary[:, 0]
-            pixel_index = int((x.max()-x.min())/2)+x.min()
+            pixel_index = int((x.max()-x.min())/2+x.min())
         self.image = image_tools.split_v(
             self.image, pixel_index, side, flip)
         self.values['image'] = self.image
