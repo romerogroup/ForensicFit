@@ -150,8 +150,6 @@ class TapeAnalyzer(Analyzer):
                 self.metadata['analysis'][key]['dynamic_positions'] = dynamic_positions
 
 
-
-
     def flip_h(self):
         self.image = np.flipud(self.image)
         self.masked = np.flipud(self.masked)
@@ -742,6 +740,15 @@ class TapeAnalyzer(Analyzer):
             "window_background": window_background, "window_tape": window_tape, "size": size}
         return edge_bw
 
+    def copy(self):
+        """copies the object
+
+        Returns
+        -------
+        TapeAnalyer object
+            
+        """        
+        return TapeAnalyzer.from_dict(self.values, self.metadata)
 
 
 
@@ -751,8 +758,7 @@ class Tape(Material):
                  image=None,
                  label=None,
                  surface=None):
-        """
-        TapeImage is a class created for tape images to be preprocessed for 
+        """TapeImage is a class created for tape images to be preprocessed for 
         Machine Learning. This Class detects the edges, auto crops the image 
         and returns the results in 3 different method coordinate_based, 
         bin_based and max_contrast. 
@@ -826,4 +832,5 @@ class Tape(Material):
         self.values['image'] = self.image
         self.metadata['flip_h'] = True
 
-
+    def copy(self):
+        return Tape.from_dict(self.values, self.metadata)
