@@ -219,7 +219,7 @@ class TapeAnalyzer(Analyzer):
         self.metadata["analysis"] = {}
 
     @classmethod
-    def from_dict(cls, values, metadata):
+    def from_dict(cls, values, metadata, verbose = False):
         """
         
 
@@ -244,7 +244,7 @@ class TapeAnalyzer(Analyzer):
         if values is None:
             raise Exception(
                 "The provided dictionary was empty. Maybe change the query criteria")
-        cls = TapeAnalyzer()
+        cls = TapeAnalyzer(verbose=verbose)
         for key in values:
             if not isinstance(getattr(type(cls), key, None), property):
                 setattr(cls, key, values[key])
@@ -254,7 +254,8 @@ class TapeAnalyzer(Analyzer):
         for key in metadata:
             if key in ['filename', 'material', 'n_divisions', 'mask_threshold', 'gaussian_blur', 'image_tilt']:
                 setattr(cls, key, metadata[key])
-        print(f" {cls.filename: <25}  | {str(cls.metadata['image']['split_v']['side']): ^5} | {['not flipped', 'flipped'][int(cls.metadata['image']['flip_h'])]: >11}")
+        if cls.verbose:
+            print(f" {cls.filename: <25}  | {str(cls.metadata['image']['split_v']['side']): ^5} | {['not flipped', 'flipped'][int(cls.metadata['image']['flip_h'])]: >11}")
         # cls.binarized = image_tools.binerized_mask(
         #     cls.image, cls.masked)
         # cls.gray_scale = image_tools.gray_scale(cls.image)
@@ -661,16 +662,18 @@ class TapeAnalyzer(Analyzer):
                     x_start += diff
                     x_end = self.binarized.shape[1]
 #            cv2.imwrite('%s_%d.tif'%(fname[:-4],iseg),im_color[y_start:y_end,x_start:x_end])
-            isection = self.binarized[y_start-overlap:y_end+overlap, x_start:x_end]
+            
+            ys = y_start - overlap if y_start > overlap else 0
+            ye = y_end + overlap if y_end < self.image.shape[0] else self.image.shape[0]
+            isection = self.image[ys:ye, x_start:x_end]
             dynamic_positions.append(
-                [[int(x_start), int(x_end)], [int(y_start-overlap), int(y_end+overlap)]])
+                [[int(x_start), int(x_end)], [int(ys), int(ye)]])
             if resize:
                 isection = cv2.resize(isection, (size[1], size[0]))
             segments.append(isection)
 
             isection = cv2.copyMakeBorder(
                 isection, 1, 1, 1, 1, cv2.BORDER_CONSTANT, value=[0, 0, 0])
-
         sy = min([seg.shape[0] for seg in segments])
         for i, seg in enumerate(segments):
             if seg.shape[0] != sy:
@@ -683,7 +686,7 @@ class TapeAnalyzer(Analyzer):
                     "window_background": window_background,
                     "window_tape": window_tape,
                     "size": size}
-        if n_bins < 10:
+        if n_bins <= 9:
             self.big_picture = segments
             self.values['big_picture'] = segments
             self.metadata['analysis']['big_picture'] = metadata
@@ -693,6 +696,7 @@ class TapeAnalyzer(Analyzer):
             self.metadata['analysis']['bin_based'] = metadata
         if plot:
             self.plot('bin_based', cmap='gray', show=True)
+        
         return segments
 
     def get_max_contrast(self,

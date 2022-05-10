@@ -10,6 +10,7 @@ import os
 import numpy as np
 import pymongo
 import gridfs
+import tensorflow_io as tfio
 from random import choice
 from bson.objectid import ObjectId
 from ..core import Tape, TapeAnalyzer
@@ -26,6 +27,7 @@ class Database:
                  port: int = 27017,
                  username: str = "",
                  password: str = "",
+                 tensorflow: bool = False,
                  verbose: bool = True,
                  **kwargs):
 
@@ -90,7 +92,7 @@ class Database:
         if skip and exists:
             if self.verbose:
                 print("{} {} already exists, skipping!".format(obj.filename, mode))
-            return exists._id
+            return exists
         if overwrite and exists:
             if self.verbose:
                 print("{} {} already exists, overwriting!".format(obj.filename, mode))

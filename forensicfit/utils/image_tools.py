@@ -2,6 +2,8 @@
 
 import cv2
 import numpy as np
+import matplotlib.pylab as plt
+from forensicfit import HAS_OPENCV
 
 
 def rotate_image(image, angle):
@@ -183,3 +185,21 @@ def binerized_mask(image, masked):
     return cv2.bitwise_and(image,
                            image,
                            mask=masked)
+    
+def imwrite(fname: str, image: np.array):
+    """save any 2d numpy array (or list) to an image file
+
+    Parameters
+    ----------
+    fname : str
+        flie name to be saved
+    image : np.array
+        2d numpy array (or list) to be saved
+    """
+    if "pathlib" in str(type(fname)):
+        fname = fname.as_posix()
+    if HAS_OPENCV:
+        cv2.imwrite(fname, image)
+    else:
+        plt.imsave(fname, image)
+        

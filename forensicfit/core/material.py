@@ -107,7 +107,7 @@ class Material(Mapping):
         """
 
         if ax is None:
-            plt.figure()
+            plt.figure(figsize=(16, 9))
             ax = plt.subplot(111)
         image = self.image
         if rotate != 0.0:

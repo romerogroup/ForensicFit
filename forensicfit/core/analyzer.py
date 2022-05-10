@@ -58,9 +58,9 @@ class Analyzer:
 
         """
         if ax is None:
-            plt.figure()
+            plt.figure(figsize = (16, 9))
             ax = plt.subplot(111)
-        ax.plot(self.boundary[:, 0], self.boundary[:, 1], c=color)
+        ax.plot(self.boundary[:, 0], self.boundary[:, 1], c = color)
         if savefig is not None:
             plt.savefig(savefig)
         elif show:
@@ -172,7 +172,7 @@ class Analyzer:
             ax = self.plot('image', ax=ax, cmap=cmap)
         else:
             if ax is None:
-                plt.figure()
+                plt.figure(figsize = (16, 9))
                 ax = plt.subplot(111)
             ax.imshow(self[which], cmap=cmap)
             if reverse_x :
