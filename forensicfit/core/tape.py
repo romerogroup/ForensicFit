@@ -6,6 +6,7 @@ Created on Sun Jun 28 14:11:02 2020
 """
 import warnings
 import os
+from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
 import math
@@ -758,7 +759,7 @@ class TapeAnalyzer(Analyzer):
 
 class Tape(Material):
     def __init__(self,
-                 filename=None,
+                 path=None,
                  image=None,
                  label=None,
                  surface=None):
@@ -769,15 +770,20 @@ class Tape(Material):
         """
         
         Material.__init__(self)
-        self.filename = filename
+        if path is not None:
+            self.path = Path(path)
+            self.filename = self.path.name
+        else:
+            self.filename = None
+            self.path = Path()
         self.label = label
         self.surface = surface
         self.material = "tape"
 
         if self.image is not None:
             self.image = image
-        elif self.filename is not None:
-            self.read(self.filename)
+        elif path is not None:
+            self.read(self.path)
 
         self.load_dict()
         self.load_metadata()
@@ -792,6 +798,7 @@ class Tape(Material):
             "side": None, "pixel_index": None}
         self.metadata['label'] = self.label
         self.metadata['filename'] = self.filename
+        self.metadata['path'] = self.path.as_posix()
         self.metadata['material'] = self.material
         self.metadata['surface'] = self.surface
         

@@ -4,6 +4,7 @@
 used PyChemia code output class as a guide  
 pychemia/code/codes.py
 """
+from pathlib import Path
 import cv2
 from matplotlib import pylab as plt
 import numpy as np
@@ -46,10 +47,9 @@ class Material(Mapping):
         """
         return not self.values == {}
 
-    def read(self, filename):
+    def read(self, filename: str):
         """
         
-
         Parameters
         ----------
         filename : TYPE
@@ -65,9 +65,12 @@ class Material(Mapping):
         None.
 
         """
-        if not os.path.exists(filename):
-            raise Exception("File %s does not exist" % filename)
-        self.image = cv2.imread(filename, 0)
+        filename = Path(filename)
+        if filename.exists():
+            self.image = cv2.imread(filename.as_posix(), 0)
+        else:
+            raise Exception(f"File {filename.as_posix()} does not exist")
+        
         
     @property
     def aspect_ratio(self):

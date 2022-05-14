@@ -89,14 +89,15 @@ class Database:
         exists = self.exists(mode=mode,
                              criteria=criteria)
         fs = self.fs[mode]
-        if skip and exists:
-            if self.verbose:
-                print("{} {} already exists, skipping!".format(obj.filename, mode))
-            return exists
         if overwrite and exists:
             if self.verbose:
                 print("{} {} already exists, overwriting!".format(obj.filename, mode))
             self.delete(criteria, mode)
+        elif skip and exists:
+            if self.verbose:
+                print("{} {} already exists, skipping!".format(obj.filename, mode))
+            return exists
+
         output = write_bytes_io(obj.values)
         metadata = obj.metadata
         filename = obj.filename.split("/")[-1].split("\\")[-1]

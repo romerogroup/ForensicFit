@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+from pathlib import Path
 import multiprocessing
 from multiprocessing import Pool, Process, cpu_count, current_process, freeze_support
 import sys
@@ -33,13 +34,13 @@ def worker(args):
     password = args[5]
     overwrite = args[6]
     skip = args[7]
-    db = Database(db_name, host, port, username, password)
+    db = Database(db_name, host, port, username, password, verbose=False)
     for _, ifile in enumerate(files):
-        if ifile.split('.')[1] not in ['tif', 'jpg', 'bmp', 'png']:
+        if ifile.suffix not in ['.tif', '.jpg', '.bmp', '.png']:
             continue
-        tape = Tape(ifile, label=ifile)
-        print(ifile)
-        tag = ifile.split("_")[0]
+        tape = Tape(ifile, label=ifile.name)
+        print(ifile.name)
+        tag = ifile.name.split("_")[0]
 
         if len(tag) == 4:
             if tag[-2:] == "HT":
@@ -103,10 +104,13 @@ def store_on_db(
     None.
 
     """
-    
-    files = os.listdir(dir_path)
-    cwd = os.getcwd()
-    os.chdir(dir_path)
+    dir_path = Path(dir_path)
+    if dir_path.is_dir():
+        files = [x for x in dir_path.iterdir()]
+    elif os.path.isfile(dir_path):
+        files = [dir_path]
+    if len(files) < nprocessors:
+        nprocessors = len(files)
     if nprocessors == 1:
         worker(chunks(files, 1,  db_name,
                               host, port, username, password, overwrite, skip)[0])
@@ -119,4 +123,4 @@ def store_on_db(
         p.map(worker, args)
 
         p.close()
-    os.chdir(cwd)
+
