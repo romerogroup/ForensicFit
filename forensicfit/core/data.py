@@ -12,6 +12,8 @@ TODO :
   imbalearn
 """
 
+
+
 class DatasetNumpy:
 
     def __init__(self, X :np.array, y: np.array, extra={}, name=''):
@@ -303,14 +305,4 @@ class DatasetNumpy:
         return DatasetNumpy(X, y, name)
         return DatasetNumpy(X, y, extra, name)
 
-if HAS_TENSORFLOW:
-    
-    import tensorflow as tf
-    # class DatasetTensorFlow(tf.data.Dataset):
-    #     def __init__(self, **kwargs):
-    #         super(DatasetTensorFlow, self).__init__(**kwargs)
-            
-    #     def from_excel(filenames, **db_settings):
-    #         db = Database(**db_settings)
-        
-    
+
