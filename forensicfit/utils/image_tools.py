@@ -134,6 +134,31 @@ def largest_contour(contours):
     contour_max_area = contours[max_con_arg]
     return contour_max_area
 
+def remove_background(image: np.array, 
+                      contour: np.array, 
+                      outside: bool = True,
+                      pixel_value: int = 0):
+    """Removes the background outside or inside the contour
+
+    Parameters
+    ----------
+    image : np.array
+        _description_
+    contour : np.array
+        _description_
+    outside : bool, optional
+        _description_, by default True
+    pixel_value : int, optional
+        _description_, by default 0
+    """
+    bkg = np.ones_like(image)*pixel_value
+    bkg = cv2.fillPoly(bkg, [contour], 255)
+    image = cv2.bitwise_and(image,
+                        image,
+                        mask=bkg)
+
+    return image
+
 def get_masked(image, mask_threshold):
         """
         Populates the masked image with the gray scale threshold
@@ -171,7 +196,7 @@ def resize(image, size):
 
 def binerized_mask(image, masked):
     """
-    This funtion return the binarized version of the tape
+    This function return the binarized version of the tape
 
     Returns
     -------

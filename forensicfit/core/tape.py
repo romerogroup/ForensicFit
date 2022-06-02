@@ -27,6 +27,7 @@ class TapeAnalyzer(Analyzer):
                  n_divisions=6,
                  auto_crop=False,
                  calculate_tilt=True,
+                 remove_background=True,
                  verbose=True,):
         """
         
@@ -67,6 +68,7 @@ class TapeAnalyzer(Analyzer):
         self.material = 'tape'
         self.cropped=False
         self.image_tilt = None
+        self.remove_background = remove_background
         # self.colored = cv2.cvtColor(self.image, cv2.COLOR_GRAY2BGR)
         if tape is not None:
             if self.verbose:
@@ -80,7 +82,7 @@ class TapeAnalyzer(Analyzer):
             self.load_metadata()
         return
 
-    def preprocess(self, calculate_tilt=True, auto_crop=True):
+    def preprocess(self, calculate_tilt: bool = True, auto_crop: bool = True):
         """
         
         Parameters
@@ -102,7 +104,7 @@ class TapeAnalyzer(Analyzer):
                 self.image, window=self.gaussian_blur)
         if self.verbose:
             print("getting the mask")
-        self.masked = image_tools.get_masked(image, self.mask_threshold)
+        #image_tools.get_masked(image, self.mask_threshold)
         self.binarized = image_tools.binerized_mask(
             image, self.masked)
         self.gray_scale = image_tools.gray_scale(image)
@@ -110,6 +112,7 @@ class TapeAnalyzer(Analyzer):
             print("calculating the tilt")
         self.contours = image_tools.contours(image, self.mask_threshold)
         self.largest_contour = image_tools.largest_contour(self.contours)
+        self.masked = image_tools.remove_background(self.image, self.largest_contour)
         self.boundary = self.largest_contour.reshape(
             self.largest_contour.shape[0], 2)
         if calculate_tilt:
@@ -126,11 +129,14 @@ class TapeAnalyzer(Analyzer):
             self.largest_contour = image_tools.largest_contour(self.contours)
             self.boundary = self.largest_contour.reshape(
                 self.largest_contour.shape[0], 2)
-            self.masked = image_tools.get_masked(
-                image, self.mask_threshold)
+            # self.masked = image_tools.get_masked(
+            #     image, self.mask_threshold)
+            self.masked = image_tools.remove_background(self.image, self.largest_contour)
             self.binarized = image_tools.binerized_mask(
                 image, self.masked)
             self.gray_scale = image_tools.gray_scale(self.image)
+        if self.remove_background:
+            self.image = self.masked
 
     def flip_v(self):
         self.image = np.fliplr(self.image)
