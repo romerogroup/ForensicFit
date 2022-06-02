@@ -645,8 +645,6 @@ class TapeAnalyzer(Analyzer):
 
         x_start = x_min-window_background
         x_end = min(x_min+window_tape, self.binarized.shape[1])
-        
-        
 
         seg_len = (y_max-y_min)//(n_bins)
         seg_len = (y_max-y_min)/(n_bins)
@@ -662,7 +660,10 @@ class TapeAnalyzer(Analyzer):
                 cond1 = boundary[:, 1] >= y_start - overlap
                 cond2 = boundary[:, 1] <= y_end + overlap
                 cond_and = np.bitwise_and(cond1, cond2)
+                
                 x_start = boundary[cond_and, 0].min() - window_background
+                if x_start < 0:
+                    x_start=0
                 x_end = boundary[cond_and, 0].min() + window_tape
                 if self.binarized.shape[1] < x_end:
                     diff =  self.binarized.shape[1] - x_end
@@ -673,6 +674,10 @@ class TapeAnalyzer(Analyzer):
             ys = y_start - overlap if y_start > overlap else 0
             ye = y_end + overlap if y_end < self.image.shape[0] else self.image.shape[0]
             isection = self.image[ys:ye, x_start:x_end]
+            print(x_start)
+            print(x_end)
+            print(ys)
+            print(ye)
             dynamic_positions.append(
                 [[int(x_start), int(x_end)], [int(ys), int(ye)]])
             if resize:
@@ -702,7 +707,10 @@ class TapeAnalyzer(Analyzer):
             self.values['bin_based'] = segments
             self.metadata['analysis']['bin_based'] = metadata
         if plot:
-            self.plot('bin_based', cmap='gray', show=True)
+            if 'bin_based' in self.values.keys():
+                self.plot('bin_based', cmap='gray', show=True)
+            elif 'big_picture' in self.values.keys():
+                self.plot('big_picture', cmap='gray', show=True)
         
         return segments
 
