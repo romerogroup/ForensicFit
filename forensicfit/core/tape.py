@@ -5,7 +5,7 @@ Created on Sun Jun 28 14:11:02 2020
 @author: Pedram Tavadze
 """
 import warnings
-import os
+import numpy.typing as npt
 from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
@@ -27,8 +27,7 @@ class TapeAnalyzer(Analyzer):
                  n_divisions=6,
                  auto_crop=False,
                  calculate_tilt=True,
-                 remove_background=True,
-                 verbose=True,):
+                 remove_background=True):
         """
         
 
@@ -54,29 +53,22 @@ class TapeAnalyzer(Analyzer):
         None.
 
         """
+        super().__init__()
 
-        Analyzer.__init__(self)
-        self.image_tilt = None
-        self.calculate_tilt = calculate_tilt
-        self.crop_y_top = None
-        self.crop_y_bottom = None
-        self.n_divisions = n_divisions
-        self.verbose = verbose
-        self.gaussian_blur = gaussian_blur
-        self.mask_threshold = int(mask_threshold)
+        # self.metadata['calculate_tilt'] = calculate_tilt
         self.masked = None
-        self.material = 'tape'
-        self.cropped=False
-        self.image_tilt = None
-        self.remove_background = remove_background
+        self.metadata['crop_y_top'] = None
+        self.metadata['crop_y_bottom'] = None
+        self.metadata['n_divisions'] = n_divisions
+        self.metadata['gaussian_blur'] = gaussian_blur
+        self.metadata['mask_threshold'] = int(mask_threshold)
+        self.metadata['cropped'] = False
+        self.metadata['image_tilt'] = None
+        self.metadata['remove_background'] = remove_background
         # self.colored = cv2.cvtColor(self.image, cv2.COLOR_GRAY2BGR)
         if tape is not None:
-            if self.verbose:
-                print(f" {tape.filename: <25}|{str(tape.metadata['split_v']['side']): ^5}|{['not flipped', 'flipped'][int(tape.metadata['flip_h'])]: >11}")
             self.image = tape.image
-            self.label = tape.label
-            self.filename = tape.filename
-            self.metadata['image'] = tape.metadata
+            self.metadata += tape.metadata
             self.preprocess(calculate_tilt, auto_crop)
             self.load_dict()
             self.load_metadata()
@@ -97,20 +89,20 @@ class TapeAnalyzer(Analyzer):
         None.
 
         """
-        if self.gaussian_blur is not None:
-            if self.verbose:
-                print("applying Gaussian Blur")
+        if self.metadata.gaussian_blur is not None:
             image = image_tools.gaussian_blur(
-                self.image, window=self.gaussian_blur)
-        if self.verbose:
-            print("getting the mask")
+                self.image, window=self.metadata.gaussian_blur)
+        # if self.verbose:
+        #     print("getting the mask")
         #image_tools.get_masked(image, self.mask_threshold)
         self.binarized = image_tools.binerized_mask(
             image, self.masked)
-        self.gray_scale = image_tools.gray_scale(image)
-        if self.verbose:
-            print("calculating the tilt")
-        self.contours = image_tools.contours(image, self.mask_threshold)
+        self.gray_scale = image_tools.gray_scale(self.image)
+        gray_gaussian = image_tools.gray_scale(image)
+        # if self.verbose:
+        #     print("calculating the tilt")
+        self.contours = image_tools.contours(gray_gaussian,
+                                             self.metadata.mask_threshold)
         self.largest_contour = image_tools.largest_contour(self.contours)
         self.masked = image_tools.remove_background(self.image, self.largest_contour)
         self.boundary = self.largest_contour.reshape(
@@ -121,21 +113,21 @@ class TapeAnalyzer(Analyzer):
         if auto_crop:
             self.metadata['cropped'] = True
             self.auto_crop_y()
-            self.cropped=True
+            self.metadata.cropped=True
             image = image_tools.gaussian_blur(
-                self.image, window=self.gaussian_blur)
+                self.image, window=self.metadata.gaussian_blur)
             self.contours = image_tools.contours(
-                image, self.mask_threshold)
+                image, self.metadata.mask_threshold)
             self.largest_contour = image_tools.largest_contour(self.contours)
             self.boundary = self.largest_contour.reshape(
                 self.largest_contour.shape[0], 2)
             # self.masked = image_tools.get_masked(
-            #     image, self.mask_threshold)
+            #     image, self.metadata.mask_threshold)
             self.masked = image_tools.remove_background(self.image, self.largest_contour)
             self.binarized = image_tools.binerized_mask(
                 image, self.masked)
             self.gray_scale = image_tools.gray_scale(self.image)
-        if self.remove_background:
+        if self.metadata.remove_background:
             self.image = self.masked
 
     def flip_v(self):
@@ -155,7 +147,6 @@ class TapeAnalyzer(Analyzer):
                     for ix in range(2):
                         dynamic_positions[iseg][0][ix] = pos[0][ix]*-1 + self.image.shape[1]
                 self.metadata['analysis'][key]['dynamic_positions'] = dynamic_positions
-
 
     def flip_h(self):
         self.image = np.flipud(self.image)
@@ -191,7 +182,6 @@ class TapeAnalyzer(Analyzer):
         self.values['boundary'] = self.boundary
         self.values['binarized'] = self.binarized
         self.values['gray_scale'] = self.gray_scale
-        
 
     def load_metadata(self):
         """
@@ -208,25 +198,14 @@ class TapeAnalyzer(Analyzer):
         self.metadata["ymin"] = int(self.ymin)
         self.metadata["ymax"] = int(self.ymax)
         self.metadata["y_interval"] = int(self.ymax-self.ymin)
-        self.metadata["image_tilt"] = float(self.image_tilt) if self.image_tilt is not None else None
         self.metadata["x_std"] = float(np.std(self.boundary[:, 0]))
         self.metadata["y_std"] = float(np.std(self.boundary[:, 1]))
         self.metadata["x_mean"] = float(np.mean(self.boundary[:, 0]))
         self.metadata["y_mean"] = float(np.mean(self.boundary[:, 1]))
-        self.metadata["gaussian_blur"] = self.gaussian_blur
-        self.metadata["mask_threshold"] = self.mask_threshold
-        self.metadata["n_divisions"] = self.n_divisions
-        self.metadata["cropped"] = self.cropped
-        self.metadata["material"] = self.material
-        self.metadata["filename"] = self.filename
-        if self.metadata['image']['split_v']:
-            self.metadata['side'] = self.metadata['image']['split_v']['side']
-        else :
-            self.metadata['side'] = None
         self.metadata["analysis"] = {}
 
     @classmethod
-    def from_dict(cls, values, metadata, verbose = False):
+    def from_dict(cls, values, metadata):
         """
         
 
@@ -251,18 +230,18 @@ class TapeAnalyzer(Analyzer):
         if values is None:
             raise Exception(
                 "The provided dictionary was empty. Maybe change the query criteria")
-        cls = TapeAnalyzer(verbose=verbose)
+        cls = TapeAnalyzer()
         for key in values:
             if not isinstance(getattr(type(cls), key, None), property):
                 setattr(cls, key, values[key])
                 cls.values[key] = values[key]
                 
-        cls.metadata = metadata
-        for key in metadata:
-            if key in ['filename', 'material', 'n_divisions', 'mask_threshold', 'gaussian_blur', 'image_tilt']:
-                setattr(cls, key, metadata[key])
-        if cls.verbose:
-            print(f" {cls.filename: <25}  | {str(cls.metadata['image']['split_v']['side']): ^5} | {['not flipped', 'flipped'][int(cls.metadata['image']['flip_h'])]: >11}")
+        cls.metadata.update(metadata)
+        # for key in metadata:
+        #     if key in ['filename', 'material', 'n_divisions', 'mask_threshold', 'gaussian_blur', 'image_tilt']:
+        #         setattr(cls, key, metadata[key])
+        # if cls.verbose:
+        #     print(f" {cls.filename: <25}  | {str(cls.metadata['image']['split_v']['side']): ^5} | {['not flipped', 'flipped'][int(cls.metadata['image']['flip_h'])]: >11}")
         # cls.binarized = image_tools.binerized_mask(
         #     cls.image, cls.masked)
         # cls.gray_scale = image_tools.gray_scale(cls.image)
@@ -273,7 +252,6 @@ class TapeAnalyzer(Analyzer):
                                                     # str(cls.metadata['image']['split_v']['side']),
                                                     # ['not flipped', 'flipped'][int(cls.metadata['image']['flip_h'])]))
         return cls
-    
 
     def get_image_tilt(self, plot=False):
         """
@@ -290,7 +268,7 @@ class TapeAnalyzer(Analyzer):
             DESCRIPTION.
 
         """
-        stds = np.ones((self.n_divisions-2, 2))*1000
+        stds = np.ones((self.metadata.n_divisions-2, 2))*1000
         conditions_top = []
         # conditions_top.append([])
         conditions_bottom = []
@@ -310,16 +288,16 @@ class TapeAnalyzer(Analyzer):
             _ = plt.figure()
             ax = plt.subplot(111)
             self.plot_boundary(color='black', ax=ax)
-        for idivision in range(self.n_divisions-2):
+        for idivision in range(self.metadata.n_divisions-2):
 
             y_interval = y_max-y_min
-            cond1 = boundary[:, 1] > y_max-y_interval/self.n_divisions
-            cond2 = boundary[:, 1] < y_max+y_interval/self.n_divisions
+            cond1 = boundary[:, 1] > y_max-y_interval/self.metadata.n_divisions
+            cond2 = boundary[:, 1] < y_max+y_interval/self.metadata.n_divisions
 
             x_interval = x_max-x_min
-            cond3 = boundary[:, 0] >= x_min+x_interval/self.n_divisions*(idivision+1)
+            cond3 = boundary[:, 0] >= x_min+x_interval/self.metadata.n_divisions*(idivision+1)
             cond4 = boundary[:, 0] <= x_min + \
-                x_interval/self.n_divisions*(idivision+2)
+                x_interval/self.metadata.n_divisions*(idivision+2)
 
             cond_12 = np.bitwise_and(cond1, cond2)
             cond_34 = np.bitwise_and(cond3, cond4)
@@ -340,15 +318,15 @@ class TapeAnalyzer(Analyzer):
             stds[idivision, 0] = std_top
             conditions_top.append(cond_and_top)
 
-        for idivision in range(self.n_divisions-2):
+        for idivision in range(self.metadata.n_divisions-2):
 
-            cond1 = boundary[:, 1] > y_min-y_interval/self.n_divisions
-            cond2 = boundary[:, 1] < y_min+y_interval/self.n_divisions
+            cond1 = boundary[:, 1] > y_min-y_interval/self.metadata.n_divisions
+            cond2 = boundary[:, 1] < y_min+y_interval/self.metadata.n_divisions
 
             x_interval = x_max-x_min
-            cond3 = boundary[:, 0] >= x_min+x_interval/self.n_divisions*(idivision+1)
+            cond3 = boundary[:, 0] >= x_min+x_interval/self.metadata.n_divisions*(idivision+1)
             cond4 = boundary[:, 0] <= x_min + \
-                x_interval/self.n_divisions*(idivision+2)
+                x_interval/self.metadata.n_divisions*(idivision+2)
 
             cond_12 = np.bitwise_and(cond1, cond2)
             cond_34 = np.bitwise_and(cond3, cond4)
@@ -382,16 +360,16 @@ class TapeAnalyzer(Analyzer):
                         boundary[cond_and_bottom][:, 1], color='red')
         top = boundary[cond_and_top][:, 1]
         bottom = boundary[cond_and_bottom][:, 1]
-        self.crop_y_top = np.average(top) if len(top) != 0 else self.ymax
-        self.crop_y_bottom = np.average(bottom) if len(bottom) !=0 else self.ymin
+        self.metadata.crop_y_top = np.average(top) if len(top) != 0 else self.ymax
+        self.metadata.crop_y_bottom = np.average(bottom) if len(bottom) !=0 else self.ymin
         if np.min(stds, axis=0)[0] > 10:
-            self.crop_y_top = y_max
+            self.metadata.crop_y_top = y_max
         if np.min(stds, axis=0)[1] > 10:
-            self.crop_y_bottom = y_min
+            self.metadata.crop_y_bottom = y_min
             
         angle = np.arctan(m)
         angle_d = np.rad2deg(angle)
-        self.image_tilt = angle_d
+        self.metadata.image_tilt = angle_d
         return angle_d
 
     @property
@@ -499,7 +477,7 @@ class TapeAnalyzer(Analyzer):
 
         Parameters
         ----------
-        calculate_tilte : TYPE, optional
+        calculate_tilt : TYPE, optional
             DESCRIPTION. The default is False.
 
         Returns
@@ -508,7 +486,7 @@ class TapeAnalyzer(Analyzer):
 
         """
         self.image = self.image[int(
-            self.crop_y_bottom):int(self.crop_y_top), :]
+            self.metadata.crop_y_bottom):int(self.metadata.crop_y_top), :]
         if calculate_tilt:
             self.get_image_tilt()
 
@@ -563,12 +541,12 @@ class TapeAnalyzer(Analyzer):
             cond_and = np.bitwise_and(cond1, cond2)
             points = edge[cond_and]
             if len(points) == 0 and x_trim_param!=1:
-                if self.verbose:
-                    print('coordinate based is missing some points for {} {} {}, decreasing x_trim_param to {}'.format(
-                        self.filename,
-                        self.metadata['image']['split_v']['side'],
-                        ['flipped', 'not_flipped'][int(self.metadata['image']['flip_h'])],
-                        x_trim_param-1))
+                # if self.verbose:
+                #     print('coordinate based is missing some points for {} {} {}, decreasing x_trim_param to {}'.format(
+                #         self.filename,
+                #         self.metadata['image']['split_v']['side'],
+                #         ['flipped', 'not_flipped'][int(self.metadata['image']['flip_h'])],
+                #         x_trim_param-1))
                 return self.get_coordinate_based(npoints=npoints, x_trim_param=x_trim_param-1, plot=plot)
             data[ipoint, :2] = np.average(points, axis=0)
             data[ipoint, 2] = np.std(points[:, 0])
@@ -598,7 +576,7 @@ class TapeAnalyzer(Analyzer):
                       n_bins=10,
                       overlap=100,
                       plot=False,
-                      verbose=True,
+                    #   verbose=True,
                       ):
         """
         This method returns the detected edge as a set of croped images from 
@@ -632,7 +610,7 @@ class TapeAnalyzer(Analyzer):
 
         """
         overlap = abs(overlap)
-        if self.cropped and overlap!=0:
+        if self.metadata.cropped and overlap!=0:
             warnings.warn("You have selected an overlap larger than 0 with an autocrop option.\n This might result in errors in finding overlap on the side edges of the tape.")
         boundary = self.boundary
         x_min = self.xmin
@@ -674,10 +652,6 @@ class TapeAnalyzer(Analyzer):
             ys = y_start - overlap if y_start > overlap else 0
             ye = y_end + overlap if y_end < self.image.shape[0] else self.image.shape[0]
             isection = self.image[ys:ye, x_start:x_end]
-            print(x_start)
-            print(x_end)
-            print(ys)
-            print(ye)
             dynamic_positions.append(
                 [[int(x_start), int(x_end)], [int(ys), int(ye)]])
             if resize:
@@ -738,8 +712,8 @@ class TapeAnalyzer(Analyzer):
             A black image with all the pixels on the edge white.
 
         """
-        if self.verbose:
-            print("getting max contrast")
+        # if self.verbose:
+        #     print("getting max contrast")
         zeros = np.zeros_like(self.image)
         edge_bw = cv2.drawContours(
             zeros, [self.boundary], 0, (255, 255, 255), 2)
@@ -773,89 +747,37 @@ class TapeAnalyzer(Analyzer):
 
 class Tape(Material):
     def __init__(self,
-                 path=None,
-                 image=None,
-                 label=None,
-                 surface=None):
-        """TapeImage is a class created for tape images to be preprocessed for 
+                 image: npt.ArrayLike,
+                 label: str = None,
+                 surface: str = None,
+                 stretched: bool = False, 
+                 **kwargs):
+        """Tape is a class created for tape images to be preprocessed for 
         Machine Learning. This Class detects the edges, auto crops the image 
         and returns the results in 3 different method coordinate_based, 
         bin_based and max_contrast. 
         """
-        
-        Material.__init__(self)
-        if path is not None:
-            self.path = Path(path)
-            self.filename = self.path.name
-        else:
-            self.filename = None
-            self.path = Path()
-        self.label = label
-        self.surface = surface
-        self.material = "tape"
-
-        if self.image is not None:
-            self.image = image
-        elif path is not None:
-            self.read(self.path)
-
-        self.load_dict()
-        self.load_metadata()
-
-    def load_dict(self):
-        self.values['image'] = self.image
-        
-
-    def load_metadata(self):
+        assert type(image) is np.ndarray, "image arg must be a numpy array"
+        assert image.ndim in [2, 3] , "image array must be 2 dimensional"
+        super().__init__(image, **kwargs)
         self.metadata['flip_h'] = False
         self.metadata['split_v'] = {
             "side": None, "pixel_index": None}
-        self.metadata['label'] = self.label
-        self.metadata['filename'] = self.filename
-        self.metadata['path'] = self.path.as_posix()
-        self.metadata['material'] = self.material
-        self.metadata['surface'] = self.surface
+        self.metadata['label'] = label
+        self.metadata['material'] = 'tape'
+        self.metadata['surface'] = surface
+        self.metadata['stretched'] = stretched
         
-        
-    @classmethod
-    def from_dict(cls, values, metadata):
-        # this is temperory 
-        if "split_vertical" in metadata:
-            metadata["split_v"] = metadata["split_vertical"]
-        cls = Tape()
-        cls.values = dict(values)
-        cls.metadata = metadata
-        cls.filename = metadata['filename']
-        cls.image = values['image']
-        cls.label = metadata['label']
-        cls.surface = metadata['surface']
-        cls.material = metadata['material']
-        # cls.load_dict()
-        # cls.load_metadata()
-        return cls
-
-    def split_v(self, pixel_index=None, side='L', flip=True):
+    def split_v(self, pixel_index=None, side='L'):
+        self.values['original_image'] = self.image.copy()
         if pixel_index is None:
-            tape_analyzer = TapeAnalyzer(self, verbose=False)
+            tape_analyzer = TapeAnalyzer(self)
             x = tape_analyzer.boundary[:, 0]
             pixel_index = int((x.max()-x.min())/2+x.min())
         self.image = image_tools.split_v(
-            self.image, pixel_index, side, flip)
+            self.image, pixel_index, side)
         self.values['image'] = self.image
         self.metadata['split_v'] = {
             "side": side, "pixel_index": pixel_index}
         # this is temporary
 
-
-    def resize(self, size):
-        self.image = image_tools.resize(self.image, size)
-        self.values['image'] = self.image
-        self.metadata['resize'] = size
-
-    def flip_h(self):
-        self.image = image_tools.flip(self.image)
-        self.values['image'] = self.image
-        self.metadata['flip_h'] = True
-
-    def copy(self):
-        return Tape.from_dict(self.values, self.metadata)

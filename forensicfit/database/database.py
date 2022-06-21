@@ -10,15 +10,33 @@ import os
 import numpy as np
 import pymongo
 import gridfs
-import tensorflow_io as tfio
 from random import choice
 from bson.objectid import ObjectId
-from ..core import Tape, TapeAnalyzer
+from ..core import Tape, TapeAnalyzer, Image
 from ..utils.array_tools import read_bytes_io, write_bytes_io
+from collections.abc import Mapping
 
-CoreClass = {'material': Tape,
-             'analysis': TapeAnalyzer}
+class ClassMap(Mapping):
+    def __init__(self):
+        self.mapping = {'material': Tape,
+                        'analysis': TapeAnalyzer,
+                        'any': Image}
+        
+    def __contains__(self, x):
+        return x in self.mapping
 
+    def __getitem__(self, x):
+        if x in self:
+            return self.mapping.__getitem__(x)
+        else:
+            return self.mapping.__getitem__('any')
+
+    def __iter__(self):
+        return self.mapping.__iter__()
+
+    def __len__(self):
+        return self.mapping.__len__()   
+            
 
 class Database:
     def __init__(self,
@@ -27,8 +45,7 @@ class Database:
                  port: int = 27017,
                  username: str = "",
                  password: str = "",
-                 tensorflow: bool = False,
-                 verbose: bool = True,
+                 verbose: bool = False,
                  **kwargs):
 
         self.name = name
@@ -38,6 +55,7 @@ class Database:
         self.username = username
         self.password = password
         self.verbose = verbose
+        
 
         if len(password) != 0:
             self.password = ":"+password+"@"
@@ -51,6 +69,10 @@ class Database:
         self.fs = {}
         self.fs['material'] = gridfs.GridFS(self.db, "material")
         self.fs['analysis'] = gridfs.GridFS(self.db, "analysis")
+        self.class_mapping = ClassMap()
+        for x in self.collection_names:
+            if x not in self.fs:
+                self.add_collection(x)
         self.db_info = {"Database Name": self.name,
                         "Host": self.host,
                         "Port": self.port,
@@ -75,75 +97,96 @@ class Database:
             ret += "{:<15}: {}\n".format(key, self.db_info[key])
         return ret
 
+    def add_collection(self, collection: str):
+        self.fs[collection] = gridfs.GridFS(self.db, collection)
+        return 
 
-    def exists(self, criteria: dict, mode: str) -> bool:
-        ret = self.fs[mode].find_one(filter=criteria)
+    def exists(self, criteria: dict, collection: str) -> bool:
+        ret = self.fs[collection].find_one(filter=criteria)
         if ret is not None:
             return ret._id
         else:
             return False
 
-    def insert(self, obj: object, overwrite: bool = False, skip: bool = False, save_minimal: bool = True):
-        mode = obj.metadata['mode']
-        criteria = {"$and":dict2mongo_query(obj.metadata, 'metadata')}
-        exists = self.exists(mode=mode,
-                             criteria=criteria)
-        fs = self.fs[mode]
+    def insert(self,    
+               obj: Image, # | Tape | TapeAnalyzer,
+               buffer_type: str = '.npz',
+               overwrite: bool = False, 
+               skip: bool = False,
+               collection : str = None):
+       
+        collection = collection or obj.metadata['mode']
+        criteria = {"$and": obj.metadata.to_mongodb_filter()}
+        exists = self.exists(criteria=criteria, 
+                             collection=collection,
+                             )
+        if collection not in self.fs:
+            self.add_collection(collection)
+        fs = self.fs[collection]
         if overwrite and exists:
             if self.verbose:
-                print("{} {} already exists, overwriting!".format(obj.filename, mode))
-            self.delete(criteria, mode)
+                print(f"{obj.metadata.filename} {collection} already exists, overwriting!")
+            self.delete(criteria, collection)
         elif skip and exists:
             if self.verbose:
-                print("{} {} already exists, skipping!".format(obj.filename, mode))
+                print(f"{obj.metadata.filename} {collection} already exists, skipping!")
             return exists
-
-        output = write_bytes_io(obj.values)
-        metadata = obj.metadata
-        filename = obj.filename.split("/")[-1].split("\\")[-1]
-        _id = fs.put(output, filename=filename, metadata=metadata)
+        metadata = obj.metadata.to_dict
+        metadata['buffer_type'] = buffer_type
+        filename = obj.metadata.filename
+        _id = fs.put(obj.to_buffer(buffer_type), 
+                     filename = filename,
+                     metadata = metadata)
         return _id
 
 
-    def find(self, criteria: dict, mode: str = 'analysis', version: int = -1) -> list:
-        CLASS = CoreClass[mode]
-        queries = self.fs[mode].find(criteria).sort("uploadDate", version)
+    def find(self, 
+             filter: dict, 
+             collection: str = 'analysis', 
+             version: int = -1,
+             no_cursor_timeout = False,
+             ) -> list:
+        CLASS = self.class_mapping[collection]
+        fs = self.fs[collection]
+        queries = fs.find(filter=filter, 
+                          no_cursor_timeout=no_cursor_timeout).sort("uploadDate", version)
         ret = []
         if queries.count() != 0:
             for iq in queries:
-                metadata = iq.metadata
-                values = read_bytes_io(iq)
-                ret.append(CLASS.from_dict(values, metadata))
+                ret.append(CLASS.from_buffer(iq.read(), iq.metadata))
         return ret
 
-
-    def get(self, filename: str = None, mode: str = 'analysis', version: int = -1, **kwargs) -> list:
-        ret = []
-        fs = self.fs[mode]
-        CLASS = CoreClass[mode]
-        if '_id' in kwargs:
-            _id = kwargs['_id']
-            iq = fs.get(ObjectId(_id), version=version)
-            metadata = iq.metadata
-            values = read_bytes_io(iq)
-            ret = [CLASS.from_dict(values, metadata)]
-        else:
-            criteria = {'$and':[]}
-            if filename is not None:
-                criteria['$and'].append({'filename':filename})
-            for ic in kwargs:
-                criteria['$and'].append({ic:kwargs[ic]})
-            ret = self.find(criteria, mode, version)
-        return ret
+    # def get(self, 
+    #         filename: str = None, 
+    #         collection: str = 'analysis', 
+    #         version: int = -1, 
+    #         **kwargs) -> list:
+    #     ret = []
+    #     fs = self.fs[collection]
+    #     CLASS = CoreClass[collection]
+    #     if '_id' in kwargs:
+    #         _id = kwargs['_id']
+    #         iq = fs.get(ObjectId(_id), version=version)
+    #         metadata = iq.metadata
+    #         values = read_bytes_io(iq)
+    #         ret = [CLASS.from_dict(values, metadata)]
+    #     else:
+    #         criteria = {'$and':[]}
+    #         if filename is not None:
+    #             criteria['$and'].append({'filename':filename})
+    #         for ic in kwargs:
+    #             criteria['$and'].append({ic:kwargs[ic]})
+    #         ret = self.find(criteria, collection, version)
+    #     return ret
 
     
-    def find_one(self, mode: str = None, **kwargs) -> object:
+    def find_one(self, filter, collection: str = None) -> object:
         """finds one entry that matches the criteria. 
         kwargs must be chosen by filter=
 
         Parameters
         ----------
-        mode : str, optional
+        collection: str, optional
             material or analysis, if none is chose it will be selected randomly, by default None
 
         Returns
@@ -151,23 +194,21 @@ class Database:
         object
             ForensicFit object e.g. Tape
         """        
-        if mode is None :
-            mode = choice(list(self.fs))
-        CLASS = CoreClass[mode]        
-        fs = self.fs[mode]
-        iq = fs.find_one(**kwargs)
-        metadata = iq.metadata
-        values = read_bytes_io(iq)
-        return CLASS.from_dict(values, metadata)
-    
-    def find_with_id(self, _id: str, mode: str) -> object:
+        if collection is None :
+            collection = choice(list(self.fs))
+        CLASS = self.class_mapping[collection]
+        fs = self.fs[collection]
+        iq = fs.find_one(filter)
+        return CLASS.from_buffer(iq.read(), iq.metadata)
+        
+    def find_with_id(self, _id: str, collection: str) -> object:
         """Retrieves core object based on the MongoDB _id
 
         Parameters
         ----------
         _id : str
             MongoDB _id
-        mode : str
+        collection : str
             'material' or 'analysis'
 
         Returns
@@ -175,8 +216,8 @@ class Database:
         object
             ForensicFit object e.g. Tape
         """        
-        CLASS = CoreClass[mode]
-        fs = self.fs[mode]
+        CLASS = self.class_mapping[collection]
+        fs = self.fs[collection]
         iq = fs.find_one({'_id':_id if type(_id) is ObjectId else ObjectId(_id)})
         metadata = iq.metadata
         values = read_bytes_io(iq)
@@ -185,18 +226,18 @@ class Database:
     @property
     def count(self):
         ret = {}
-        for mode in self.fs:
-            ret[mode] = self.fs[mode].find().count()
+        for collection in self.fs:
+            ret[collection] = self.fs[collection].find().count()
         return ret
 
     @property
     def collection_names(self):
-        return [x.replace(".files", '')for x in self.db.collection_names() if 'files' in x]
+        return [x.replace(".files", '')for x in self.db.list_collection_names() if 'files' in x]
         
 
-    def delete(self, criteria: dict, mode: str):
-        fs = self.fs[mode]
-        queries = self.fs[mode].find(criteria)
+    def delete(self, criteria: dict, collection: str):
+        fs = self.fs[collection]
+        queries = fs.find(criteria)
         for iq in queries:
             fs.delete(iq._id)
         return 

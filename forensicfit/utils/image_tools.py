@@ -152,11 +152,11 @@ def remove_background(image: np.array,
         _description_, by default 0
     """
     bkg = np.ones_like(image)*pixel_value
-    bkg = cv2.fillPoly(bkg, [contour], 255)
-    image = cv2.bitwise_and(image,
-                        image,
-                        mask=bkg)
+    bkg = cv2.fillPoly(bkg, [contour], (255, 255, 255))
 
+    image = cv2.bitwise_and(image,
+                        bkg)
+                        # mask=bkg)
     return image
 
 def get_masked(image, mask_threshold):
@@ -227,4 +227,4 @@ def imwrite(fname: str, image: np.array):
         cv2.imwrite(fname, image)
     else:
         plt.imsave(fname, image)
-        
+        d

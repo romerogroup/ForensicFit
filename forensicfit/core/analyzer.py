@@ -7,7 +7,8 @@ import numpy as np
 from scipy.stats import norm
 from abc import ABCMeta, abstractmethod
 from collections.abc import Mapping
-
+from .metadata import Metadata
+import io
 
 class Analyzer:
     
@@ -15,7 +16,7 @@ class Analyzer:
     """Class containing all future analyzers
     """
     
-    def __init__(self):
+    def __init__(self, **kwargs):
         """
         
 
@@ -24,13 +25,14 @@ class Analyzer:
         None.
 
         """
-        self.label = None
+        
         self.image = None
-        self.mode = 'analysis'
-        self.material = None
         self.boundary = None
         self.values = {}
-        self.metadata = {'mode': 'analysis'}
+        self.metadata = Metadata({'mode': 'analysis', 
+                                  'label': None, 
+                                  'material': None})
+        self.metadata.update(kwargs)
 
     def plot_boundary(self, savefig=None, color='r', ax=None, show=False):
         """
@@ -68,7 +70,14 @@ class Analyzer:
         return ax
 
         
-    def plot(self, which, cmap='gray', savefig=None, ax=None, reverse_x=False, show = False, **kwargs):
+    def plot(self,
+             which, 
+             cmap='gray', 
+             savefig = None, 
+             ax = None, 
+             reverse_x = False, 
+             show = False, 
+             **kwargs):
        
         """
         Parameters
@@ -189,24 +198,6 @@ class Analyzer:
         else:
             return ax
 
-    def add_metadata(self, key, value):
-        """
-        
-
-        Parameters
-        ----------
-        key : TYPE
-            DESCRIPTION.
-        value : TYPE
-            DESCRIPTION.
-
-        Returns
-        -------
-        None.
-
-        """
-        self.metadata[key] = value
-
     def show(self, which, wait=0):
         """
         
@@ -235,7 +226,38 @@ class Analyzer:
     def from_dict(self):
         pass
 
+    @classmethod
+    def from_buffer(cls, 
+                    buffer: bytes, 
+                    metadata: dict,
+                    ext: str='.npz',
+                    allow_pickle: bool=False):
+        """receives an io byte buffer with the corresponding metadata and creates 
+        the image class
+
+        Parameters
+        ----------
+        buffer : io.BytesIO
+            _description_
+        metadata : dict
+            _description_
+        allow_pickle : bool, optional
+            _description_, by default False
+        """        
+
+        values = dict(np.load(
+            io.BytesIO(buffer), 
+            allow_pickle=allow_pickle))
+        cls = cls.from_dict(values, metadata)
+        # cls = Image(values['image'], label=metadata['filename'])
+        # cls.metadata = metadata
+        return cls
     
+    def to_buffer(self, ext: str='.npz'):
+        output = io.BytesIO()
+        np.savez(output, self.values)
+        return output.getvalue()
+        
     def __contains__(self, x):
         return x in self.values
 

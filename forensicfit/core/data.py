@@ -12,8 +12,6 @@ TODO :
   imbalearn
 """
 
-
-
 class DatasetNumpy:
 
     def __init__(self, X :np.array, y: np.array, extra={}, name=''):
