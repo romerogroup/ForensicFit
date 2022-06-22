@@ -12,7 +12,7 @@ import pymongo
 import gridfs
 from random import choice
 from bson.objectid import ObjectId
-from ..core import Tape, TapeAnalyzer, Image
+from ..core import Tape, TapeAnalyzer, Image, Metadata
 from ..utils.array_tools import read_bytes_io, write_bytes_io
 from collections.abc import Mapping
 
@@ -101,7 +101,15 @@ class Database:
         self.fs[collection] = gridfs.GridFS(self.db, collection)
         return 
 
-    def exists(self, criteria: dict, collection: str) -> bool:
+    def exists(self, 
+               criteria: dict = None, 
+               collection: str = None, 
+               metadata: Metadata = None) -> ObjectId: #| bool:
+        if metadata is not None:
+            collection = collection or metadata['mode']
+            criteria = {"$and": metadata.to_mongodb_filter()}
+        elif criteria is None or collection is None:
+            raise Exception("Provide metadata or criteria and collection")
         ret = self.fs[collection].find_one(filter=criteria)
         if ret is not None:
             return ret._id
@@ -114,7 +122,7 @@ class Database:
                overwrite: bool = False, 
                skip: bool = False,
                collection : str = None):
-       
+        
         collection = collection or obj.metadata['mode']
         criteria = {"$and": obj.metadata.to_mongodb_filter()}
         exists = self.exists(criteria=criteria, 
