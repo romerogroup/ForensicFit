@@ -6,6 +6,13 @@ import matplotlib.pylab as plt
 from forensicfit import HAS_OPENCV
 
 
+IMAGE_EXTENSIONS = ['.png', '.bmp', '.dib', '.jpeg', 
+                    '.jpg', '.jpe', '.jp2', '.webp',
+                    '.pbm', '.pgm', '.ppm', '.pxm', 
+                    '.pnm', '.sr', '.ras', '.tiff',
+                    '.tif', '.exr', '.hdr', '.pic']
+
+
 def rotate_image(image, angle):
     """
     Rotates the image by angle degrees

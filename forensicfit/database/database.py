@@ -102,15 +102,15 @@ class Database:
         return 
 
     def exists(self, 
-               criteria: dict = None, 
+               filter: dict = None, 
                collection: str = None, 
                metadata: Metadata = None) -> ObjectId: #| bool:
         if metadata is not None:
             collection = collection or metadata['mode']
-            criteria = {"$and": metadata.to_mongodb_filter()}
-        elif criteria is None or collection is None:
-            raise Exception("Provide metadata or criteria and collection")
-        ret = self.fs[collection].find_one(filter=criteria)
+            filter = {"$and": metadata.to_mongodb_filter()}
+        elif filter is None or collection is None:
+            raise Exception("Provide metadata or filter and collection")
+        ret = self.fs[collection].find_one(filter=filter)
         if ret is not None:
             return ret._id
         else:
@@ -118,14 +118,14 @@ class Database:
 
     def insert(self,    
                obj: Image, # | Tape | TapeAnalyzer,
-               buffer_type: str = '.npz',
+               ext: str = '.npz',
                overwrite: bool = False, 
                skip: bool = False,
                collection : str = None):
         
         collection = collection or obj.metadata['mode']
-        criteria = {"$and": obj.metadata.to_mongodb_filter()}
-        exists = self.exists(criteria=criteria, 
+        filter = {"$and": obj.metadata.to_mongodb_filter()}
+        exists = self.exists(filter=filter, 
                              collection=collection,
                              )
         if collection not in self.fs:
@@ -134,15 +134,15 @@ class Database:
         if overwrite and exists:
             if self.verbose:
                 print(f"{obj.metadata.filename} {collection} already exists, overwriting!")
-            self.delete(criteria, collection)
+            self.delete(filter, collection)
         elif skip and exists:
             if self.verbose:
                 print(f"{obj.metadata.filename} {collection} already exists, skipping!")
             return exists
         metadata = obj.metadata.to_dict
-        metadata['buffer_type'] = buffer_type
+        metadata['ext'] = ext
         filename = obj.metadata.filename
-        _id = fs.put(obj.to_buffer(buffer_type), 
+        _id = fs.put(obj.to_buffer(ext), 
                      filename = filename,
                      metadata = metadata)
         return _id
@@ -150,46 +150,27 @@ class Database:
 
     def find(self, 
              filter: dict, 
-             collection: str = 'analysis', 
+             collection: str = 'analysis',
+             ext:str = '.npz',
              version: int = -1,
              no_cursor_timeout = False,
              ) -> list:
-        CLASS = self.class_mapping[collection]
+        Class = self.class_mapping[collection]
         fs = self.fs[collection]
-        queries = fs.find(filter=filter, 
-                          no_cursor_timeout=no_cursor_timeout).sort("uploadDate", version)
+
         ret = []
-        if queries.count() != 0:
+        if self.count_documents(filter, collection) != 0 :
+            queries = fs.find(filter=filter, 
+                            no_cursor_timeout=no_cursor_timeout).sort("uploadDate", version)
             for iq in queries:
-                ret.append(CLASS.from_buffer(iq.read(), iq.metadata))
+                ret.append(Class.from_buffer(iq.read(), iq.metadata))
         return ret
 
-    # def get(self, 
-    #         filename: str = None, 
-    #         collection: str = 'analysis', 
-    #         version: int = -1, 
-    #         **kwargs) -> list:
-    #     ret = []
-    #     fs = self.fs[collection]
-    #     CLASS = CoreClass[collection]
-    #     if '_id' in kwargs:
-    #         _id = kwargs['_id']
-    #         iq = fs.get(ObjectId(_id), version=version)
-    #         metadata = iq.metadata
-    #         values = read_bytes_io(iq)
-    #         ret = [CLASS.from_dict(values, metadata)]
-    #     else:
-    #         criteria = {'$and':[]}
-    #         if filename is not None:
-    #             criteria['$and'].append({'filename':filename})
-    #         for ic in kwargs:
-    #             criteria['$and'].append({ic:kwargs[ic]})
-    #         ret = self.find(criteria, collection, version)
-    #     return ret
 
     
+    
     def find_one(self, filter, collection: str = None) -> object:
-        """finds one entry that matches the criteria. 
+        """finds one entry that matches the filter. 
         kwargs must be chosen by filter=
 
         Parameters
@@ -204,10 +185,10 @@ class Database:
         """        
         if collection is None :
             collection = choice(list(self.fs))
-        CLASS = self.class_mapping[collection]
+        Class = self.class_mapping[collection]
         fs = self.fs[collection]
         iq = fs.find_one(filter)
-        return CLASS.from_buffer(iq.read(), iq.metadata)
+        return Class.from_buffer(iq.read(), iq.metadata)
         
     def find_with_id(self, _id: str, collection: str) -> object:
         """Retrieves core object based on the MongoDB _id
@@ -224,28 +205,27 @@ class Database:
         object
             ForensicFit object e.g. Tape
         """        
-        CLASS = self.class_mapping[collection]
+        Class = self.class_mapping[collection]
         fs = self.fs[collection]
         iq = fs.find_one({'_id':_id if type(_id) is ObjectId else ObjectId(_id)})
         metadata = iq.metadata
         values = read_bytes_io(iq)
-        return CLASS.from_dict(values, metadata)
+        return Class.from_dict(values, metadata)
     
-    @property
-    def count(self):
-        ret = {}
-        for collection in self.fs:
-            ret[collection] = self.fs[collection].find().count()
-        return ret
+    def count_documents(self, filter: dict, collection: str):
+        fs = self.fs[collection]
+        cursor = fs.find()
+        return cursor.collection.count_documents(filter=filter)
+        
 
     @property
     def collection_names(self):
         return [x.replace(".files", '')for x in self.db.list_collection_names() if 'files' in x]
         
 
-    def delete(self, criteria: dict, collection: str):
+    def delete(self, filter: dict, collection: str):
         fs = self.fs[collection]
-        queries = fs.find(criteria)
+        queries = fs.find(filter)
         for iq in queries:
             fs.delete(iq._id)
         return 
@@ -290,6 +270,8 @@ def dict2mongo_query(inp: dict, previous_key: str = '') -> dict:
 
 def list_databases(host='localhost',
                    port=27017,
+                   username='',
+                   password='',
                    ):
     uri = "mongodb://%s%s%s:%d" % (username, password, host, port)
     client = pymongo.MongoClient(uri)

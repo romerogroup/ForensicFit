@@ -23,6 +23,8 @@ import io
 from .metadata import Metadata
 from ..utils import image_tools
 
+IMAGE_EXTENSIONS = image_tools.IMAGE_EXTENSIONS 
+
 
 class Image(Mapping):
     __metaclass__ = ABCMeta
@@ -52,6 +54,7 @@ class Image(Mapping):
             return cls(image, path=path, filename=path.name)
         else:
             raise Exception(f"File {path.as_posix()} does not exist")
+        
  
     @classmethod
     def from_buffer(cls, 
@@ -81,12 +84,8 @@ class Image(Mapping):
             return cls.from_dict(values, metadata)
             # cls = Image(values['image'], label=metadata['filename'])
             # cls.metadata = metadata
-        elif ext in ['.png', '.bmp', '.dib', '.jpeg', 
-                                         '.jpg', '.jpe', '.jp2', '.webp',
-                                         '.pbm', '.pgm', '.ppm', '.pxm', 
-                                         '.pnm', '.sr', '.ras', '.tiff',
-                                         '.tif', '.exr', '.hdr', '.pic']:
-            image = cv2.imdecode(np.frombuffer(buffer.getbuffer(), np.uint8), -1)
+        elif ext in IMAGE_EXTENSIONS:
+            image = cv2.imdecode(np.frombuffer(buffer, np.uint8), -1)
             return cls(image, metadata)
 
     
@@ -99,11 +98,7 @@ class Image(Mapping):
         if ext == '.npz':
             output = io.BytesIO()
             np.savez(output, self.values)
-        elif ext in ['.png', '.bmp', '.dib', '.jpeg', 
-                             '.jpg', '.jpe', '.jp2', '.webp',
-                             '.pbm', '.pgm', '.ppm', '.pxm', 
-                             '.pnm', '.sr', '.ras', '.tiff',
-                             '.tif', '.exr', '.hdr', '.pic']:
+        elif ext in IMAGE_EXTENSIONS:
             is_success, buffer = cv2.imencode(ext, self.image)
             output = io.BytesIO(buffer)
         return output.getvalue()
@@ -124,7 +119,7 @@ class Image(Mapping):
         gcd = np.gcd(self.image.shape[0], self.image.shape[1])
         return (self.image.shape[1]//gcd, self.image.shape[0]//gcd)
 
-    def plot(self, savefig=None, cmap='gray', ax=None, rotate=0.0, show=False):
+    def plot(self, savefig = None, cmap = 'gray', ax = None, rotate=0.0, show=False):
         """
         
 
@@ -160,7 +155,7 @@ class Image(Mapping):
             cv2.imwrite(savefig, self.image)
         return ax
                 
-    def show(self, wait=0, savefig=None):
+    def show(self, wait=0, savefig = None):
         """
         
 

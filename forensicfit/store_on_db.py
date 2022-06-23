@@ -13,12 +13,14 @@ from unicodedata import name
 from numpy import insert
 from .core import Tape
 from .database import Database
- 
+from .utils.image_tools import IMAGE_EXTENSIONS
+
+
 def get_chunks(files: List[Dict], n_processors: int):
     ret = [ [] for x in range(n_processors)]
     n_files = len(files)
     for i, file in enumerate(files):
-        ret[i % n_processors].append(files[file])
+        ret[i % n_processors].append(files[i])
     return ret
 
 def worker(args):
@@ -28,11 +30,10 @@ def worker(args):
     db = Database(**db_settings)
     for _, entry in enumerate(files):
         file_path = Path(entry['source'])
-        if file_path.suffix not in ['.png', '.bmp', '.dib', '.jpeg', 
-                                '.jpg', '.jpe', '.jp2', '.webp',
-                                '.pbm', '.pgm', '.ppm', '.pxm', 
-                                '.pnm', '.sr', '.ras', '.tiff',
-                                '.tif', '.exr', '.hdr', '.pic']:
+        if not file_path.exists():
+            print(f"{file_path.as_posix()} does not exist")
+            return 
+        if file_path.suffix not in IMAGE_EXTENSIONS:
             continue
         tape = Tape.from_file(file_path)
         # print(f"{file_path.stem}")
@@ -40,13 +41,13 @@ def worker(args):
             tape.metadata[key] = entry[key]
         db.insert(tape, **insert_options)
         
-def get_files(path: Path, ret: list = [], ext: str ='.tif'):
+def get_files(path: Path, ret: list = []):
     for x in path.iterdir():
-        if x.is_file() and x.suffix == ext :
+        if x.is_file() and x.suffix in IMAGE_EXTENSIONS :
             ret.append({x.stem: {'source': x.as_posix(),
                                  'filename': x.stem}})
         elif x.is_dir():
-            get_files(x, ret, ext)
+            get_files(x, ret)
     return ret
 
     
@@ -54,8 +55,7 @@ def get_files(path: Path, ret: list = [], ext: str ='.tif'):
 def store_on_db(
         dir_path='.',
         metadata_file = None,
-        buffer_type = '.png',
-        ext:str = '.tif', 
+        ext: str = '.png',
         overwrite: bool=False,
         skip: bool=True,
         db_name: str='forensicfit',
@@ -64,34 +64,33 @@ def store_on_db(
         username: str="",
         password:str ="",
         n_processors: int=1):
-    """
+    """_summary_
 
     Parameters
     ----------
-    dir_path : TYPE, optional
-        DESCRIPTION. The default is '.'.
-    dynamic_window : TYPE, optional
-        DESCRIPTION. The default is True.
-    verbose : TYPE, optional
-        DESCRIPTION. The default is True.
-    overwrite : TYPE, optional
-        DESCRIPTION. The default is False.
-    db_name : TYPE, optional
-        DESCRIPTION. The default is 'forensicfit'.
-    host : TYPE, optional
-        DESCRIPTION. The default is 'localhost'.
-    port : TYPE, optional
-        DESCRIPTION. The default is 27017.
-    username : TYPE, optional
-        DESCRIPTION. The default is "".
-    password : TYPE, optional
-        DESCRIPTION. The default is "".
-
-    Returns
-    -------
-    None.
-
-    """
+    dir_path : str, optional
+        _description_, by default '.'
+    metadata_file : _type_, optional
+        _description_, by default None
+    ext : str, optional
+        extension for storage on mongodb, by default '.png'
+    overwrite : bool, optional
+        _description_, by default False
+    skip : bool, optional
+        _description_, by default True
+    db_name : str, optional
+        _description_, by default 'forensicfit'
+    host : str, optional
+        _description_, by default 'localhost'
+    port : int, optional
+        _description_, by default 27017
+    username : str, optional
+        _description_, by default ""
+    password : str, optional
+        _description_, by default ""
+    n_processors : int, optional
+        _description_, by default 1
+    """    
     if n_processors > cpu_count():
         n_processors = cpu_count()
         
@@ -101,7 +100,7 @@ def store_on_db(
     else:
         dir_path = Path(dir_path)
         
-        metadata = get_files(dir_path, ext='.tif')
+        metadata = get_files(dir_path)
     chunks = get_chunks(metadata, n_processors)
     
     db_settings = dict(name=db_name,
@@ -109,7 +108,7 @@ def store_on_db(
                        port=port,
                        username=username,
                        password=password)
-    insert_options = dict(buffer_type=buffer_type,
+    insert_options = dict(ext=ext,
                           overwrite=overwrite,
                           skip=skip)
     
