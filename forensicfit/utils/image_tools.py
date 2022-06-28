@@ -81,12 +81,12 @@ def split_v(image, pixel_index=None,pick_side='L', flip=True):
         image = image[:, 0:pixel_index]
     else : 
         if flip:
-            image = cv2.flip(image[:,pixel_index:width],1)
+            image = np.fliplr(image[:,pixel_index:width])
         else:
             image = image[:, pixel_index:width]
     return image
 
-def gray_scale(image):
+def to_gray(image):
     """
     Gray Scale image of the input image.
 
@@ -96,11 +96,10 @@ def gray_scale(image):
         Gray Scale image of the input image.
 
     """
-    if len(image.shape) >2:
-        gray_scale = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
-    else : 
-        gray_scale = image
-    return gray_scale
+    return cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+
+def to_rbg(image):
+    return cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
 
 def flip(image):
     return cv2.flip(image, 0)
@@ -211,9 +210,9 @@ def binerized_mask(image, masked):
         .
 
     """
-    image = cv2.bitwise_and(image,
-                           image,
-                           mask=masked)
+    # image = cv2.bitwise_and(image,
+    #                        image,
+    #                        mask=masked)
     return cv2.bitwise_and(image,
                            image,
                            mask=masked)

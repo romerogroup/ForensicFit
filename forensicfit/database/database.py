@@ -12,9 +12,11 @@ import pymongo
 import gridfs
 from random import choice
 from bson.objectid import ObjectId
+from collections.abc import Mapping
+from typing import Callable, List
 from ..core import Tape, TapeAnalyzer, Image, Metadata
 from ..utils.array_tools import read_bytes_io, write_bytes_io
-from collections.abc import Mapping
+
 
 class ClassMap(Mapping):
     def __init__(self):
@@ -105,6 +107,8 @@ class Database:
                filter: dict = None, 
                collection: str = None, 
                metadata: Metadata = None) -> ObjectId: #| bool:
+        if collection not in self.fs:
+            return False
         if metadata is not None:
             collection = collection or metadata['mode']
             filter = {"$and": metadata.to_mongodb_filter()}
@@ -118,7 +122,7 @@ class Database:
 
     def insert(self,    
                obj: Image, # | Tape | TapeAnalyzer,
-               ext: str = '.npz',
+               ext: str = '.png',
                overwrite: bool = False, 
                skip: bool = False,
                collection : str = None):
@@ -139,7 +143,7 @@ class Database:
             if self.verbose:
                 print(f"{obj.metadata.filename} {collection} already exists, skipping!")
             return exists
-        metadata = obj.metadata.to_dict
+        metadata = obj.metadata.to_serial_dict
         metadata['ext'] = ext
         filename = obj.metadata.filename
         _id = fs.put(obj.to_buffer(ext), 
@@ -153,7 +157,7 @@ class Database:
              collection: str = 'analysis',
              ext:str = '.npz',
              version: int = -1,
-             no_cursor_timeout = False,
+             no_cursor_timeout: bool = False,
              ) -> list:
         Class = self.class_mapping[collection]
         fs = self.fs[collection]
@@ -167,9 +171,26 @@ class Database:
         return ret
 
 
+    def map_to(self,
+               func: Callable,
+               filter: dict, 
+               collection_source: str,
+               collection_target,
+               no_cursor_timeout: bool = False):
+        Class = self.class_mapping[collection_source]
+        fs = self.fs[collection_source]
+        
+        queries = fs.find(filter=filter, 
+                        no_cursor_timeout=no_cursor_timeout)
+        for iq in queries:
+            obj = Class.from_buffer(iq.read(), iq.metadata)
+            ext = obj.metadata['ext']
+            self.insert(func(obj), ext=ext, collection=collection_target)
+            
+                
     
     
-    def find_one(self, filter, collection: str = None) -> object:
+    def find_one(self, filter = None, collection: str = None) -> object:
         """finds one entry that matches the filter. 
         kwargs must be chosen by filter=
 
@@ -204,15 +225,34 @@ class Database:
         -------
         object
             ForensicFit object e.g. Tape
-        """        
+        """
+
         Class = self.class_mapping[collection]
         fs = self.fs[collection]
         iq = fs.find_one({'_id':_id if type(_id) is ObjectId else ObjectId(_id)})
-        metadata = iq.metadata
-        values = read_bytes_io(iq)
-        return Class.from_dict(values, metadata)
+        return Class.from_buffer(iq.read(), iq.metadata)
+    
+    def filter_with_metadata(self, 
+                             inp: List[str], 
+                             filter: dict, 
+                             collection: str):
+        fs = self.fs[collection]
+        query = fs.find({'$and':
+                        [
+                            filter, 
+                            {'filename':{'$in':inp}}
+                            ]
+            })
+        db_fnames = [iq.metadata['filename'] for iq in query]
+        ret = []
+        for i, filename in enumerate(inp):
+            if filename in db_fnames:
+                ret.append(i)
+        return ret
     
     def count_documents(self, filter: dict, collection: str):
+        if collection not in self.fs:
+            return 0
         fs = self.fs[collection]
         cursor = fs.find()
         return cursor.collection.count_documents(filter=filter)

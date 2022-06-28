@@ -5,6 +5,7 @@ Created on Sun Jun 28 14:11:02 2020
 @author: Pedram Tavadze
 """
 import warnings
+from importlib_metadata import metadata
 import numpy.typing as npt
 from pathlib import Path
 import numpy as np
@@ -19,15 +20,56 @@ else:
     import cv2
 
 
+
+class Tape(Material):
+    def __init__(self,
+                 image: npt.ArrayLike,
+                 label: str = None,
+                 surface: str = None,
+                 stretched: bool = False, 
+                 **kwargs):
+        """Tape is a class created for tape images to be preprocessed for 
+        Machine Learning. This Class detects the edges, auto crops the image 
+        and returns the results in 3 different method coordinate_based, 
+        bin_based and max_contrast. 
+        """
+        assert type(image) is np.ndarray, "image arg must be a numpy array"
+        assert image.ndim in [2, 3] , "image array must be 2 dimensional"
+        super().__init__(image, **kwargs)
+        self.metadata['flip_h'] = False
+        self.metadata['flip_v'] = False
+        self.metadata['split_v'] = {
+            "side": None, "pixel_index": None}
+        self.metadata['label'] = label
+        self.metadata['material'] = 'tape'
+        self.metadata['surface'] = surface
+        self.metadata['stretched'] = stretched
+        
+        
+    def split_v(self, pixel_index=None, side='L'):
+        self.values['original_image'] = self.image.copy()
+        if pixel_index is None:
+            tape_analyzer = TapeAnalyzer(self)
+            x = tape_analyzer.boundary[:, 0]
+            pixel_index = int((x.max()-x.min())/2+x.min())
+        self.image = image_tools.split_v(
+            self.image, pixel_index, side)
+        self.values['image'] = self.image
+        self.metadata['split_v'] = {
+            "side": side, "pixel_index": pixel_index}
+        # this is temporary
+
+
+
 class TapeAnalyzer(Analyzer):
     def __init__(self,
-                 tape=None,
-                 mask_threshold=60,
-                 gaussian_blur=(15, 15),
-                 n_divisions=6,
-                 auto_crop=False,
-                 calculate_tilt=True,
-                 remove_background=True):
+                 tape: Tape = None,
+                 mask_threshold: int=60,
+                 gaussian_blur: tuple=(15, 15),
+                 n_divisions: int=6,
+                 auto_crop: bool=False,
+                 calculate_tilt: bool=True,
+                 remove_background: bool=True):
         """
         
 
@@ -54,24 +96,19 @@ class TapeAnalyzer(Analyzer):
 
         """
         super().__init__()
-
-        # self.metadata['calculate_tilt'] = calculate_tilt
-        self.masked = None
-        self.metadata['crop_y_top'] = None
-        self.metadata['crop_y_bottom'] = None
         self.metadata['n_divisions'] = n_divisions
         self.metadata['gaussian_blur'] = gaussian_blur
         self.metadata['mask_threshold'] = int(mask_threshold)
-        self.metadata['cropped'] = False
-        self.metadata['image_tilt'] = None
         self.metadata['remove_background'] = remove_background
-        # self.colored = cv2.cvtColor(self.image, cv2.COLOR_GRAY2BGR)
+        self.metadata["analysis"] = {}
         if tape is not None:
             self.image = tape.image
             self.metadata += tape.metadata
+            self.metadata['resolution'] = self.image.shape
             self.preprocess(calculate_tilt, auto_crop)
-            self.load_dict()
-            self.load_metadata()
+            if remove_background:
+                self.image = self.masked
+            
         return
 
     def preprocess(self, calculate_tilt: bool = True, auto_crop: bool = True):
@@ -89,100 +126,72 @@ class TapeAnalyzer(Analyzer):
         None.
 
         """
-        if self.metadata.gaussian_blur is not None:
-            image = image_tools.gaussian_blur(
-                self.image, window=self.metadata.gaussian_blur)
-        # if self.verbose:
-        #     print("getting the mask")
-        #image_tools.get_masked(image, self.mask_threshold)
-        self.binarized = image_tools.binerized_mask(
-            image, self.masked)
-        self.gray_scale = image_tools.gray_scale(self.image)
-        gray_gaussian = image_tools.gray_scale(image)
-        # if self.verbose:
-        #     print("calculating the tilt")
-        self.contours = image_tools.contours(gray_gaussian,
-                                             self.metadata.mask_threshold)
-        self.largest_contour = image_tools.largest_contour(self.contours)
-        self.masked = image_tools.remove_background(self.image, self.largest_contour)
-        self.boundary = self.largest_contour.reshape(
-            self.largest_contour.shape[0], 2)
+        image = self.image
+        # if self.metadata.gaussian_blur is not None:
+        #     image = image_tools.gaussian_blur(
+        #         self.image, window=self.metadata.gaussian_blur)
+        gray = image_tools.to_gray(image)
+        image = image_tools.gaussian_blur(
+                gray, window=self.metadata.gaussian_blur)
+        contours = image_tools.contours(image,
+                                        self.metadata.mask_threshold)
+        largest_contour = image_tools.largest_contour(contours)
+        self.metadata['boundary'] = largest_contour.reshape(-1, 2)
         if calculate_tilt:
             self.get_image_tilt()
         self.metadata['cropped'] = False
         if auto_crop:
             self.metadata['cropped'] = True
             self.auto_crop_y()
-            self.metadata.cropped=True
+            self.metadata.cropped = True
+            gray = image_tools.to_gray(self.image)
             image = image_tools.gaussian_blur(
-                self.image, window=self.metadata.gaussian_blur)
-            self.contours = image_tools.contours(
+                gray, window=self.metadata.gaussian_blur)
+            self.tape.metadata['cropped'] = True
+            contours = image_tools.contours(
                 image, self.metadata.mask_threshold)
-            self.largest_contour = image_tools.largest_contour(self.contours)
-            self.boundary = self.largest_contour.reshape(
-                self.largest_contour.shape[0], 2)
-            # self.masked = image_tools.get_masked(
-            #     image, self.metadata.mask_threshold)
-            self.masked = image_tools.remove_background(self.image, self.largest_contour)
-            self.binarized = image_tools.binerized_mask(
-                image, self.masked)
-            self.gray_scale = image_tools.gray_scale(self.image)
-        if self.metadata.remove_background:
-            self.image = self.masked
+            largest_contour = image_tools.largest_contour(contours)
+            self.metadata['boundary'] = largest_contour.reshape(-1, 2)
+
+        # if self.metadata.remove_background:
+        #     self.image = self.masked
 
     def flip_v(self):
+        # TODO coordinate based
         self.image = np.fliplr(self.image)
-        self.masked = np.fliplr(self.masked)
-        self.binarized = np.fliplr(self.binarized)
-        self.gray_scale = np.fliplr(self.gray_scale)
-        self.boundary[:, 0] = self.boundary[:, 0]*-1 + self.image.shape[1]
-        self.load_dict()
-        for key in ['bin_based', 'big_picture']:
-            if key in self.values:
-                temp = np.flip(self[key],axis=2)
-                setattr(self, key, temp)
-                self.values[key] = temp
-                dynamic_positions = self.metadata['analysis'][key]['dynamic_positions']
-                for iseg, pos in enumerate(dynamic_positions):
-                    for ix in range(2):
-                        dynamic_positions[iseg][0][ix] = pos[0][ix]*-1 + self.image.shape[1]
-                self.metadata['analysis'][key]['dynamic_positions'] = dynamic_positions
+        self.metadata['boundary'] = np.array(self.metadata['boundary'])
+        self.metadata['boundary'][:, 0] = self.metadata['boundary'][:, 0]*-1 + self.image.shape[1]
+        if 'coordinate_based' in self.metadata['analysis']:
+            coords  = np.array(self.metadata['analysis']['coordinate_based']['data'])
+            coords = np.fliplr(coords)
+            self.metadata['analysis']['coordinate_based']['data'] = coords
+        if 'bin_based' in self.metadata['analysis']:
+            dynamic_positions = np.array(self.metadata['analysis']['bin_based']['dynamic_positions'])
+            for i, pos in enumerate(dynamic_positions):
+                for ix in range(2):
+                    dynamic_positions[i][0][ix] = pos[0][ix]*-1 + self.image.shape[1]
+            dynamic_positions[:, 0, [0, 1]] = dynamic_positions[:, 0, [1, 0]]
+            self.metadata['analysis']['bin_based']['dynamic_positions'] = dynamic_positions
+        self.metadata['flip_v'] =  True
 
     def flip_h(self):
+        # TODO coordinate based
         self.image = np.flipud(self.image)
-        self.masked = np.flipud(self.masked)
-        self.binarized = np.flipud(self.binarized)
-        self.gray_scale = np.flipud(self.gray_scale)
-        self.boundary[:, 1] = self.boundary[:, 1]*-1 + self.image.shape[0]
-        self.load_dict()
-        for key in ['bin_based', 'big_picture']:
-            if key in self.values:
-                temp = np.flip(self[key],axis=2)
-                setattr(self, key, temp)
-                self.values[key] = temp
-                dynamic_positions = self.metadata['analysis'][key]['dynamic_positions']
-                for iseg, pos in enumerate(dynamic_positions):
-                    for ix in range(2):
-                        dynamic_positions[iseg][1][ix] = pos[1][ix]*-1 + self.image.shape[0]
-                self.metadata['analysis'][key]['dynamic_positions'] = dynamic_positions
-
-        self.load_dict()
-
-    def load_dict(self):
-        """
+        self.metadata['boundary'] = np.array(self.metadata['boundary'])
+        self.metadata['boundary'][:, 1] = self.metadata['boundary'][:, 1]*-1 + self.image.shape[0]
+        if 'coordinate_based' in self.metadata['analysis']:
+            coords  = np.array(self.metadata['analysis']['coordinate_based']['data'])
+            coords = np.flipud(coords)
+            self.metadata['analysis']['coordinate_based']['data'] = coords
+        if 'bin_based' in self.metadata['analysis']:
+            dynamic_positions = np.array(self.metadata['analysis']['bin_based']['dynamic_positions'])
+            for i, pos in enumerate(dynamic_positions):
+                for ix in range(2):
+                    dynamic_positions[i, 1, ix] = pos[1, ix]*-1 + self.image.shape[0]
+            dynamic_positions[:, 1, [0, 1]] = dynamic_positions[:, 1, [1, 0]]
+            self.metadata['analysis']['bin_based']['dynamic_positions'] = dynamic_positions
+        self.metadata['flip_h'] = True
         
-
-        Returns
-        -------
-        None.
-
-        """
-        self.values['image'] = self.image
-        self.values['masked'] = self.masked
-        self.values['boundary'] = self.boundary
-        self.values['binarized'] = self.binarized
-        self.values['gray_scale'] = self.gray_scale
-
     def load_metadata(self):
         """
         
@@ -198,17 +207,16 @@ class TapeAnalyzer(Analyzer):
         self.metadata["ymin"] = int(self.ymin)
         self.metadata["ymax"] = int(self.ymax)
         self.metadata["y_interval"] = int(self.ymax-self.ymin)
-        self.metadata["x_std"] = float(np.std(self.boundary[:, 0]))
-        self.metadata["y_std"] = float(np.std(self.boundary[:, 1]))
-        self.metadata["x_mean"] = float(np.mean(self.boundary[:, 0]))
-        self.metadata["y_mean"] = float(np.mean(self.boundary[:, 1]))
-        self.metadata["analysis"] = {}
+        # self.metadata["x_std"] = float(np.std(self.boundary[:, 0]))
+        # self.metadata["y_std"] = float(np.std(self.boundary[:, 1]))
+        # self.metadata["x_mean"] = float(np.mean(self.boundary[:, 0]))
+        # self.metadata["y_mean"] = float(np.mean(self.boundary[:, 1]))
+
 
     @classmethod
-    def from_dict(cls, values, metadata):
+    def from_dict(cls, image, metadata):
         """
         
-
         Parameters
         ----------
         cls : TYPE
@@ -227,30 +235,12 @@ class TapeAnalyzer(Analyzer):
             DESCRIPTION.
 
         """
-        if values is None:
+        if image is None:
             raise Exception(
-                "The provided dictionary was empty. Maybe change the query criteria")
-        cls = TapeAnalyzer()
-        for key in values:
-            if not isinstance(getattr(type(cls), key, None), property):
-                setattr(cls, key, values[key])
-                cls.values[key] = values[key]
-                
+                "The provided image was empty. Maybe change the query criteria")
+        cls = cls()
+        cls.image = image
         cls.metadata.update(metadata)
-        # for key in metadata:
-        #     if key in ['filename', 'material', 'n_divisions', 'mask_threshold', 'gaussian_blur', 'image_tilt']:
-        #         setattr(cls, key, metadata[key])
-        # if cls.verbose:
-        #     print(f" {cls.filename: <25}  | {str(cls.metadata['image']['split_v']['side']): ^5} | {['not flipped', 'flipped'][int(cls.metadata['image']['flip_h'])]: >11}")
-        # cls.binarized = image_tools.binerized_mask(
-        #     cls.image, cls.masked)
-        # cls.gray_scale = image_tools.gray_scale(cls.image)
-        # cls.load_dict()
-        # for key in cls.metadata['analysis']:
-            # cls.values[key] = eval("cls.%s" % key)
-        # print(" {: <25}  | {: ^5} | {: >11}".format(cls.filename,
-                                                    # str(cls.metadata['image']['split_v']['side']),
-                                                    # ['not flipped', 'flipped'][int(cls.metadata['image']['flip_h'])]))
         return cls
 
     def get_image_tilt(self, plot=False):
@@ -372,21 +362,21 @@ class TapeAnalyzer(Analyzer):
         self.metadata.image_tilt = angle_d
         return angle_d
 
-    @property
-    def edge(self):
-        """
-         List of pixels that create the boundary.
+    # @property
+    # def edge(self):
+    #     """
+    #      List of pixels that create the boundary.
 
-        Returns
-        -------
-        edge_bw : 2d array int
-            List of pixels that create the boundary.
+    #     Returns
+    #     -------
+    #     edge_bw : 2d array int
+    #         List of pixels that create the boundary.
 
-        """
-        zeros = np.zeros_like(self.image)
-        edge_bw = cv2.drawContours(
-            zeros, self.largest_contour, (255, 255, 255), 2)
-        return edge_bw
+    #     """
+    #     zeros = np.zeros_like(self.image)
+    #     edge_bw = cv2.drawContours(
+    #         zeros, self.largest_contour, (255, 255, 255), 2)
+    #     return edge_bw
 
     @property
     def xmin(self):
@@ -427,8 +417,7 @@ class TapeAnalyzer(Analyzer):
             interval of the coordinates in X direction
 
         """
-        x_interval = self.xmax-self.xmin
-        return x_interval
+        return self.xmax - self.xmin
 
     @property
     def ymin(self):
@@ -491,19 +480,19 @@ class TapeAnalyzer(Analyzer):
             self.get_image_tilt()
 
     def get_coordinate_based(self,
-                             npoints=64,
-                             x_trim_param=6,
-                             normalize=True,
-                             standardize=False,
-                             shift=True,
-                             plot=False):
+                             n_points: int=64,
+                             x_trim_param: int=6,
+                             normalize: bool=True,
+                             standardize: bool=False,
+                             shift: bool=True,
+                             plot: bool=False):
         """
         This method returns the data of the detected edge as a set of points 
         in 2d plain with (x,y)
 
         Parameters
         ----------
-        npoints : TYPE, optional
+        n_points : TYPE, optional
             DESCRIPTION. The default is 1024.
         x_trim_param : TYPE, optional
             DESCRIPTION. The default is 2.
@@ -526,16 +515,17 @@ class TapeAnalyzer(Analyzer):
         cond2 = boundary[:, 0] <= x_min+x_interval/x_trim_param*0.95
         cond_12 = np.bitwise_and(cond1, cond2)
         # cond_12 = cond1
-        data = np.zeros((npoints, 3))
-        stds = np.zeros((npoints, ))
+        data = np.zeros((n_points, 3))
         y_min = self.ymin
         y_max = self.ymax
         y_interval = y_max - y_min
         edge = boundary[cond_12]
+        self.metadata['edge_x_std'] = float(np.std(edge[:, 0]))
+        self.metadata['edge_x_range'] = int(edge[:, 0].max() - edge[:, 0].min())
         
-        for ipoint in range(0, npoints):
-            y_start = y_min+ipoint*(y_interval/npoints)
-            y_end = y_min+(ipoint+1)*(y_interval/npoints)
+        for ipoint in range(0, n_points):
+            y_start = y_min+ipoint*(y_interval/n_points)
+            y_end = y_min+(ipoint+1)*(y_interval/n_points)
             cond1 = edge[:, 1] >= y_start
             cond2 = edge[:, 1] <= y_end
             cond_and = np.bitwise_and(cond1, cond2)
@@ -547,12 +537,13 @@ class TapeAnalyzer(Analyzer):
                 #         self.metadata['image']['split_v']['side'],
                 #         ['flipped', 'not_flipped'][int(self.metadata['image']['flip_h'])],
                 #         x_trim_param-1))
-                return self.get_coordinate_based(npoints=npoints, x_trim_param=x_trim_param-1, plot=plot)
+                return self.get_coordinate_based(n_points=n_points, 
+                                                 x_trim_param=x_trim_param - 1, 
+                                                 plot=plot)
             data[ipoint, :2] = np.average(points, axis=0)
             data[ipoint, 2] = np.std(points[:, 0])
         if shift:
-            data[:,0]-=np.average(data[:,0
-                                       ])
+            data[:, 0] -= np.average(data[:, 0])
 
         if plot:
             # plt.figure(figsize=(1.65,10))
@@ -560,12 +551,11 @@ class TapeAnalyzer(Analyzer):
             self.show()
             plt.scatter(data[:, 0], data[:, 1], s=1, color='red')
             plt.xlim(data[:, 0].min()*0.9, data[:, 0].max()*1.1)
-        self.coordinate_based = data
-        self.values['coordinate_based'] = data
         self.metadata['analysis']['coordinate_based'] = {
-            "npoints": npoints, "x_trim_param": x_trim_param}
-
-        return self.coordinate_based
+            "n_points": n_points, 
+            "x_trim_param": x_trim_param, 
+            'data': data}
+        return data
 
     def get_bin_based(self,
                       window_background=50,
@@ -575,8 +565,6 @@ class TapeAnalyzer(Analyzer):
                       resize=False,
                       n_bins=10,
                       overlap=100,
-                      plot=False,
-                    #   verbose=True,
                       ):
         """
         This method returns the detected edge as a set of croped images from 
@@ -610,8 +598,10 @@ class TapeAnalyzer(Analyzer):
 
         """
         overlap = abs(overlap)
-        if self.metadata.cropped and overlap!=0:
-            warnings.warn("You have selected an overlap larger than 0 with an autocrop option.\n This might result in errors in finding overlap on the side edges of the tape.")
+        if self.metadata.cropped and overlap != 0:
+            warnings.warn(("You have selected an overlap larger than 0 with an" 
+                           "autocrop option.\n This might result in errors in" 
+                           "finding overlap on the side edges of the tape."))
         boundary = self.boundary
         x_min = self.xmin
         x_max = self.xmax
@@ -622,7 +612,7 @@ class TapeAnalyzer(Analyzer):
         # y_max = self.image.shape[0]
 
         x_start = x_min-window_background
-        x_end = min(x_min+window_tape, self.binarized.shape[1])
+        x_end = min(x_min+window_tape, self.image.shape[1])
 
         seg_len = (y_max-y_min)//(n_bins)
         seg_len = (y_max-y_min)/(n_bins)
@@ -643,56 +633,49 @@ class TapeAnalyzer(Analyzer):
                 if x_start < 0:
                     x_start=0
                 x_end = boundary[cond_and, 0].min() + window_tape
-                if self.binarized.shape[1] < x_end:
-                    diff =  self.binarized.shape[1] - x_end
+                if self.image.shape[1] < x_end:
+                    diff =  self.image.shape[1] - x_end
                     x_start += diff
-                    x_end = self.binarized.shape[1]
+                    x_end = self.image.shape[1]
 #            cv2.imwrite('%s_%d.tif'%(fname[:-4],iseg),im_color[y_start:y_end,x_start:x_end])
             
-            ys = y_start - overlap if y_start > overlap else 0
-            ye = y_end + overlap if y_end < self.image.shape[0] else self.image.shape[0]
-            isection = self.image[ys:ye, x_start:x_end]
+            # ys = max(0, y_start - overlap) 
+            # ye = min(y_end + overlap, self.image.shape[0]) 
+            
+            ys = y_start - overlap
+            ye = y_end + overlap
+            
             dynamic_positions.append(
                 [[int(x_start), int(x_end)], [int(ys), int(ye)]])
-            if resize:
-                isection = cv2.resize(isection, (size[1], size[0]))
-            segments.append(isection)
+            # if resize:
+            #     isection = cv2.resize(isection, (size[1], size[0]))
+            # segments.append(isection)
 
-            isection = cv2.copyMakeBorder(
-                isection, 1, 1, 1, 1, cv2.BORDER_CONSTANT, value=[0, 0, 0])
-        sy = min([seg.shape[0] for seg in segments])
-        for i, seg in enumerate(segments):
-            if seg.shape[0] != sy:
-                segments[i] = segments[i][:sy, :]
+            # isection = cv2.copyMakeBorder(
+            #     isection, 1, 1, 1, 1, cv2.BORDER_CONSTANT, value=[0, 0, 0])
+        # sy = min([seg[1][1] - seg[1][0] for seg in dynamic_positions])
+        
+        # for i, seg in enumerate(dynamic_positions):
+        #     if seg[1][1] - seg[1][0] != sy:
+        #         dynamic_positions[i][1][1] = seg[1][0] + sy
 
-        segments = np.array(segments)
+        # segments = np.array(segments)
         metadata = {"dynamic_positions": dynamic_positions,
                     "n_bins": n_bins,
                     "dynamic_window": dynamic_window,
                     "window_background": window_background,
                     "window_tape": window_tape,
                     "size": size}
-        if n_bins <= 9:
-            self.big_picture = segments
-            self.values['big_picture'] = segments
-            self.metadata['analysis']['big_picture'] = metadata
-        else:
-            self.bin_based = segments
-            self.values['bin_based'] = segments
-            self.metadata['analysis']['bin_based'] = metadata
-        if plot:
-            if 'bin_based' in self.values.keys():
-                self.plot('bin_based', cmap='gray', show=True)
-            elif 'big_picture' in self.values.keys():
-                self.plot('big_picture', cmap='gray', show=True)
-        
-        return segments
+
+        self.bin_based = segments
+        self.metadata['analysis']['bin_based'] = metadata
+        return dynamic_positions
 
     def get_max_contrast(self,
-                         window_background=100,
-                         window_tape=600,
-                         size=None,
-                         plot=False):
+                         window_background: int=100,
+                         window_tape: int=600,
+                         size: tuple = None,
+                         plot: bool = False):
         """
         This method returns the detected image as a black image with only the 
         boundary being white.
@@ -718,7 +701,6 @@ class TapeAnalyzer(Analyzer):
         edge_bw = cv2.drawContours(
             zeros, [self.boundary], 0, (255, 255, 255), 2)
         x_min = self.xmin
-
         x_start = x_min-window_background
         x_end = x_min+window_tape
         edge_bw = edge_bw[:, x_start:x_end]
@@ -728,9 +710,10 @@ class TapeAnalyzer(Analyzer):
             plt.figure()
             plt.imshow(edge_bw, cmap='gray')
         self.max_contrast = edge_bw
-        self.values['max_contrast'] = self.max_contrast
         self.metadata['analysis']['max_contrast'] = {
-            "window_background": window_background, "window_tape": window_tape, "size": size}
+            "window_background": window_background,
+            "window_tape": window_tape, 
+            "size": size}
         return edge_bw
 
     def copy(self):
@@ -744,40 +727,52 @@ class TapeAnalyzer(Analyzer):
         return TapeAnalyzer.from_dict(self.values, self.metadata)
 
 
+    def __getattr__(self, name):
+       return self[name]
 
-class Tape(Material):
-    def __init__(self,
-                 image: npt.ArrayLike,
-                 label: str = None,
-                 surface: str = None,
-                 stretched: bool = False, 
-                 **kwargs):
-        """Tape is a class created for tape images to be preprocessed for 
-        Machine Learning. This Class detects the edges, auto crops the image 
-        and returns the results in 3 different method coordinate_based, 
-        bin_based and max_contrast. 
-        """
-        assert type(image) is np.ndarray, "image arg must be a numpy array"
-        assert image.ndim in [2, 3] , "image array must be 2 dimensional"
-        super().__init__(image, **kwargs)
-        self.metadata['flip_h'] = False
-        self.metadata['split_v'] = {
-            "side": None, "pixel_index": None}
-        self.metadata['label'] = label
-        self.metadata['material'] = 'tape'
-        self.metadata['surface'] = surface
-        self.metadata['stretched'] = stretched
+    def __getitem__(self, x):
+        if x == 'image':
+            return self.image
+        elif x == 'masked':
+            return image_tools.remove_background(self['image'], 
+                                                 self.largest_contour)
+        elif x == 'gray_scale':
+            return image_tools.to_gray(self['image'])
+        elif x == 'binarized':
+            return image_tools.binerized_mask(
+                self['image'], self['masked'])
+        elif x == 'largest_contour':
+            return self.boundary.reshape(-1, 1, 2)
+        elif x == 'boundary':
+            return np.asarray(self.metadata['boundary'])
+        elif x == 'coordinate_based':
+            return np.asarray(self.metadata['analysis']['coordinate_based']['data'])
+        elif x == 'max_contrast':
+            return self.max_contrast
+        elif x == 'bin_based':
+            ret = []
+            bin_based =  self.metadata['analysis']['bin_based']
+            dynamic_positions = np.array(bin_based['dynamic_positions'])
+            delta_y = int(np.diff(dynamic_positions[:, 1][1:-2]).mean())
+            for seg in dynamic_positions:
+                x_start, x_end = seg[0]
+                y_start, _ = seg[1]
+                y_end = y_start + delta_y
+                pad_y_start = -1*(min(y_start, 0))
+                y_start = max(y_start, 0)
+                pad_y_end = -1*(min(self.image.shape[0]-y_end, 0))
+                y_end = min(self.image.shape[0], y_end)
+                img = self.image[y_start:y_end, x_start:x_end]
+                # the (len(img.shape)-1) is to adjust to gray scale and rgb
+                img = np.pad(
+                    img, 
+                    ((pad_y_start, pad_y_end),) + ((0, 0),)*(len(img.shape)-1),
+                    'constant', 
+                    constant_values=(0, )
+                    )
+                ret.append(img)
+            return np.asarray(ret)
+        else:
+            raise ValueError(f"TapeAnalyzer does not have attrib {x}")    
         
-    def split_v(self, pixel_index=None, side='L'):
-        self.values['original_image'] = self.image.copy()
-        if pixel_index is None:
-            tape_analyzer = TapeAnalyzer(self)
-            x = tape_analyzer.boundary[:, 0]
-            pixel_index = int((x.max()-x.min())/2+x.min())
-        self.image = image_tools.split_v(
-            self.image, pixel_index, side)
-        self.values['image'] = self.image
-        self.metadata['split_v'] = {
-            "side": side, "pixel_index": pixel_index}
-        # this is temporary
 

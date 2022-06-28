@@ -6,6 +6,7 @@ __author__ = 'Pedram Tavadze'
 from abc import ABCMeta, abstractmethod
 from collections.abc import MutableMapping
 from pathlib import Path
+from ..utils.array_tools import serializer
 
 
 class Metadata(MutableMapping):
@@ -53,7 +54,7 @@ class Metadata(MutableMapping):
         return self
     
     def to_mongodb_filter(self, inp: dict = None, previous_key: str = 'metadata') -> dict:
-        inp = inp or self.mapping
+        inp = inp or self.to_serial_dict
         ret = []
         for key in inp:
             if  isinstance(inp[key], dict) :
@@ -75,5 +76,5 @@ class Metadata(MutableMapping):
         return ret_p
     
     @property
-    def to_dict(self):
-        return self.mapping
+    def to_serial_dict(self):
+        return serializer(self.mapping)

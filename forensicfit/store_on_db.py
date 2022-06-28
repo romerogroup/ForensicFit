@@ -19,8 +19,8 @@ from .utils.image_tools import IMAGE_EXTENSIONS
 def get_chunks(files: List[Dict], n_processors: int):
     ret = [ [] for x in range(n_processors)]
     n_files = len(files)
-    for i, file in enumerate(files):
-        ret[i % n_processors].append(files[i])
+    for i, ifile in enumerate(files):
+        ret[i % n_processors].append(ifile)
     return ret
 
 def worker(args):

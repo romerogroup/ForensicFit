@@ -6,9 +6,11 @@ from matplotlib.colors import Normalize
 import numpy as np
 from scipy.stats import norm
 from abc import ABCMeta, abstractmethod
+import io
 from collections.abc import Mapping
 from .metadata import Metadata
-import io
+from ..utils.image_tools import IMAGE_EXTENSIONS
+
 
 class Analyzer:
     
@@ -27,14 +29,13 @@ class Analyzer:
         """
         
         self.image = None
-        self.boundary = None
         self.values = {}
         self.metadata = Metadata({'mode': 'analysis', 
                                   'label': None, 
                                   'material': None})
         self.metadata.update(kwargs)
 
-    def plot_boundary(self, savefig=None, color='r', ax=None, show=False):
+    def plot_boundary(self, savefig = None, color='r', ax = None, show=False):
         """
         This function plots the detected boundary of the image. 
 
@@ -116,7 +117,7 @@ class Analyzer:
         
         if which == "coordinate_based":
             if ax is None:
-                plt.figure(figsize=(2,8))
+                plt.figure(figsize=(3, 10))
                 ax = plt.subplot(111)
                 
             if "plot_gaussian" in kwargs:
@@ -134,7 +135,7 @@ class Analyzer:
                         y_prime*=dy
                         ax.fill_between(x, y, y+y_prime, cmap='gray')
             
-            if "plot_errorbar" in kwargs:
+            elif "plot_errorbar" in kwargs:
                 if kwargs["plot_errorbar"]:
                     ax.errorbar(self[which][:, 0],
                                 np.flip(self[which][:, 1]),
@@ -144,28 +145,34 @@ class Analyzer:
                                 markersize=0.5,
                                 fmt='o')
 
-            if "plot_scatter" in kwargs:
-                if kwargs["plot_scatter"]:
+            else:
                     ax.scatter(self[which][:, 0],
                             np.flip(self[which][:, 1]),
                             c='red',
                             s=1)
             ax.set_ylim(min(self[which][:, 1]),max(self[which][:, 1]))            
+            ymin = min(self[which][:, 0])
             if reverse_x :
-                ax.set_xlim(max(self[which][:, 0])*1.1, min(self[which][:, 0])*0.9)
+                ax.set_xlim(max(self[which][:, 0])*1.1, ymin - abs(ymin)*0.1)
             else :
-                ax.set_xlim(min(self[which][:, 0])*0.9, max(self[which][:, 0])*1.1)
+                
+                ax.set_xlim(ymin-abs(ymin)*0.9, max(self[which][:, 0])*1.1)
         elif which == 'boundary':
             ax = self.plot('image', cmap=cmap, ax=ax)
             ax = self.plot_boundary(ax=ax)
-        elif which in ['bin_based', 'big_picture']:
+        elif which == 'bin_based':
             if ax is None:
-                plt.figure()
+                plt.figure(figsize = (16, 9))
                 ax = plt.subplot(111)
-            dynamic_positions = self.metadata['analysis'][which]['dynamic_positions']
+            dynamic_positions = self.metadata[
+                'analysis'][which]['dynamic_positions']
             
-            colors = ['red', 'blue', 'green', 'cyan', 'magenta']*len(dynamic_positions)
-            styles = ['solid', 'dashed', 'dotted', 'dashdot']*len(dynamic_positions)
+            colors = [
+                'red', 'blue', 'green', 'cyan', 'magenta'
+                ]*len(dynamic_positions)
+            styles = [
+                'solid', 'dashed', 'dotted', 'dashdot'
+                ]*len(dynamic_positions)
             xs = []
             for i, seg in enumerate(dynamic_positions):
                 y1 = seg[1][0]
@@ -174,10 +181,14 @@ class Analyzer:
                 x2 = seg[0][1]
                 xs.append(x1)
                 xs.append(x2)
-                ax.plot([x1, x1], [y1, y2], color=colors[i], linestyle=styles[i], linewidth=1)
-                ax.plot([x2, x2], [y1, y2], color=colors[i], linestyle=styles[i], linewidth=1)
-                ax.plot([x1, x2], [y1, y1], color=colors[i], linestyle=styles[i], linewidth=1)
-                ax.plot([x1, x2], [y2, y2], color=colors[i], linestyle=styles[i], linewidth=1)
+                ax.plot([x1, x1], [y1, y2], color=colors[i], 
+                        linestyle=styles[i], linewidth=1)
+                ax.plot([x2, x2], [y1, y2], color=colors[i], 
+                        linestyle=styles[i], linewidth=1)
+                ax.plot([x1, x2], [y1, y1], color=colors[i], 
+                        linestyle=styles[i], linewidth=1)
+                ax.plot([x1, x2], [y2, y2], color=colors[i], 
+                        linestyle=styles[i], linewidth=1)
             ax = self.plot('image', ax=ax, cmap=cmap)
         else:
             if ax is None:
@@ -230,10 +241,10 @@ class Analyzer:
     def from_buffer(cls, 
                     buffer: bytes, 
                     metadata: dict,
-                    ext: str='.npz',
+                    ext: str='.png',
                     allow_pickle: bool=False):
-        """receives an io byte buffer with the corresponding metadata and creates 
-        the image class
+        """receives an io byte buffer with the corresponding metadata and 
+        creates the image class
 
         Parameters
         ----------
@@ -244,18 +255,18 @@ class Analyzer:
         allow_pickle : bool, optional
             _description_, by default False
         """        
-
-        values = dict(np.load(
-            io.BytesIO(buffer), 
-            allow_pickle=allow_pickle))
-        cls = cls.from_dict(values, metadata)
-        # cls = Image(values['image'], label=metadata['filename'])
-        # cls.metadata = metadata
-        return cls
+        if 'ext' in metadata:
+            ext = metadata['ext']
+        if ext in IMAGE_EXTENSIONS:
+            image = cv2.imdecode(np.frombuffer(buffer, np.uint8), -1)
+            return cls.from_dict(image, metadata)
     
-    def to_buffer(self, ext: str='.npz'):
-        output = io.BytesIO()
-        np.savez(output, self.values)
+    def to_buffer(self, ext: str = '.png'):
+        if ext in IMAGE_EXTENSIONS:
+            is_success, buffer = cv2.imencode(ext, self.image)
+            output = io.BytesIO(buffer)
+        else:
+            raise ValueError("Extension not supported")
         return output.getvalue()
         
     def __contains__(self, x):

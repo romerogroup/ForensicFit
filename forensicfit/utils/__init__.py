@@ -5,3 +5,4 @@ if HAS_PYMONGO:
     from . import array_tools
 if HAS_OPENCV:
     from . import image_tools
+from . import plotter

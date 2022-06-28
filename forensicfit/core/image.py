@@ -9,6 +9,7 @@ __version__ = '1.0'
 __author__ = 'Pedram Tavadze'
 
 # externals
+from re import X
 import cv2
 from matplotlib import pylab as plt
 import numpy as np
@@ -42,7 +43,8 @@ class Image(Mapping):
 
         self.image = image
         self.values = {'image': self.image}
-        self.metadata = Metadata({'mode': 'image'})
+        self.metadata = Metadata({'mode': 'image', 
+                                  'resolution': self.image.shape})
         self.metadata.update(kwargs)
 
     @classmethod
@@ -86,14 +88,72 @@ class Image(Mapping):
             # cls.metadata = metadata
         elif ext in IMAGE_EXTENSIONS:
             image = cv2.imdecode(np.frombuffer(buffer, np.uint8), -1)
-            return cls(image, metadata)
+            obj = cls(image)
+            obj.metadata.update(metadata)
+            return obj
 
+    
+    def isolate(self,
+             x_start: int, 
+             x_end: int, 
+             y_start: int, 
+             y_end: int) -> np.ndarray:
+        """isolates a rectangle from the image
+
+        Parameters
+        ----------
+        x_start : int
+            _description_
+        x_end : int
+            _description_
+        y_start : int
+            _description_
+        y_end : int
+            _description_
+
+        Returns
+        -------
+        np.ndarray
+            _description_
+        """
+        return self.image[y_start:y_end, x_start:x_end]
+    
+    def crop(self,
+             x_start: int, 
+             x_end: int, 
+             y_start: int, 
+             y_end: int) -> np.ndarray:
+        self.image = self.isolate(**locals())
+        self.metadata['resolution'] = self.image.shape
+        return
     
     @classmethod
     def from_dict(cls, values: dict, metadata: dict):
         return cls(values['image'], metadata)
         
+        
+    @property
+    def shape(self):
+        return self.image.shape
+        
+    def convert_to_gray(self):
+        if len(self.shape) == 2:
+            return 
+        elif len(self.shape) == 3:
+            if self.shape[2] == 1:
+                return 
+            elif self.shape[2] == 3:
+                self.image = image_tools.to_gray(self.image)
+                self.metadata['resolution'] = self.image.shape
     
+    def convert_to_rgb(self):
+        if len(self.shape) == 3 and self.shape[2] == 3:
+            return
+        else:
+            self.image = image_tools.to_rbg(self.image)
+            self.metadata['resolution'] = self.image.shape
+            
+                
     def to_buffer(self, ext: str = '.png'):
         if ext == '.npz':
             output = io.BytesIO()
@@ -181,16 +241,19 @@ class Image(Mapping):
         self.image = image_tools.resize(self.image, size)
         self.values['image'] = self.image
         self.metadata['resize'] = size
+        self.metadata['resolution'] = self.image.shape
 
     def flip_h(self):
         self.image = image_tools.flip(self.image)
         self.values['image'] = self.image
         self.metadata['flip_h'] = True
+        self.metadata['resolution'] = self.image.shape
 
     def flip_v(self):
         self.image = np.fliplr(self.image)
         self.values['image'] = self.image
         self.metadata['flip_v'] = True
+        self.metadata['resolution'] = self.image.shape
 
     def copy(self):
         return self.from_dict(self.values, self.metadata)
