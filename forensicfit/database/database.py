@@ -121,7 +121,7 @@ class Database:
             return False
 
     def insert(self,    
-               obj: Image, # | Tape | TapeAnalyzer,
+               obj: Image or Tape or TapeAnalyzer,
                ext: str = '.png',
                overwrite: bool = False, 
                skip: bool = False,
@@ -152,7 +152,7 @@ class Database:
         return _id
 
 
-    def find(self, 
+    def find(self,
              filter: dict, 
              collection: str = 'analysis',
              ext:str = '.npz',

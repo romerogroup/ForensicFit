@@ -58,6 +58,11 @@ class Image(Mapping):
             raise Exception(f"File {path.as_posix()} does not exist")
         
  
+    def to_file(self, filepath: str):
+        image_tools.imwrite(filepath, self.image)
+        return 
+        
+ 
     @classmethod
     def from_buffer(cls, 
                     buffer: bytes, 
