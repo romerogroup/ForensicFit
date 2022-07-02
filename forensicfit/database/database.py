@@ -176,7 +176,8 @@ class Database:
                filter: dict, 
                collection_source: str,
                collection_target,
-               no_cursor_timeout: bool = False):
+               verbose: bool=True,
+               no_cursor_timeout: bool=False):
         Class = self.class_mapping[collection_source]
         fs = self.fs[collection_source]
         
@@ -185,6 +186,8 @@ class Database:
         for iq in queries:
             obj = Class.from_buffer(iq.read(), iq.metadata)
             ext = obj.metadata['ext']
+            if verbose:
+                print(iq.filename)
             self.insert(func(obj), ext=ext, collection=collection_target)
             
                 
