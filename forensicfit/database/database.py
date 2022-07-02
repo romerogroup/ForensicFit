@@ -266,6 +266,12 @@ class Database:
         return [x.replace(".files", '')for x in self.db.list_collection_names() if 'files' in x]
         
 
+    def drop_collection(self, collection: str):
+        for x in ['files', 'chunks']:
+            print(f'drop {collection}.{x}')
+            self.db.drop_collection(f'{collection}.{x}')
+        return
+
     def delete(self, filter: dict, collection: str):
         fs = self.fs[collection]
         queries = fs.find(filter)

@@ -5,7 +5,6 @@ Created on Sun Jun 28 14:11:02 2020
 @author: Pedram Tavadze
 """
 import warnings
-from importlib_metadata import metadata
 import numpy.typing as npt
 from pathlib import Path
 import numpy as np
