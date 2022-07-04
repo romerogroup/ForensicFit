@@ -10,6 +10,7 @@ import os
 import numpy as np
 import pymongo
 import gridfs
+from pathlib import Path
 from random import choice
 from bson.objectid import ObjectId
 from collections.abc import Mapping
@@ -260,6 +261,26 @@ class Database:
         cursor = fs.find()
         return cursor.collection.count_documents(filter=filter)
         
+    def export_to_files(self,
+                        destination: str,
+                        filter: dict,
+                        collection: str,
+                        ext: str='.png',
+                        verbose: bool=True,
+                        no_cursor_timeout: bool=False):
+        Class = self.class_mapping[collection]
+        fs = self.fs[collection]
+        queries = fs.find(filter=filter, 
+                        no_cursor_timeout=no_cursor_timeout)
+        dst = Path(destination)
+        dst.mkdir(exist_ok=True)
+        for iq in queries:
+            obj = Class.from_buffer(iq.read(), iq.metadata)
+            ext = obj.metadata['ext']
+            path = dst / iq.filename
+            if verbose:
+                print(path.as_posix())
+            obj.to_file(path.with_suffix(ext))
 
     @property
     def collection_names(self):

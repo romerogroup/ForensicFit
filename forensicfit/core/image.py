@@ -58,11 +58,6 @@ class Image(Mapping):
             raise Exception(f"File {path.as_posix()} does not exist")
         
  
-    def to_file(self, filepath: str):
-        image_tools.imwrite(filepath, self.image)
-        return 
-        
- 
     @classmethod
     def from_buffer(cls, 
                     buffer: bytes, 
@@ -97,7 +92,24 @@ class Image(Mapping):
             obj.metadata.update(metadata)
             return obj
 
-    
+    @classmethod
+    def from_dict(cls, values: dict, metadata: dict):
+        return cls(values['image'], metadata)
+        
+                    
+    def to_buffer(self, ext: str = '.png'):
+        if ext == '.npz':
+            output = io.BytesIO()
+            np.savez(output, self.values)
+        elif ext in IMAGE_EXTENSIONS:
+            is_success, buffer = cv2.imencode(ext, self.image)
+            output = io.BytesIO(buffer)
+        return output.getvalue()
+
+    def to_file(self, filepath: str):
+        image_tools.imwrite(filepath, self.image)
+        return 
+   
     def isolate(self,
              x_start: int, 
              x_end: int, 
@@ -132,11 +144,6 @@ class Image(Mapping):
         self.metadata['resolution'] = self.image.shape
         return
     
-    @classmethod
-    def from_dict(cls, values: dict, metadata: dict):
-        return cls(values['image'], metadata)
-        
-        
     @property
     def shape(self):
         return self.image.shape
@@ -158,15 +165,6 @@ class Image(Mapping):
             self.image = image_tools.to_rbg(self.image)
             self.metadata['resolution'] = self.image.shape
             
-                
-    def to_buffer(self, ext: str = '.png'):
-        if ext == '.npz':
-            output = io.BytesIO()
-            np.savez(output, self.values)
-        elif ext in IMAGE_EXTENSIONS:
-            is_success, buffer = cv2.imencode(ext, self.image)
-            output = io.BytesIO(buffer)
-        return output.getvalue()
         
     @property
     def aspect_ratio(self):
