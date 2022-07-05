@@ -762,10 +762,10 @@ class TapeAnalyzer(Analyzer):
             ret = []
             bin_based =  self.metadata['analysis']['bin_based']
             dynamic_positions = np.array(bin_based['dynamic_positions'])
-            if self.metadata.analysis['bin_based']['n_bins']>2:
+            if self.metadata.analysis['bin_based']['n_bins'] > 3:
                 delta_y = int(np.diff(dynamic_positions[:, 1][1:-2]).mean())
             else:
-                delta_y = 0
+                delta_y = int(np.diff(dynamic_positions[:, 1]).mean())
             for seg in dynamic_positions:
                 x_start, x_end = seg[0]
                 y_start, _ = seg[1]
@@ -774,6 +774,7 @@ class TapeAnalyzer(Analyzer):
                 y_start = max(y_start, 0)
                 pad_y_end = -1*(min(self.image.shape[0]-y_end, 0))
                 y_end = min(self.image.shape[0], y_end)
+                print(y_start,y_end, x_start,x_end)
                 img = self.image[y_start:y_end, x_start:x_end]
                 # the (len(img.shape)-1) is to adjust to gray scale and rgb
                 img = np.pad(

@@ -166,7 +166,7 @@ class Analyzer:
                         n_bins, 1,
                         sharex=True, 
                         gridspec_kw={'hspace':2e-2})
-                if isinstance(ax, list):
+                elif isinstance(ax, list):
                     assert len(ax) >= n_bins, 'Number of Axes provided ' \
                         "smaller than the number of bins"
                 else:
