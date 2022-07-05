@@ -166,11 +166,12 @@ class Analyzer:
                         n_bins, 1,
                         sharex=True, 
                         gridspec_kw={'hspace':2e-2})
+                
                 elif isinstance(ax, list):
                     assert len(ax) >= n_bins, 'Number of Axes provided ' \
                         "smaller than the number of bins"
-                else:
-                    ax = [ax]
+                if n_bins == 1: ax=[ax]
+                
                 bins = self['bin_based']
                 for i, seg in enumerate(bins):
                     ax[i].imshow(seg, cmap=cmap)
