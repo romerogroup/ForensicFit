@@ -45,7 +45,7 @@ class Tape(Material):
         self.metadata['stretched'] = stretched
         
         
-    def split_v(self, pixel_index=None, side='L'):
+    def split_v(self, side='L', pixel_index=None, ):
         self.values['original_image'] = self.image.copy()
         if pixel_index is None:
             tape_analyzer = TapeAnalyzer(self)
@@ -146,7 +146,7 @@ class TapeAnalyzer(Analyzer):
             gray = image_tools.to_gray(self.image)
             image = image_tools.gaussian_blur(
                 gray, window=self.metadata.gaussian_blur)
-            self.tape.metadata['cropped'] = True
+            self.metadata['cropped'] = True
             contours = image_tools.contours(
                 image, self.metadata.mask_threshold)
             largest_contour = image_tools.largest_contour(contours)
@@ -162,7 +162,8 @@ class TapeAnalyzer(Analyzer):
         self.metadata['boundary'][:, 0] = self.metadata['boundary'][:, 0]*-1 + self.image.shape[1]
         if 'coordinate_based' in self.metadata['analysis']:
             coords  = np.array(self.metadata['analysis']['coordinate_based']['data'])
-            coords = np.fliplr(coords)
+            # coords = np.fliplr(coords)
+            coords *= -1
             self.metadata['analysis']['coordinate_based']['data'] = coords
         if 'bin_based' in self.metadata['analysis']:
             dynamic_positions = np.array(self.metadata['analysis']['bin_based']['dynamic_positions'])
@@ -170,8 +171,9 @@ class TapeAnalyzer(Analyzer):
                 for ix in range(2):
                     dynamic_positions[i][0][ix] = pos[0][ix]*-1 + self.image.shape[1]
             dynamic_positions[:, 0, [0, 1]] = dynamic_positions[:, 0, [1, 0]]
+            
             self.metadata['analysis']['bin_based']['dynamic_positions'] = dynamic_positions
-        self.metadata['flip_v'] =  True
+        self.metadata['flip_v'] =  not(self.metadata['flip_v'])
 
     def flip_h(self):
         # TODO coordinate based
@@ -188,8 +190,9 @@ class TapeAnalyzer(Analyzer):
                 for ix in range(2):
                     dynamic_positions[i, 1, ix] = pos[1, ix]*-1 + self.image.shape[0]
             dynamic_positions[:, 1, [0, 1]] = dynamic_positions[:, 1, [1, 0]]
+            dynamic_positions = np.flipud(dynamic_positions)
             self.metadata['analysis']['bin_based']['dynamic_positions'] = dynamic_positions
-        self.metadata['flip_h'] = True
+        self.metadata['flip_h'] = not(self.metadata['flip_h'])
         
     def load_metadata(self):
         """
@@ -504,7 +507,9 @@ class TapeAnalyzer(Analyzer):
             DESCRIPTION.
 
         """
-
+        was_flipped = self.metadata['flip_v']
+        if was_flipped:
+            self.flip_v()
         x_min = self.xmin
         x_max = self.xmax
         x_interval = x_max-x_min
@@ -554,7 +559,12 @@ class TapeAnalyzer(Analyzer):
             "n_points": n_points, 
             "x_trim_param": x_trim_param, 
             'data': data}
-        return data
+        if was_flipped:
+            self.flip_v()
+            data = self.metadata['analysis']['coordinate_based']['data']
+            data -= np.average(data[:, 0])
+            self.metadata['analysis']['coordinate_based']['data'] = data
+        return 
 
     def get_bin_based(self,
                       window_background=50,
@@ -752,7 +762,10 @@ class TapeAnalyzer(Analyzer):
             ret = []
             bin_based =  self.metadata['analysis']['bin_based']
             dynamic_positions = np.array(bin_based['dynamic_positions'])
-            delta_y = int(np.diff(dynamic_positions[:, 1][1:-2]).mean())
+            if self.metadata.analysis['bin_based']['n_bins']>2:
+                delta_y = int(np.diff(dynamic_positions[:, 1][1:-2]).mean())
+            else:
+                delta_y = 0
             for seg in dynamic_positions:
                 x_start, x_end = seg[0]
                 y_start, _ = seg[1]

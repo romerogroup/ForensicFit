@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import itertools
-
+from ..core import Image, Tape, TapeAnalyzer
 
 plt.rcParams["font.family"] = "Arial"
 plt.rc("font", size=11)  # controls default text sizes
@@ -10,6 +10,42 @@ plt.rc("axes", labelsize=14)  # fontsize of the x and y labels
 plt.rc("xtick", labelsize=12)  # fontsize of the tick labels
 plt.rc("ytick", labelsize=12)  # fontsize of the tick labels
 plt.rc("legend", fontsize=12)  # legend fontsize
+
+
+def plot_pair(obj_1: Image or Tape or TapeAnalyzer, 
+              obj_2: Image or Tape or TapeAnalyzer,
+              which: str = None,
+              mode: str = None,
+              savefig: str = None,
+              cmap: str='gray', 
+              show: bool=True,
+              figsize: tuple = None,
+              **kwargs,
+              ):
+    
+    if which == 'bin_based' and mode == 'individual_bins':
+        n_bins = max(
+            obj_1.metadata['analysis']['bin_based']['n_bins'], 
+            obj_1.metadata['analysis']['bin_based']['n_bins']
+            )
+        figsize = figsize or (n_bins/4, 2*n_bins)
+        figure = plt.figure(figsize=figsize)
+        axes = figure.subplots(
+            n_bins, 2,
+            gridspec_kw={'hspace':0.1, 'wspace': 0.001})
+        ax = [axes[:, 0], axes[:, 1]]
+    else:
+        figsize = figsize or (20, 10)
+        figure = plt.figure(figsize=figsize)
+        axes = figure.subplots(1, 2)
+        ax = [axes[0], axes[1]]
+    for i, obj in enumerate([obj_1, obj_2]):
+        obj.plot(which, ax=ax[i], mode=mode, cmap=cmap, **kwargs)
+    if show:
+        plt.show()
+    if savefig is not None:
+        plt.savefig(savefig)
+    return 
 
 
 def plot_confusion_matrix(matrix: np.asarray,

@@ -182,7 +182,7 @@ class Image(Mapping):
         gcd = np.gcd(self.image.shape[0], self.image.shape[1])
         return (self.image.shape[1]//gcd, self.image.shape[0]//gcd)
 
-    def plot(self, savefig = None, cmap = 'gray', ax = None, rotate=0.0, show=False):
+    def plot(self, savefig = None, cmap = 'gray', ax = None, rotate=0.0, show=False, **kwargs):
         """
         
 
@@ -214,8 +214,8 @@ class Image(Mapping):
         ax.yaxis.set_visible(False)
         if show:
             plt.show()
-        if savefig is not None:
-            cv2.imwrite(savefig, self.image)
+        # if savefig is not None:
+        #     cv2.imwrite(savefig, self.image)
         return ax
                 
     def show(self, wait=0, savefig = None):

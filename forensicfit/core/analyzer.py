@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
+from typing import List
 import cv2
-from matplotlib import pylab as plt
+from matplotlib import gridspec, pylab as plt
+from matplotlib.axes import Axes
 from matplotlib.colors import Normalize
 import numpy as np
 from scipy.stats import norm
@@ -72,12 +74,12 @@ class Analyzer:
 
         
     def plot(self,
-             which, 
-             cmap='gray', 
-             savefig = None, 
-             ax = None, 
-             reverse_x = False, 
-             show = False, 
+             which: str, 
+             cmap: str='gray', 
+             savefig: str = None, 
+             ax: Axes or List[Axes]= None, 
+             show: bool = False,
+             mode: str = None, 
              **kwargs):
        
         """
@@ -119,88 +121,100 @@ class Analyzer:
             if ax is None:
                 plt.figure(figsize=(3, 10))
                 ax = plt.subplot(111)
-                
-            if "plot_gaussian" in kwargs:
+            if mode == "gaussian":
                 dy = (self.ymax-self.ymin)/len(self[which])
-                if kwargs["plot_gaussian"]:
-                    # norm = Normalize(vmin, vmax)
-                    cmap=plt.get_cmap('gray')
-                    for ig in self[which]:
-                        x = np.linspace(ig[0]-3*ig[2], ig[0]+3*ig[2])
-                        dx = x[2]-x[1]
-                        y = np.ones_like(x)*ig[1]
-                        y_prime = norm.pdf(x, ig[0], ig[2])
-                        y_prime /= sum(y_prime)/dx
-                        colors = cmap(y_prime)
-                        y_prime*=dy
-                        ax.fill_between(x, y, y+y_prime, cmap='gray')
+                # norm = Normalize(vmin, vmax)
+                cmap=plt.get_cmap('gray')
+                for ig in self[which]:
+                    x = np.linspace(ig[0]-3*ig[2], ig[0]+3*ig[2])
+                    dx = x[2]-x[1]
+                    y = np.ones_like(x)*ig[1]
+                    y_prime = norm.pdf(x, ig[0], ig[2])
+                    y_prime /= sum(y_prime)/dx
+                    colors = cmap(y_prime)
+                    y_prime*=dy
+                    ax.fill_between(x, y, y+y_prime, cmap='gray')
             
-            elif "plot_errorbar" in kwargs:
-                if kwargs["plot_errorbar"]:
-                    ax.errorbar(self[which][:, 0],
-                                np.flip(self[which][:, 1]),
-                                xerr= self[which][:, 2],
-                                ecolor='blue',
-                                color='red',
-                                markersize=0.5,
-                                fmt='o')
+            elif mode == "errorbar":
+                ax.errorbar(self[which][:, 0],
+                            np.flip(self[which][:, 1]),
+                            xerr= self[which][:, 2],
+                            ecolor='blue',
+                            color='red',
+                            markersize=0.5,
+                            fmt='o')
 
             else:
-                    ax.scatter(self[which][:, 0],
-                            np.flip(self[which][:, 1]),
-                            c='red',
-                            s=1)
+                ax.scatter(self[which][:, 0],
+                        np.flip(self[which][:, 1]),
+                        c='red',
+                        s=1)
             ax.set_ylim(min(self[which][:, 1]),max(self[which][:, 1]))            
             ymin = min(self[which][:, 0])
-            if reverse_x :
-                ax.set_xlim(max(self[which][:, 0])*1.1, ymin - abs(ymin)*0.1)
-            else :
-                
-                ax.set_xlim(ymin-abs(ymin)*0.9, max(self[which][:, 0])*1.1)
+            ax.set_xlim(ymin-abs(ymin)*0.9, max(self[which][:, 0])*1.1)
         elif which == 'boundary':
             ax = self.plot('image', cmap=cmap, ax=ax)
             ax = self.plot_boundary(ax=ax)
         elif which == 'bin_based':
-            if ax is None:
-                plt.figure(figsize = (16, 9))
-                ax = plt.subplot(111)
-            dynamic_positions = self.metadata[
-                'analysis'][which]['dynamic_positions']
-            
-            colors = [
-                'red', 'blue', 'green', 'cyan', 'magenta'
-                ]*len(dynamic_positions)
-            styles = [
-                'solid', 'dashed', 'dotted', 'dashdot'
-                ]*len(dynamic_positions)
-            xs = []
-            for i, seg in enumerate(dynamic_positions):
-                y1 = seg[1][0]
-                y2 = seg[1][1]
-                x1 = seg[0][0]
-                x2 = seg[0][1]
-                xs.append(x1)
-                xs.append(x2)
-                ax.plot([x1, x1], [y1, y2], color=colors[i], 
-                        linestyle=styles[i], linewidth=1)
-                ax.plot([x2, x2], [y1, y2], color=colors[i], 
-                        linestyle=styles[i], linewidth=1)
-                ax.plot([x1, x2], [y1, y1], color=colors[i], 
-                        linestyle=styles[i], linewidth=1)
-                ax.plot([x1, x2], [y2, y2], color=colors[i], 
-                        linestyle=styles[i], linewidth=1)
-            ax = self.plot('image', ax=ax, cmap=cmap)
+            if mode == 'individual_bins':
+                dynamic_positions = self.metadata[
+                    'analysis']['bin_based']['dynamic_positions']
+                n_bins = self.metadata['analysis']['bin_based']['n_bins']
+                if ax is None:
+                    figure = plt.figure(figsize=(10, 20))
+                    ax = figure.subplots(
+                        n_bins, 1,
+                        sharex=True, 
+                        gridspec_kw={'hspace':2e-2})
+                if isinstance(ax, list):
+                    assert len(ax) >= n_bins, 'Number of Axes provided ' \
+                        "smaller than the number of bins"
+                else:
+                    ax = [ax]
+                bins = self['bin_based']
+                for i, seg in enumerate(bins):
+                    ax[i].imshow(seg, cmap=cmap)
+                    ax[i].xaxis.set_visible(False)
+                    ax[i].yaxis.set_visible(False)
+                ax = ax[-1]
+            else:
+                if ax is None:
+                    plt.figure(figsize=(16, 9))
+                    ax = plt.subplot(111)
+                dynamic_positions = self.metadata[
+                    'analysis'][which]['dynamic_positions']
+                colors = [
+                    'red', 'blue', 'green', 'cyan', 'magenta'
+                    ]*len(dynamic_positions)
+                styles = [
+                    'solid', 'dashed', 'dotted', 'dashdot'
+                    ]*len(dynamic_positions)
+                xs = []
+                for i, seg in enumerate(dynamic_positions):
+                    y1 = seg[1][0]
+                    y2 = seg[1][1]
+                    x1 = seg[0][0]
+                    x2 = seg[0][1]
+                    xs.append(x1)
+                    xs.append(x2)
+                    ax.plot([x1, x1], [y1, y2], color=colors[i], 
+                            linestyle=styles[i], linewidth=1)
+                    ax.plot([x2, x2], [y1, y2], color=colors[i], 
+                            linestyle=styles[i], linewidth=1)
+                    ax.plot([x1, x2], [y1, y1], color=colors[i], 
+                            linestyle=styles[i], linewidth=1)
+                    ax.plot([x1, x2], [y2, y2], color=colors[i], 
+                            linestyle=styles[i], linewidth=1)
+                ax = self.plot('image', ax=ax, cmap=cmap)
         else:
             if ax is None:
                 plt.figure(figsize = (16, 9))
                 ax = plt.subplot(111)
             ax.imshow(self[which], cmap=cmap)
-            if reverse_x :
-                ax.set_xlim(self[which].shape[1], 0)
-            else :
-                ax.set_xlim(0, self[which].shape[1])
-        ax.xaxis.set_visible(False)
-        ax.yaxis.set_visible(False)
+            ax.set_xlim(0, self[which].shape[1])
+        if which != 'coordinate_based':
+            ax.xaxis.set_visible(False)
+            ax.yaxis.set_visible(False)
         if savefig is not None:
             plt.savefig(savefig)
             return ax
