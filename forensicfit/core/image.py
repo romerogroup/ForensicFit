@@ -9,7 +9,6 @@ __version__ = '1.0'
 __author__ = 'Pedram Tavadze'
 
 # externals
-from re import X
 import cv2
 from matplotlib import pylab as plt
 import numpy as np
@@ -18,6 +17,7 @@ from scipy import ndimage
 # built-ins
 from abc import ABCMeta, abstractmethod
 from collections.abc import Mapping
+import pathlib
 from pathlib import Path
 import io
 # internals
@@ -48,7 +48,7 @@ class Image(Mapping):
         self.metadata.update(kwargs)
 
     @classmethod
-    def from_file(cls, filepath: str):
+    def from_file(cls, filepath: str or pathlib.Path):
 
         path = Path(filepath)
         if path.exists():

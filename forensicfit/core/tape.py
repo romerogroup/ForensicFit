@@ -162,8 +162,8 @@ class TapeAnalyzer(Analyzer):
         self.metadata['boundary'][:, 0] = self.metadata['boundary'][:, 0]*-1 + self.image.shape[1]
         if 'coordinate_based' in self.metadata['analysis']:
             coords  = np.array(self.metadata['analysis']['coordinate_based']['data'])
-            # coords = np.fliplr(coords)
-            coords *= -1
+            # coords = np.flipud(coords)
+            coords[:, 0] *= -1
             self.metadata['analysis']['coordinate_based']['data'] = coords
         if 'bin_based' in self.metadata['analysis']:
             dynamic_positions = np.array(self.metadata['analysis']['bin_based']['dynamic_positions'])
@@ -182,7 +182,7 @@ class TapeAnalyzer(Analyzer):
         self.metadata['boundary'][:, 1] = self.metadata['boundary'][:, 1]*-1 + self.image.shape[0]
         if 'coordinate_based' in self.metadata['analysis']:
             coords  = np.array(self.metadata['analysis']['coordinate_based']['data'])
-            coords = np.flipud(coords)
+            coords[:, 1] *= -1
             self.metadata['analysis']['coordinate_based']['data'] = coords
         if 'bin_based' in self.metadata['analysis']:
             dynamic_positions = np.array(self.metadata['analysis']['bin_based']['dynamic_positions'])
@@ -574,6 +574,7 @@ class TapeAnalyzer(Analyzer):
                       resize=False,
                       n_bins=10,
                       overlap=100,
+                      border: str = 'avg',
                       ):
         """
         This method returns the detected edge as a set of croped images from 
@@ -637,11 +638,16 @@ class TapeAnalyzer(Analyzer):
                 cond1 = boundary[:, 1] >= y_start - overlap
                 cond2 = boundary[:, 1] <= y_end + overlap
                 cond_and = np.bitwise_and(cond1, cond2)
-                
-                x_start = boundary[cond_and, 0].min() - window_background
+                x_slice = boundary[cond_and, 0]
+                if border == 'min' or iseg in [0, n_bins-1]:
+                    loc = x_slice.min()
+                else:
+                    cond_x = x_slice.min() + 500
+                    loc = np.average(x_slice[x_slice < cond_x])
+                x_start =  loc - window_background
                 if x_start < 0:
                     x_start=0
-                x_end = boundary[cond_and, 0].min() + window_tape
+                x_end = loc + window_tape
                 if self.image.shape[1] < x_end:
                     diff =  self.image.shape[1] - x_end
                     x_start += diff
@@ -774,7 +780,6 @@ class TapeAnalyzer(Analyzer):
                 y_start = max(y_start, 0)
                 pad_y_end = -1*(min(self.image.shape[0]-y_end, 0))
                 y_end = min(self.image.shape[0], y_end)
-                print(y_start,y_end, x_start,x_end)
                 img = self.image[y_start:y_end, x_start:x_end]
                 # the (len(img.shape)-1) is to adjust to gray scale and rgb
                 img = np.pad(

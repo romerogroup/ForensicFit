@@ -6,15 +6,17 @@ Created on Mon Apr 12 09:36:25 2021
 used PyChemia Database class as a guide
 https://github.com/MaterialsDiscovery/PyChemia/blob/master/pychemia/db/db.py
 """
-import os
+import subprocess
 import numpy as np
 import pymongo
+import bson
 import gridfs
+import pathlib
 from pathlib import Path
 from random import choice
 from bson.objectid import ObjectId
 from collections.abc import Mapping
-from typing import Callable, List
+from typing import Callable, List, Optional, Union
 from ..core import Tape, TapeAnalyzer, Image, Metadata
 from ..utils.array_tools import read_bytes_io, write_bytes_io
 
@@ -282,10 +284,8 @@ class Database:
                 print(path.as_posix())
             obj.to_file(path.with_suffix(ext))
 
-    @property
-    def collection_names(self):
-        return [x.replace(".files", '')for x in self.db.list_collection_names() if 'files' in x]
-        
+
+
 
     def drop_collection(self, collection: str):
         for x in ['files', 'chunks']:
@@ -304,6 +304,10 @@ class Database:
         self.client.drop_database(self.name)
 
     @property
+    def collection_names(self):
+        return [x.replace(".files", '')for x in self.db.list_collection_names() if 'files' in x]
+
+    @property
     def connected(self):
         try:
             self.client.server_info()  # force connection on a request as the
@@ -315,6 +319,8 @@ class Database:
     @property
     def server_info(self):
         return self.client.server_info()
+    
+
 
 def dict2mongo_query(inp: dict, previous_key: str = '') -> dict:
     ret = []
@@ -348,3 +354,36 @@ def list_databases(host='localhost',
     database_names = client.list_database_names()
     return database_names
 
+
+def dump(db: Optional[str] = None, 
+         host: Optional[str] = None,
+         port: Optional[int] = None,
+         username: Optional[str] = None,
+         password: Optional[str] = None,
+         out: Optional[str] = None,
+         collection: Optional[str] = None,
+         ):
+    command = 'mongodump '
+    tags = locals()
+    for itag in tags:
+        if tags[itag] is not None and itag != 'command':
+            command += f'--{itag}={tags[itag]} '
+    print(command)
+    subprocess.check_output(command, shell=True)
+    
+def restore(path: Optional[str] = None,
+            db: Optional[str] = None, 
+            host: Optional[str] = None,
+            port: Optional[int] = None,
+            username: Optional[str] = None,
+            password: Optional[str] = None,
+            collection: Optional[str] = None,
+         ):
+    command = 'mongorestore '
+    tags = locals()
+    for itag in tags:
+        if tags[itag] is not None and itag not in ['command', 'path']:
+            command += f'--{itag}={tags[itag]} '
+    command += path
+    print(command)
+    subprocess.check_output(command, shell=True)

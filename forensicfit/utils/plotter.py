@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import itertools
-from ..core import Image, Tape, TapeAnalyzer
+from typing import Any, List
 
 plt.rcParams["font.family"] = "Arial"
 plt.rc("font", size=11)  # controls default text sizes
@@ -12,14 +12,15 @@ plt.rc("ytick", labelsize=12)  # fontsize of the tick labels
 plt.rc("legend", fontsize=12)  # legend fontsize
 
 
-def plot_pair(obj_1: Image or Tape or TapeAnalyzer, 
-              obj_2: Image or Tape or TapeAnalyzer,
+def plot_pair(obj_1: Any, 
+              obj_2: Any,
               which: str = None,
               mode: str = None,
               savefig: str = None,
               cmap: str='gray', 
               show: bool=True,
               figsize: tuple = None,
+              labels: List[str] = None,
               **kwargs,
               ):
     
@@ -40,7 +41,9 @@ def plot_pair(obj_1: Image or Tape or TapeAnalyzer,
         axes = figure.subplots(1, 2)
         ax = [axes[0], axes[1]]
     for i, obj in enumerate([obj_1, obj_2]):
-        obj.plot(which, ax=ax[i], mode=mode, cmap=cmap, **kwargs)
+        axi = obj.plot(which, ax=ax[i], mode=mode, cmap=cmap, **kwargs)
+        if labels is not None:
+            axi.set_title(labels[i])
     if show:
         plt.show()
     if savefig is not None:
