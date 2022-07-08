@@ -118,40 +118,54 @@ class Analyzer:
         """
         
         if which == "coordinate_based":
+            data = self.metadata['analysis']['coordinate_based']['data']
+            stds = self.metadata['analysis']['coordinate_based']['stds']
+            # slops = self.metadata['analysis']['coordinate_based']['slops']
+            n_points = len(data)
             if ax is None:
                 plt.figure(figsize=(3, 10))
                 ax = plt.subplot(111)
-            if mode == "gaussian":
-                dy = (self.ymax-self.ymin)/len(self[which])
+            if mode == "gaussians":
+                dy = (self.ymax-self.ymin)/len(data)
                 # norm = Normalize(vmin, vmax)
                 cmap=plt.get_cmap('gray')
-                for ig in self[which]:
-                    x = np.linspace(ig[0]-3*ig[2], ig[0]+3*ig[2])
-                    dx = x[2]-x[1]
+                data[:, 1] = np.flip(data[:, 1])
+                for i, ig in enumerate(data):
+                    x = np.linspace(ig[0]-3*stds[i], ig[0]+3*stds[i])
+                    dx = (x[2]-x[1])
                     y = np.ones_like(x)*ig[1]
-                    y_prime = norm.pdf(x, ig[0], ig[2])
+                    y_prime = norm.pdf(x, ig[0], stds[i])
                     y_prime /= sum(y_prime)/dx
                     colors = cmap(y_prime)
                     y_prime*=dy
                     ax.fill_between(x, y, y+y_prime, cmap='gray')
-            
-            elif mode == "errorbar":
-                ax.errorbar(self[which][:, 0],
-                            np.flip(self[which][:, 1]),
-                            xerr= self[which][:, 2],
+                    ax.scatter(data[:, 0],
+                        data[:, 1],
+                        c='black',
+                        s=0.01)
+            elif mode == "error_bars":
+                ax.errorbar(data[:, 0],
+                            np.flip(data[:, 1]),
+                            xerr=stds,
                             ecolor='blue',
                             color='red',
                             markersize=0.5,
                             fmt='o')
-
+            elif mode == 'slops':
+                dy = data[0, 1] - data[1, 1]
+                for i, iseg in enumerate(slops):
+                    m = iseg[0]
+                    b0 = iseg[1]
+                    # y = np.linspace(data[i, 1])
             else:
-                ax.scatter(self[which][:, 0],
-                        np.flip(self[which][:, 1]),
+                ax.scatter(data[:, 0],
+                        np.flip(data[:, 1]),
                         c='red',
                         s=1)
-            ax.set_ylim(min(self[which][:, 1]),max(self[which][:, 1]))            
-            ymin = min(self[which][:, 0])
-            ax.set_xlim(ymin-abs(ymin)*0.9, max(self[which][:, 0])*1.1)
+            ax.set_ylim(min(data[:, 1]),max(data[:, 1]))            
+            ymin = min(data[:, 0])
+            ymax = max(data[:, 1])
+            ax.set_xlim(ymin-abs(ymin)*0.9, ymax+abs(ymax)*1.1)
         elif which == 'boundary':
             ax = self.plot('image', cmap=cmap, ax=ax)
             ax = self.plot_boundary(ax=ax)

@@ -162,9 +162,12 @@ class TapeAnalyzer(Analyzer):
         self.metadata['boundary'][:, 0] = self.metadata['boundary'][:, 0]*-1 + self.image.shape[1]
         if 'coordinate_based' in self.metadata['analysis']:
             coords  = np.array(self.metadata['analysis']['coordinate_based']['data'])
+            # slops  = np.array(self.metadata['analysis']['coordinate_based']['slops'])
             # coords = np.flipud(coords)
             coords[:, 0] *= -1
+            # slops[:, 0] *= -1
             self.metadata['analysis']['coordinate_based']['data'] = coords
+            # self.metadata['analysis']['coordinate_based']['slops'] = slops
         if 'bin_based' in self.metadata['analysis']:
             dynamic_positions = np.array(self.metadata['analysis']['bin_based']['dynamic_positions'])
             for i, pos in enumerate(dynamic_positions):
@@ -519,7 +522,9 @@ class TapeAnalyzer(Analyzer):
         cond2 = boundary[:, 0] <= x_min+x_interval/x_trim_param*0.95
         cond_12 = np.bitwise_and(cond1, cond2)
         # cond_12 = cond1
-        data = np.zeros((n_points, 3))
+        data = np.zeros((n_points, 2))
+        stds = np.zeros((n_points,))
+        slops = np.zeros((n_points, 2))
         y_min = self.ymin
         y_max = self.ymax
         y_interval = y_max - y_min
@@ -541,13 +546,17 @@ class TapeAnalyzer(Analyzer):
                 #         self.metadata['image']['split_v']['side'],
                 #         ['flipped', 'not_flipped'][int(self.metadata['image']['flip_h'])],
                 #         x_trim_param-1))
+                if was_flipped:
+                    self.flip_v()
                 return self.get_coordinate_based(n_points=n_points, 
                                                  x_trim_param=x_trim_param - 1, 
                                                  plot=plot)
             data[ipoint, :2] = np.average(points, axis=0)
-            data[ipoint, 2] = np.std(points[:, 0])
-        if shift:
-            data[:, 0] -= np.average(data[:, 0])
+            stds[ipoint] = np.std(points[:, 0])
+            # slops[ipoint, :] = np.polyfit(points[:, 0], points[:, 1], 1)
+            
+        # if shift:
+        #     data[:, 0] -= np.average(data[:, 0])
 
         if plot:
             # plt.figure(figsize=(1.65,10))
@@ -558,12 +567,15 @@ class TapeAnalyzer(Analyzer):
         self.metadata['analysis']['coordinate_based'] = {
             "n_points": n_points, 
             "x_trim_param": x_trim_param, 
-            'data': data}
+            'data': data, 
+            'stds': stds}
+            # 'slops': slops}
         if was_flipped:
             self.flip_v()
-            data = self.metadata['analysis']['coordinate_based']['data']
-            data -= np.average(data[:, 0])
-            self.metadata['analysis']['coordinate_based']['data'] = data
+        #     data = self.metadata['analysis']['coordinate_based']['data']
+        #     data -= np.average(data[:, 0])
+        #     self.metadata['analysis']['coordinate_based']['data'] = data
+        
         return 
 
     def get_bin_based(self,
