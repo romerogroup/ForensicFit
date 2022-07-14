@@ -215,7 +215,11 @@ class Database:
         Class = self.class_mapping[collection]
         fs = self.fs[collection]
         iq = fs.find_one(filter)
-        return Class.from_buffer(iq.read(), iq.metadata)
+        if iq is not None:
+            return Class.from_buffer(iq.read(), iq.metadata)
+        else:
+            raise ValueError(f'No entry found with the filter: {str(filter)}')
+        
         
     def find_with_id(self, _id: str, collection: str) -> object:
         """Retrieves core object based on the MongoDB _id

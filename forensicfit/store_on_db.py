@@ -42,6 +42,10 @@ def worker(args):
         db.insert(tape, **insert_options)
         
 def get_files(path: Path, ret: list = []):
+    if path.is_file() and path.suffix in IMAGE_EXTENSIONS:
+        ret.append({path.stem: {'source': path.as_posix(),
+                        'filename': path.stem}})
+        return ret
     for x in path.iterdir():
         if x.is_file() and x.suffix in IMAGE_EXTENSIONS :
             ret.append({x.stem: {'source': x.as_posix(),
@@ -50,7 +54,7 @@ def get_files(path: Path, ret: list = []):
             get_files(x, ret)
     return ret
 
-    
+
 
 def store_on_db(
         dir_path='.',
