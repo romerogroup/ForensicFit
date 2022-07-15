@@ -373,7 +373,7 @@ def dump(db: Optional[str] = None,
         if tags[itag] is not None and itag != 'command':
             command += f'--{itag}={tags[itag]} '
     print(command)
-    subprocess.check_output(command, shell=True)
+    print(subprocess.check_output(command, shell=True))
     
 def restore(path: Optional[str] = None,
             db: Optional[str] = None, 

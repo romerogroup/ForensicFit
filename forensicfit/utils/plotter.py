@@ -1,11 +1,12 @@
 import itertools
-from typing import Any, List
+from typing import Any, List, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
+import tensorflow as tf
 from scipy import stats
 from matplotlib.axes import Axes
-
+from matplotlib.ticker import MaxNLocator, MultipleLocator
 
 plt.rcParams["font.family"] = "Arial"
 plt.rc("font", size=11)  # controls default text sizes
@@ -62,6 +63,45 @@ def plot_pair(obj_1: Any,
     if savefig is not None:
         plt.savefig(savefig)
     return
+
+
+def plot_metrics(history: tf.keras.callbacks.History,
+                metrics: List[Union[tf.keras.metrics.Metric, str]],
+                has_valid: bool=True,
+                savefig: str = None):
+    """Plots the given 'metric' from 'history'.
+    """
+    n_plots = len(metrics)
+    n_rows = n_plots//2 + n_plots%2
+    fig = plt.figure(figsize=((14, n_rows*2+10)))
+    axes = fig.subplots(n_rows, 2, sharex=True)
+    for i, metric in enumerate(metrics):
+        if 'keras' in str(type(metric)):
+            name = metric.name
+            ylabel = metric.__str__().split('(')[0]
+        elif isinstance(metric, str):
+            name = metric
+            ylabel = metric.capitalize()
+        EPOCHS = len(history[name])
+        x = np.arange(1, EPOCHS+1)
+        ax = axes[i//2, i%2]
+        ax.plot(x, history[name], color='blue')
+        if has_valid:
+            ax.plot(x, history["val_" + name], color='red')
+            ax.legend(["train", "validation"])#, loc="upper left")
+        ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+        ax.xaxis.set_minor_locator(MultipleLocator(1))
+        ax.tick_params(axis="x", direction="inout")
+        ax.tick_params(which="minor", axis="x", direction="in") 
+        ax.tick_params(axis="y", direction="inout")
+        ax.set_ylabel(ylabel)
+        if i//2 == n_rows - 1:
+            ax.set_xlabel("epoch")
+        ax.set_xlim(1, EPOCHS)
+    plt.tight_layout()
+    if savefig is not None:
+        plt.savefig(savefig)
+    plt.show()
 
 
 def plot_confusion_matrix(matrix: np.asarray,
