@@ -109,12 +109,12 @@ class Image(Mapping):
     def to_file(self, filepath: str):
         image_tools.imwrite(filepath, self.image)
         return 
-   
+    
     def isolate(self,
-             x_start: int, 
-             x_end: int, 
-             y_start: int, 
-             y_end: int) -> np.ndarray:
+                x_start: int, 
+                x_end: int, 
+                y_start: int, 
+                y_end: int) -> np.ndarray:
         """isolates a rectangle from the image
 
         Parameters

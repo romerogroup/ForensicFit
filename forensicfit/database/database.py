@@ -186,6 +186,8 @@ class Database:
         
         queries = fs.find(filter=filter, 
                         no_cursor_timeout=no_cursor_timeout)
+        if queries is None:
+            print('There are no matching entries to the provided filter')
         for iq in queries:
             obj = Class.from_buffer(iq.read(), iq.metadata)
             ext = obj.metadata['ext']
