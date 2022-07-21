@@ -120,7 +120,7 @@ class Analyzer:
         if which == "coordinate_based":
             data = self.metadata['analysis']['coordinate_based']['data']
             stds = self.metadata['analysis']['coordinate_based']['stds']
-            # slops = self.metadata['analysis']['coordinate_based']['slops']
+            slops = self.metadata['analysis']['coordinate_based']['slops']
             n_points = len(data)
             if ax is None:
                 plt.figure(figsize=(3, 10))

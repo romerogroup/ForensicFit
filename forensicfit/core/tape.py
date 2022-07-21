@@ -532,9 +532,9 @@ class TapeAnalyzer(Analyzer):
         self.metadata['edge_x_std'] = float(np.std(edge[:, 0]))
         self.metadata['edge_x_range'] = int(edge[:, 0].max() - edge[:, 0].min())
         
-        for ipoint in range(0, n_points):
-            y_start = y_min+ipoint*(y_interval/n_points)
-            y_end = y_min+(ipoint+1)*(y_interval/n_points)
+        for i_point in range(0, n_points):
+            y_start = y_min+i_point*(y_interval/n_points)
+            y_end = y_min+(i_point+1)*(y_interval/n_points)
             cond1 = edge[:, 1] >= y_start
             cond2 = edge[:, 1] <= y_end
             cond_and = np.bitwise_and(cond1, cond2)
@@ -551,9 +551,9 @@ class TapeAnalyzer(Analyzer):
                 return self.get_coordinate_based(n_points=n_points, 
                                                  x_trim_param=x_trim_param - 1, 
                                                  plot=plot)
-            data[ipoint, :2] = np.average(points, axis=0)
-            stds[ipoint] = np.std(points[:, 0])
-            # slops[ipoint, :] = np.polyfit(points[:, 0], points[:, 1], 1)
+            data[i_point, :2] = np.average(points, axis=0)
+            stds[i_point] = np.std(points[:, 0])
+            slops[i_point, :] = np.polyfit(points[:, 0], points[:, 1], 1)
             
         # if shift:
         #     data[:, 0] -= np.average(data[:, 0])
@@ -567,9 +567,9 @@ class TapeAnalyzer(Analyzer):
         self.metadata['analysis']['coordinate_based'] = {
             "n_points": n_points, 
             "x_trim_param": x_trim_param, 
-            'data': data, 
-            'stds': stds}
-            # 'slops': slops}
+            'coordinates': data,
+            'stds': stds,
+            'slops': slops}
         if was_flipped:
             self.flip_v()
         #     data = self.metadata['analysis']['coordinate_based']['data']
