@@ -6,6 +6,7 @@ import numpy as np
 from .. import HAS_TENSORFLOW
 from scipy import stats
 from matplotlib.axes import Axes
+from pathlib import Path
 from matplotlib.ticker import MaxNLocator, MultipleLocator
 
 plt.rcParams["font.family"] = "Arial"
@@ -198,5 +199,6 @@ if HAS_TENSORFLOW:
             ax.set_xlim(1, EPOCHS)
         plt.tight_layout()
         if savefig is not None:
-            plt.savefig(savefig)
+            savefig = Path(savefig)
+            plt.savefig(savefig.absolute().as_posix())
         plt.show()

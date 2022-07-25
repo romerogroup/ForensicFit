@@ -70,13 +70,9 @@ setup(
     license="LICENSE.txt",
     install_requires=[
         "opencv-python",
-        "numpy",
+        "numpy>=1.20",
+        "scipy"
         "matplotlib",
-        "tqdm",
-        "keras",
-        "tensorflow",
-        "scikit-learn",
-        "pymongo"
     ],
     data_files=[("", ["LICENSE.txt"])],
     package_data={"": ["setup.json"]},

@@ -1,9 +1,16 @@
 # -*- coding: utf-8 -*-
 
-import numpy as np
 import io
+
 import cv2
-from gridfs.grid_file import GridOut
+import numpy as np
+from numpy import typing as npt
+
+from .. import HAS_PYMONGO
+
+if HAS_PYMONGO:
+    from gridfs.grid_file import GridOut
+
 
 def serializer(indict: dict) -> dict:
     """Serilizes any given dictionary for mongodb.
@@ -55,3 +62,11 @@ def write_bytes_io(obj: dict, method: str = 'numpy') -> io.BytesIO:
         output = io.BytesIO(buffer)
         return output.getvalue()
     
+def vote_calculator(prediction: npt.ArrayLike) -> npt.ArrayLike:
+    n_voters = prediction.shape[1]
+    ret = np.zeros(shape=(prediction.shape[0]))
+    for i, pred in enumerate(prediction):
+        votes = pred.round()
+        score = votes.sum()/n_voters
+        ret[i] = score
+    return np.array(ret)
