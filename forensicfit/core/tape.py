@@ -620,10 +620,6 @@ class TapeAnalyzer(Analyzer):
 
         """
         overlap = abs(overlap)
-        if self.metadata.cropped and overlap != 0:
-            warnings.warn(("You have selected an overlap larger than 0 with an" 
-                           "autocrop option.\n This might result in errors in" 
-                           "finding overlap on the side edges of the tape."))
         boundary = self.boundary
         x_min = self.xmin
         x_max = self.xmax
