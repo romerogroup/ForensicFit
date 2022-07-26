@@ -657,8 +657,6 @@ class TapeAnalyzer(Analyzer):
                     cond_x = x_slice.min() + 500
                     loc = np.average(x_slice[x_slice < cond_x])
                 x_start =  loc - window_background
-                if x_start < 0:
-                    x_start=0
                 x_end = loc + window_tape
                 if self.image.shape[1] < x_end:
                     diff =  self.image.shape[1] - x_end
@@ -753,9 +751,8 @@ class TapeAnalyzer(Analyzer):
         """        
         return TapeAnalyzer.from_dict(self.values, self.metadata)
 
-
     def __getattr__(self, name):
-       return self[name]
+        return self[name]
 
     def __getitem__(self, x):
         if x == 'image':
@@ -780,7 +777,7 @@ class TapeAnalyzer(Analyzer):
             ret = []
             bin_based =  self.metadata['analysis']['bin_based']
             dynamic_positions = np.array(bin_based['dynamic_positions'])
-            if self.metadata.analysis['bin_based']['n_bins'] > 3:
+            if bin_based['n_bins'] > 3:
                 delta_y = int(np.diff(dynamic_positions[:, 1][1:-2]).mean())
             else:
                 delta_y = int(np.diff(dynamic_positions[:, 1]).mean())
@@ -792,15 +789,21 @@ class TapeAnalyzer(Analyzer):
                 y_start = max(y_start, 0)
                 pad_y_end = -1*(min(self.image.shape[0]-y_end, 0))
                 y_end = min(self.image.shape[0], y_end)
+                pad_x_start = -1*(min(x_start, 0))
+                x_start = max(x_start, 0)
+                
                 img = self.image[y_start:y_end, x_start:x_end]
                 # the (len(img.shape)-1) is to adjust to gray scale and rgb
                 img = np.pad(
                     img, 
-                    ((pad_y_start, pad_y_end),) + ((0, 0),)*(len(img.shape)-1),
+                    ((pad_y_start, pad_y_end),) 
+                    + ((pad_x_start, 0),)
+                    + ((0, 0),)*(len(img.shape)-2),
                     'constant', 
                     constant_values=(0, )
                     )
                 ret.append(img)
+            
             return np.asarray(ret)
         else:
             raise ValueError(f"TapeAnalyzer does not have attrib {x}")    

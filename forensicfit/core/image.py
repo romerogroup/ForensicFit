@@ -149,21 +149,12 @@ class Image(Mapping):
         return self.image.shape
         
     def convert_to_gray(self):
-        if len(self.shape) == 2:
-            return 
-        elif len(self.shape) == 3:
-            if self.shape[2] == 1:
-                return 
-            elif self.shape[2] == 3:
-                self.image = image_tools.to_gray(self.image)
-                self.metadata['resolution'] = self.image.shape
+        self.image = image_tools.to_gray(self.image)
+        self.metadata['resolution'] = self.image.shape
     
     def convert_to_rgb(self):
-        if len(self.shape) == 3 and self.shape[2] == 3:
-            return
-        else:
-            self.image = image_tools.to_rbg(self.image)
-            self.metadata['resolution'] = self.image.shape
+        self.image = image_tools.to_rbg(self.image)
+        self.metadata['resolution'] = self.image.shape
             
         
     @property

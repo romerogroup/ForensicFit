@@ -96,10 +96,19 @@ def to_gray(image):
         Gray Scale image of the input image.
 
     """
-    return cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+    if len(image.shape) == 2:
+        return image
+    elif len(image.shape) == 3:
+        if image.shape[2] == 1:
+            return image
+        elif image.shape[2] == 3:
+            return cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
 
 def to_rbg(image):
-    return cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+    if len(image.shape) == 3 and image.shape[2] == 3:
+        return image
+    else:
+        return cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
 
 def flip(image):
     return cv2.flip(image, 0)
