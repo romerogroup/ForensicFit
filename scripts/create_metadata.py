@@ -90,8 +90,7 @@ def get_lookup(file_dict: Dict[str, str],
                     file_path = files_dict[name]
                     lookup.append(get_metadata(file_path, key))
                 if name+'_mod' in files_dict:
-                    
-file_path = files_dict[name+'_mod']
+                    file_path = files_dict[name+'_mod']
                     lookup.append(get_metadata(file_path, key))    
                 if name not in files_dict:
                     not_exists.append(entry[key])

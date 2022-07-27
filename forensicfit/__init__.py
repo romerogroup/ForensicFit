@@ -24,7 +24,7 @@ if HAS_TENSORFLOW:
     from . import machine_learning
 if HAS_OPENCV and HAS_PYMONGO:
     from . import database as db
-    from .script_process_dir import process_directory
-    from .store_on_db import store_on_db
-    from .from_excel import from_excel
+    # from .script_process_dir import process_directory
+    # from .store_on_db import store_on_db
+    # from .from_excel import from_excel
 

@@ -118,13 +118,8 @@ def store_on_db(
     if n_processors > cpu_count():
         n_processors = cpu_count()
         
-    if metadata_file is not None:
-        with open(metadata_file, 'r') as rf:
-            metadata = json.load(rf)
-    else:
-        dir_path = Path(dir_path)
-        
-        metadata = get_files(dir_path)
+    with open(metadata_file, 'r') as rf:
+        metadata = json.load(rf)
     chunks = get_chunks(metadata, n_processors)
     
     db_settings = dict(name=db_name,
