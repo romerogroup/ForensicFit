@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 import matplotlib.pylab as plt
 from forensicfit import HAS_OPENCV
-
+from pathlib import Path
 
 IMAGE_EXTENSIONS = ['.png', '.bmp', '.dib', '.jpeg', 
                     '.jpg', '.jpe', '.jp2', '.webp',
@@ -236,10 +236,10 @@ def imwrite(fname: str, image: np.array):
     image : np.array
         2d numpy array (or list) to be saved
     """
-    if "pathlib" in str(type(fname)):
-        fname = fname.as_posix()
+    fname = Path(fname)
+    fname.parent.mkdir(exist_ok=True)
+    fname = fname.as_posix()
     if HAS_OPENCV:
         cv2.imwrite(fname, image)
     else:
         plt.imsave(fname, image)
-        d

@@ -8,8 +8,6 @@ from numpy import typing as npt
 
 from .. import HAS_PYMONGO
 
-if HAS_PYMONGO:
-    from gridfs.grid_file import GridOut
 
 
 def serializer(indict: dict) -> dict:
@@ -31,36 +29,6 @@ def serializer(indict: dict) -> dict:
         else :
             ret[key] = indict[key]
     return ret
- 
-def read_bytes_io(obj: GridOut, method: str = 'numpy') -> np.array:
-    """reads a binary file stored in mongodb and returns a numpy array
-
-    Parameters
-    ----------
-    obj : GridOut
-        output from a mongodb girdfs file
-
-    Returns
-    -------
-    np.array
-        numpy array containing the information loaded from gridfs file
-
-    """
-    if method == 'numpy':
-        return np.load(io.BytesIO(obj.read()), allow_pickle=True)
-    elif method == 'opencv':
-        return cv2.imdecode(np.frombuffer(obj.read().getbuffer(), np.uint8), -1)
-
-
-def write_bytes_io(obj: dict, method: str = 'numpy') -> io.BytesIO:
-    if method == 'numpy':
-        output = io.BytesIO()
-        np.savez(output, **obj)
-        return output.getvalue()
-    elif method == 'opencv':
-        is_success, buffer = cv2.imencode(".png", obj)
-        output = io.BytesIO(buffer)
-        return output.getvalue()
     
 def vote_calculator(prediction: npt.ArrayLike) -> npt.ArrayLike:
     n_voters = prediction.shape[1]
@@ -70,3 +38,39 @@ def vote_calculator(prediction: npt.ArrayLike) -> npt.ArrayLike:
         score = votes.sum()/n_voters
         ret[i] = score
     return np.array(ret)
+
+
+if HAS_PYMONGO:
+    from gridfs.grid_file import GridOut
+
+
+    def read_bytes_io(obj: GridOut, method: str = 'numpy') -> np.array:
+        """reads a binary file stored in mongodb and returns a numpy array
+
+        Parameters
+        ----------
+        obj : GridOut
+            output from a mongodb girdfs file
+
+        Returns
+        -------
+        np.array
+            numpy array containing the information loaded from gridfs file
+
+        """
+        if method == 'numpy':
+            return np.load(io.BytesIO(obj.read()), allow_pickle=True)
+        elif method == 'opencv':
+            return cv2.imdecode(np.frombuffer(obj.read().getbuffer(), np.uint8), -1)
+
+
+    def write_bytes_io(obj: dict, method: str = 'numpy') -> io.BytesIO:
+        if method == 'numpy':
+            output = io.BytesIO()
+            np.savez(output, **obj)
+            return output.getvalue()
+        elif method == 'opencv':
+            is_success, buffer = cv2.imencode(".png", obj)
+            output = io.BytesIO(buffer)
+            return output.getvalue()
+

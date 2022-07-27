@@ -158,7 +158,7 @@ class Database:
     def find(self,
              filter: dict, 
              collection: str = 'analysis',
-             ext:str = '.npz',
+             ext:str = '.png',
              version: int = -1,
              no_cursor_timeout: bool = False,
              ) -> list:
