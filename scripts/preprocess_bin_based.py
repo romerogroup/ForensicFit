@@ -13,8 +13,6 @@ from multiprocessing import Pool
 from pathlib import Path
 from typing import List, Dict, Union
 
-from traitlets import default
-
 import forensicfit as ff
 
 import json
@@ -72,6 +70,7 @@ def get_item(name: str,
             if len(tape_analyzer['bin_based']) == 0:
                 db.delete(collection='analysis', filter=criteria)
                 tape_analyzer = get_item(name, db, args)
+            return tape_analyzer
         else:
             criteria = {'filename':fname}
             n_docs = db.count_documents(filter=criteria, collection='material')
@@ -82,7 +81,6 @@ def get_item(name: str,
                 if db.count_documents(filter=criteria, collection='material') == 0 :
                     criteria = {'filename':fname}
             tape = db.find_one(filter=criteria, collection='material')
-            
     elif isinstance(lookup, dict):
         key = fname
         if fname+'_mod' in lookup:
@@ -94,13 +92,12 @@ def get_item(name: str,
                                         gaussian_blur=args.gaussian_blur,
                                         n_divisions=args.n_divisions,
                                         auto_crop=args.auto_crop,
-                                        calculate_tilt=args.calculate_tilt,
+                                        calculate_tilt=args.correct_tilt,
                                         )
     tape_analyzer.get_bin_based(window_background=args.window_background,
                                 window_tape=args.window_tape,
                                 dynamic_window=args.dynamic_window,
                                 n_bins=args.n_bins, overlap=args.overlap)
-        
     return tape_analyzer
 
 def preprocess(entry: dict, 
@@ -116,28 +113,27 @@ def preprocess(entry: dict,
                 continue
             if tape == 'Tape 1' and entry[rotation_map[side]]:
                 tape_analyzer.flip_h()
-            # print(f"filename: {fname:15}, rotation: {tape_analyzer.metadata.flip_h}, index: {entry['idx']}")
-            
             for ibin in range(args.n_bins):
                 image = ff.core.Image(tape_analyzer['bin_based'][ibin])
                 if args.color:
                     image.convert_to_rgb()
                 else:
                     image.convert_to_gray()
-                if 'outpt_shape' in args:
+                if args.output_shape is not None:
                     image.resize(args.output_shape)
                 image.metadata.update(tape_analyzer.metadata.to_serial_dict)
                 image.metadata['bin'] = ibin
                 image.metadata['index'] = entry['idx']
                 image.metadata['filename'] = f"{fname}_{ibin}"
-                if 'cln_name' in args:
+                if args.cln_name is not None:
                     db = lookup
                     db.insert(image,
                             ext='.png', 
                             collection=args.cln_name)
-                elif 'output' in args:
+                elif args.output is not None:
                     path = Path(args.output)
-                    path /= f"{fname}_{ibin}_{args.ext}"
+                    path /= fname
+                    path /= f"{ibin}{args.ext}"
                     image.to_file(path)
     return
 
@@ -150,12 +146,12 @@ def get_chunks(entries: List[Dict], n_processors: int) -> List:
 
 def worker(args: Dict[str, List]):
     entries = args['entries'] 
-    parsed_args = args['parsed_args']
-    if 'db_name' in parsed_args:
+    args = args['parsed_args']
+    if args.db_name is not None:
         lookup = ff.db.Database(name=args.db_name, 
                             host=args.db_host,
                             port=args.db_port)
-    elif 'input' in parsed_args:
+    elif args.input is not None:
         with open(args.input, 'r') as rf:
             metadata = json.load(rf)
             lookup = {}
@@ -164,6 +160,9 @@ def worker(args: Dict[str, List]):
                 if x['modified']:
                     name += '_mod'
                 lookup[name] = x
+    if args.output is not None:
+        path = Path(args.output)
+        path.mkdir(exist_ok=True)
     for _, entry in enumerate(entries):
         preprocess(entry, lookup, parsed_args)
         
@@ -202,6 +201,7 @@ if __name__ == '__main__':
     parser.add_argument('--dynamic-window', 
                         dest='dynamic_window',
                         type=bool,
+                        default=True,
                         help='Use a dynamic window when scanning the edge',
                         action=argparse.BooleanOptionalAction,
                         )
@@ -259,6 +259,7 @@ if __name__ == '__main__':
                               'tape.'))
     parser.add_argument('-x', '-extension',
                         dest='ext',
+                        default='.png',
                         help='The extension of file to be save.')
     parser.add_argument('-s', '--start',
                         dest='start',
@@ -296,21 +297,28 @@ if __name__ == '__main__':
                         )
     parser.add_argument('--mask-threshold', 
                         dest='mask_threshold',
+                        default=60,
                         type=int,
                         help=('Threshold for binarization of the image for edge'
                               ' detection.')
                         )
     parsed_args = parser.parse_args()
-    
     dfs = [pd.read_excel(x, engine='openpyxl') for x in parsed_args.path_excel]
-    df = pd.concat(dfs)
+    df = pd.concat(dfs)[parsed_args.start:parsed_args.end]
     df['idx'] = np.arange(1, len(df) + 1 )
     del dfs
-    
     chunks = get_chunks(df.to_dict('records'), parsed_args.n_processors)
     args = [
         {'entries': x,
         'parsed_args': parsed_args} 
         for x in chunks
         ]
-    print(args)
+    if parsed_args.n_processors == 1:
+        worker(args[0])
+    else:
+        with Pool(parsed_args.n_processors) as p:
+            p.map(worker, args)
+    output = Path(parsed_args.output or '.')
+    output /= f'log_{parsed_args.start}_{parsed_args.end}.json'
+    with open(output, 'w') as wf:
+        json.dump(parsed_args.__dict__, wf, indent=2)

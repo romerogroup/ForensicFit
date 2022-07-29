@@ -19,12 +19,13 @@ from typing import Union, Dict, List
 
 def get_files(path: Path, 
               ret: list = {}, 
-              ext: str = '.tif') -> List[Dict[str, Path]]:
+              ext: str = '.tif',
+              avoid: list = []) -> List[Dict[str, Path]]:
     for x in path.iterdir():
         if x.is_file() and x.suffix == ext :
             ret[x.stem] = x
         elif x.is_dir() and x.stem not in avoid:
-            get_files(x, ret, ext)
+            get_files(x, ret, ext, avoid)
     return ret
 
 def get_metadata(file_path: Path, key: str) -> Dict[str, str]:
@@ -58,16 +59,16 @@ def get_metadata(file_path: Path, key: str) -> Dict[str, str]:
             'separation_method': separation_method,
             'stretched': stretched,
             'modified': modified, 
-            'source': file_path.as_posix(),
+            'source': file_path.absolute().as_posix(),
             }
 
-def get_lookup(file_dict: Dict[str, str], 
+def get_lookup(files_dict: Dict[str, str], 
                df: pd.DataFrame) -> List[Dict]:
     """generates a lookup table for metadata
 
     Parameters
     ----------
-    file_dict : Dict[str, str]
+    files_dict : Dict[str, str]
         Dictionary containing metadata about all files found
     df : pd.DataFrame
         Match or non-match excel file
@@ -88,10 +89,9 @@ def get_lookup(file_dict: Dict[str, str],
                 name = entry[key][:-2]
                 if name in files_dict:
                     file_path = files_dict[name]
-                    lookup.append(get_metadata(file_path, key))
                 if name+'_mod' in files_dict:
                     file_path = files_dict[name+'_mod']
-                    lookup.append(get_metadata(file_path, key))    
+                lookup.append(get_metadata(file_path, key))    
                 if name not in files_dict:
                     not_exists.append(entry[key])
     return lookup, not_exists
@@ -127,15 +127,17 @@ if __name__ == '__main__':
                         help='Output (metadata) filename',
                         )
     args = parser.parse_args()
-
-    files_dict = get_files(args.path, ext=args.ext)
+    
+    file_dict = get_files(Path(args.path), ext=args.ext, avoid=args.avoid)
     dfs = [pd.read_excel(x, engine='openpyxl') for x in args.path_excel]
     df = pd.concat(dfs)
+    cols = [x for x in df.columns if 'Tape' in x or 'Rotation' in x]
+    df = df[cols]
     del dfs
     lookup, not_exists = get_lookup(file_dict, df)
     print("-------------------------------------------------")
     print('The following files do not exist on this storage.')
-    for x in no_exists:
+    for x in not_exists:
         print(x)
     with open('metadata.json','w') as wf:
         json.dump(lookup, wf, indent=2)
