@@ -264,11 +264,13 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--start',
                         dest='start',
                         type=int,
+                        default=0,
                         help=('Index to start from in the excel file of the'
                               ' ground truth.'))
     parser.add_argument('-e', '--end',
                         dest='end',
                         type=int,
+                        default=-1,
                         help=('Index to end to in the excel file of the'
                               ' ground truth.'))
     parser.add_argument('--excel-files',
@@ -302,10 +304,23 @@ if __name__ == '__main__':
                         help=('Threshold for binarization of the image for edge'
                               ' detection.')
                         )
+    parser.add_argument('--individual-entry', 
+                        dest='individual_entry',
+                        help=('files the individual entry from the excel files ' 
+                              'and only processes those.')
+                        )
     parsed_args = parser.parse_args()
     dfs = [pd.read_excel(x, engine='openpyxl') for x in parsed_args.path_excel]
-    df = pd.concat(dfs)[parsed_args.start:parsed_args.end]
+    df = pd.concat(dfs)
     df['idx'] = np.arange(1, len(df) + 1 )
+    if parsed_args.individual_entry is not None:
+        dfs = []
+        for col in df.columns:
+            dfs.append(df[df[col] == parsed_args.individual_entry]) 
+        df = pd.concat(dfs)        
+    else:
+        df = df[parsed_args.start:parsed_args.end]
+    print(df)
     del dfs
     chunks = get_chunks(df.to_dict('records'), parsed_args.n_processors)
     args = [
