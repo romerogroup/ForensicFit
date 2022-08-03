@@ -92,7 +92,6 @@ class Database:
         """Closes the connection with the mongodb Client.
 
         """
-        
         self.client.close()
 
     def __str__(self):

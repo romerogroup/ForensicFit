@@ -109,7 +109,6 @@ def preprocess(entry: dict,
             fname = entry[f'{tape} ({side})']
             tape_analyzer = get_item(fname, lookup, args)
             if tape_analyzer is None:
-                print(fname)
                 continue
             if tape == 'Tape 1' and entry[rotation_map[side]]:
                 tape_analyzer.flip_h()
@@ -165,6 +164,8 @@ def worker(args: Dict[str, List]):
         path.mkdir(exist_ok=True)
     for _, entry in enumerate(entries):
         preprocess(entry, lookup, parsed_args)
+    if args.db_name is not None:
+        lookup.disconnect()
         
 
 if __name__ == '__main__':
