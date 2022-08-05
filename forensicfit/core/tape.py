@@ -212,11 +212,7 @@ class TapeAnalyzer(Analyzer):
         self.metadata["ymin"] = int(self.ymin)
         self.metadata["ymax"] = int(self.ymax)
         self.metadata["y_interval"] = int(self.ymax-self.ymin)
-        # self.metadata["x_std"] = float(np.std(self.boundary[:, 0]))
-        # self.metadata["y_std"] = float(np.std(self.boundary[:, 1]))
-        # self.metadata["x_mean"] = float(np.mean(self.boundary[:, 0]))
-        # self.metadata["y_mean"] = float(np.mean(self.boundary[:, 1]))
-
+        return 
 
     @classmethod
     def from_dict(cls, image, metadata):
@@ -367,21 +363,6 @@ class TapeAnalyzer(Analyzer):
         self.metadata.image_tilt = angle_d
         return angle_d
 
-    # @property
-    # def edge(self):
-    #     """
-    #      List of pixels that create the boundary.
-
-    #     Returns
-    #     -------
-    #     edge_bw : 2d array int
-    #         List of pixels that create the boundary.
-
-    #     """
-    #     zeros = np.zeros_like(self.image)
-    #     edge_bw = cv2.drawContours(
-    #         zeros, self.largest_contour, (255, 255, 255), 2)
-    #     return edge_bw
 
     @property
     def xmin(self):
@@ -435,12 +416,6 @@ class TapeAnalyzer(Analyzer):
              Y coordinate of minimum pixel of the boundary
 
         """
-        # n_xsections = 6
-        # cond1 = self.boundary[:, 0] >= self.xmin+self.x_interval/n_xsections*1
-        # cond2 = self.boundary[:, 0] <= self.xmin+self.x_interval/n_xsections*2
-        # cond_and = np.bitwise_and(cond1, cond2)
-        # # using int because pixel numbers are integers
-        # ymin = int(self.boundary[cond_and, 1].min())
         ymin = self.boundary[:, 1].min()
         return ymin
 
@@ -455,12 +430,6 @@ class TapeAnalyzer(Analyzer):
              Y coordinate of maximum pixel of the boundary
 
         """
-        # n_xsections = 6
-        # cond1 = self.boundary[:, 0] >= self.xmin+self.x_interval/n_xsections*1
-        # cond2 = self.boundary[:, 0] <= self.xmin+self.x_interval/n_xsections*2
-        # cond_and = np.bitwise_and(cond1, cond2)
-        # # using int because pixel numbers are integers
-        # ymax = int(self.boundary[cond_and, 1].max())
         ymax = self.boundary[:, 1].max()
         return ymax
 
@@ -487,9 +456,6 @@ class TapeAnalyzer(Analyzer):
     def get_coordinate_based(self,
                              n_points: int=64,
                              x_trim_param: int=6,
-                             normalize: bool=True,
-                             standardize: bool=False,
-                             shift: bool=True,
                              plot: bool=False):
         """
         This method returns the data of the detected edge as a set of points 
