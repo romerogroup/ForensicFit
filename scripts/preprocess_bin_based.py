@@ -104,14 +104,17 @@ def preprocess(entry: dict,
                lookup: Union[ff.db.Database, Dict],
                args: argparse.Namespace):
     rotation_map = {'Backing' : 'Rotation?', 'Scrim' : 'Rotation?.1'}
+    rot = ['', '-rotated']
     for tape in ['Tape 1', 'Tape 2']:
         for side in ['Backing', 'Scrim']:
             fname = entry[f'{tape} ({side})']
             tape_analyzer = get_item(fname, lookup, args)
             if tape_analyzer is None:
                 continue
+            rotated = 0
             if tape == 'Tape 1' and entry[rotation_map[side]]:
                 tape_analyzer.flip_h()
+                rotated = 1
             for ibin in range(args.n_bins):
                 image = ff.core.Image(tape_analyzer['bin_based'][ibin])
                 if args.color:
@@ -131,7 +134,7 @@ def preprocess(entry: dict,
                             collection=args.cln_name)
                 elif args.output is not None:
                     path = Path(args.output)
-                    path /= fname
+                    path /= f'{fname}{rot[rotated]}'
                     path /= f"{ibin}{args.ext}"
                     image.to_file(path)
     return
@@ -314,6 +317,8 @@ if __name__ == '__main__':
     dfs = [pd.read_excel(x, engine='openpyxl') for x in parsed_args.path_excel]
     df = pd.concat(dfs)
     df['idx'] = np.arange(1, len(df) + 1 )
+    df['Rotation?'] = df['Rotation?'].astype(bool)
+    df['Rotation?.1'] = df['Rotation?.1'].astype(bool)
     if parsed_args.individual_entry is not None:
         dfs = []
         for col in df.columns:
