@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 
-from typing import List
-import cv2
-from matplotlib import gridspec, pylab as plt
-from matplotlib.axes import Axes
-from matplotlib.colors import Normalize
-import numpy as np
-from scipy.stats import norm
-from abc import ABCMeta, abstractmethod
 import io
-from collections.abc import Mapping
-from .metadata import Metadata
+from abc import ABCMeta, abstractmethod
+from pathlib import Path
+from typing import List, Union
+
+import cv2
+import numpy as np
+from matplotlib import pylab as plt
+from matplotlib.axes import Axes
+from scipy.stats import norm
+
 from ..utils.image_tools import IMAGE_EXTENSIONS
+from .metadata import Metadata
 
 
 class Analyzer:
@@ -37,7 +38,11 @@ class Analyzer:
                                   'material': None})
         self.metadata.update(kwargs)
 
-    def plot_boundary(self, savefig = None, color='r', ax = None, show=False):
+    def plot_boundary(self, 
+                      savefig: Union[str, Path] = None, 
+                      color: str='red', 
+                      ax: Axes = None, 
+                      show: bool=False):
         """
         This function plots the detected boundary of the image. 
 

@@ -67,7 +67,7 @@ class TapeAnalyzer(Analyzer):
                  gaussian_blur: tuple=(15, 15),
                  n_divisions: int=6,
                  auto_crop: bool=False,
-                 calculate_tilt: bool=True,
+                 correct_tilt: bool=True,
                  remove_background: bool=True):
         """
         
@@ -104,13 +104,25 @@ class TapeAnalyzer(Analyzer):
             self.image = tape.image
             self.metadata += tape.metadata
             self.metadata['resolution'] = self.image.shape
-            self.preprocess(calculate_tilt, auto_crop)
+            self.preprocess()
+            self.metadata['cropped'] = False
+            self.metadata['tilt_corrected'] = False
+            if correct_tilt:
+                angle = self.get_image_tilt()
+                self.image = image_tools.rotate_image(self.image, angle)
+                self.metadata.tilt_corrected = True
+            if auto_crop:
+                self.metadata['cropped'] = True
+                self.auto_crop_y()
+                self.metadata.cropped = True
+            if correct_tilt or auto_crop:
+                self.preprocess()
             if remove_background:
                 self.image = self.masked
             
         return
 
-    def preprocess(self, calculate_tilt: bool = True, auto_crop: bool = True):
+    def preprocess(self):
         """
         
         Parameters
@@ -136,21 +148,15 @@ class TapeAnalyzer(Analyzer):
                                         self.metadata.mask_threshold)
         largest_contour = image_tools.largest_contour(contours)
         self.metadata['boundary'] = largest_contour.reshape(-1, 2)
-        if calculate_tilt:
-            self.get_image_tilt()
-        self.metadata['cropped'] = False
-        if auto_crop:
-            self.metadata['cropped'] = True
-            self.auto_crop_y()
-            self.metadata.cropped = True
-            gray = image_tools.to_gray(self.image)
-            image = image_tools.gaussian_blur(
-                gray, window=self.metadata.gaussian_blur)
-            self.metadata['cropped'] = True
-            contours = image_tools.contours(
-                image, self.metadata.mask_threshold)
-            largest_contour = image_tools.largest_contour(contours)
-            self.metadata['boundary'] = largest_contour.reshape(-1, 2)
+            
+        
+        gray = image_tools.to_gray(self.image)
+        image = image_tools.gaussian_blur(
+            gray, window=self.metadata.gaussian_blur)
+        contours = image_tools.contours(
+            image, self.metadata.mask_threshold)
+        largest_contour = image_tools.largest_contour(contours)
+        self.metadata['boundary'] = largest_contour.reshape(-1, 2)
 
         # if self.metadata.remove_background:
         #     self.image = self.masked
@@ -244,7 +250,7 @@ class TapeAnalyzer(Analyzer):
         cls.metadata.update(metadata)
         return cls
 
-    def get_image_tilt(self, plot=False):
+    def get_image_tilt(self, plot: bool=False):
         """
         
 
@@ -259,6 +265,7 @@ class TapeAnalyzer(Analyzer):
             DESCRIPTION.
 
         """
+        figsize=(16, 9)
         stds = np.ones((self.metadata.n_divisions-2, 2))*1000
         conditions_top = []
         # conditions_top.append([])
@@ -276,7 +283,7 @@ class TapeAnalyzer(Analyzer):
         m_bottom = []
         # m_bottom.append(None)
         if plot:
-            _ = plt.figure()
+            _ = plt.figure(figsize=figsize)
             ax = plt.subplot(111)
             self.plot_boundary(color='black', ax=ax)
         for idivision in range(self.metadata.n_divisions-2):
@@ -343,7 +350,7 @@ class TapeAnalyzer(Analyzer):
         cond_and_top = conditions_top[arg_mins[0]]
         cond_and_bottom = conditions_bottom[arg_mins[1]]
         if plot:
-            plt.figure()
+            plt.figure(figsize=figsize)
             plt.plot(boundary[:, 0], boundary[:, 1], color='black')
             plt.scatter(boundary[cond_and_top][:, 0],
                         boundary[cond_and_top][:, 1], color='blue')
@@ -621,7 +628,7 @@ class TapeAnalyzer(Analyzer):
                 x_start =  loc - window_background
                 x_end = loc + window_tape
                 if self.image.shape[1] < x_end:
-                    diff =  self.image.shape[1] - x_end
+                    diff = self.image.shape[1] - x_end
                     x_start += diff
                     x_end = self.image.shape[1]
 #            cv2.imwrite('%s_%d.tif'%(fname[:-4],iseg),im_color[y_start:y_end,x_start:x_end])

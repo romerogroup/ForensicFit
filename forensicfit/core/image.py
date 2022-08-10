@@ -8,21 +8,20 @@ __all__ = []
 __version__ = '1.0'
 __author__ = 'Pedram Tavadze'
 
-# externals
-import cv2
-from matplotlib import pylab as plt
-import numpy as np
-import numpy.typing as npt
-from scipy import ndimage
-# built-ins
+import io
+import pathlib
 from abc import ABCMeta, abstractmethod
 from collections.abc import Mapping
-import pathlib
 from pathlib import Path
-import io
-# internals
-from .metadata import Metadata
+
+import cv2
+import numpy as np
+import numpy.typing as npt
+from matplotlib import pylab as plt
+from scipy import ndimage
+
 from ..utils import image_tools
+from .metadata import Metadata
 
 IMAGE_EXTENSIONS = image_tools.IMAGE_EXTENSIONS 
 
