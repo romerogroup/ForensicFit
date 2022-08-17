@@ -24,7 +24,6 @@ class Analyzer:
     def __init__(self, **kwargs):
         """
         
-
         Returns
         -------
         None.
@@ -123,19 +122,19 @@ class Analyzer:
         """
         
         if which == "coordinate_based":
-            data = self.metadata['analysis']['coordinate_based']['data']
+            coordinates = self.metadata['analysis']['coordinate_based']['coordinates']
             stds = self.metadata['analysis']['coordinate_based']['stds']
             slops = self.metadata['analysis']['coordinate_based']['slops']
-            n_points = len(data)
+            n_points = len(coordinates)
             if ax is None:
                 plt.figure(figsize=(3, 10))
                 ax = plt.subplot(111)
             if mode == "gaussians":
-                dy = (self.ymax-self.ymin)/len(data)
+                dy = (self.ymax-self.ymin)/n_points
                 # norm = Normalize(vmin, vmax)
                 cmap=plt.get_cmap('gray')
-                data[:, 1] = np.flip(data[:, 1])
-                for i, ig in enumerate(data):
+                coordinates[:, 1] = np.flip(coordinates[:, 1])
+                for i, ig in enumerate(coordinates):
                     x = np.linspace(ig[0]-3*stds[i], ig[0]+3*stds[i])
                     dx = (x[2]-x[1])
                     y = np.ones_like(x)*ig[1]
@@ -144,37 +143,41 @@ class Analyzer:
                     colors = cmap(y_prime)
                     y_prime*=dy
                     ax.fill_between(x, y, y+y_prime, cmap='gray')
-                    ax.scatter(data[:, 0],
-                        data[:, 1],
+                    ax.scatter(coordinates[:, 0],
+                        coordinates[:, 1],
                         c='black',
                         s=0.01)
             elif mode == "error_bars":
-                ax.errorbar(data[:, 0],
-                            np.flip(data[:, 1]),
+                ax.errorbar(coordinates[:, 0],
+                            np.flip(coordinates[:, 1]),
                             xerr=stds,
                             ecolor='blue',
                             color='red',
                             markersize=0.5,
                             fmt='o')
             elif mode == 'slops':
-                dy = data[0, 1] - data[1, 1]
+                dy = coordinates[0, 1] - coordinates[1, 1]
                 for i, iseg in enumerate(slops):
                     m = iseg[0]
                     b0 = iseg[1]
-                    # y = np.linspace(data[i, 1])
+                    # y = np.linspace(coordinates[i, 1])
             else:
-                ax.scatter(data[:, 0],
-                        np.flip(data[:, 1]),
+                ax.scatter(coordinates[:, 0],
+                        np.flip(coordinates[:, 1]),
                         c='red',
                         s=1)
-            ax.set_ylim(min(data[:, 1]),max(data[:, 1]))            
-            ymin = min(data[:, 0])
-            ymax = max(data[:, 1])
-            ax.set_xlim(ymin-abs(ymin)*0.9, ymax+abs(ymax)*1.1)
+            ax.set_ylim(min(coordinates[:, 1]),max(coordinates[:, 1]))            
+            xmin = min(coordinates[:, 0])
+            xmax = max(coordinates[:, 0])
+            ax.set_xlim(xmin-abs(xmin)*0.9, xmax+abs(xmax)*1.1)
         elif which == 'boundary':
             ax = self.plot('image', cmap=cmap, ax=ax)
             ax = self.plot_boundary(ax=ax)
-        elif which == 'bin_based':
+           
+        elif which in [
+            'bin_based', 
+            'bin_based+max_contrast', 
+            'max_contrast+bin_based']:
             if mode == 'individual_bins':
                 dynamic_positions = self.metadata[
                     'analysis']['bin_based']['dynamic_positions']
@@ -191,7 +194,7 @@ class Analyzer:
                         "smaller than the number of bins"
                 if n_bins == 1: ax=[ax]
                 
-                bins = self['bin_based']
+                bins = self[which]
                 for i, seg in enumerate(bins):
                     ax[i].imshow(seg, cmap=cmap)
                     ax[i].xaxis.set_visible(False)
@@ -202,7 +205,7 @@ class Analyzer:
                     plt.figure(figsize=(16, 9))
                     ax = plt.subplot(111)
                 dynamic_positions = self.metadata[
-                    'analysis'][which]['dynamic_positions']
+                    'analysis']['bin_based']['dynamic_positions']
                 colors = [
                     'red', 'blue', 'green', 'cyan', 'magenta'
                     ]*len(dynamic_positions)
@@ -225,7 +228,10 @@ class Analyzer:
                             linestyle=styles[i], linewidth=1)
                     ax.plot([x1, x2], [y2, y2], color=colors[i], 
                             linestyle=styles[i], linewidth=1)
-                ax = self.plot('image', ax=ax, cmap=cmap)
+                if 'max_contrast' in which:
+                    ax = self.plot('edge_bw', ax=ax, cmap=cmap)
+                else:
+                    ax = self.plot('image', ax=ax, cmap=cmap)
         else:
             if ax is None:
                 plt.figure(figsize = (16, 9))
@@ -243,26 +249,6 @@ class Analyzer:
         else:
             return ax
 
-    def show(self, which, wait=0):
-        """
-        
-
-        Parameters
-        ----------
-        which : TYPE
-            DESCRIPTION.
-        wait : TYPE, optional
-            DESCRIPTION. The default is 0.
-
-        Returns
-        -------
-        None.
-
-        """
-        cv2.imshow(which, self[which])
-        cv2.waitKey(wait)
-        cv2.destroyAllWindows()
-
     @abstractmethod
     def load_dict(self):
         pass
@@ -275,8 +261,7 @@ class Analyzer:
     def from_buffer(cls, 
                     buffer: bytes, 
                     metadata: dict,
-                    ext: str='.png',
-                    allow_pickle: bool=False):
+                    ext: str='.png'):
         """receives an io byte buffer with the corresponding metadata and 
         creates the image class
 
