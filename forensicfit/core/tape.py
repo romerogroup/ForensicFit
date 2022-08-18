@@ -44,10 +44,7 @@ class Tape(Material):
         self.metadata['surface'] = surface
         self.metadata['stretched'] = stretched
 
-        
-        
-        
-    def split_v(self, side='L', pixel_index=None, ):
+    def split_v(self, side, pixel_index=None):
         self.values['original_image'] = self.image.copy()
         if pixel_index is None:
             tape_analyzer = TapeAnalyzer(self)
@@ -58,7 +55,7 @@ class Tape(Material):
         self.values['image'] = self.image
         self.metadata['split_v'] = {
             "side": side, "pixel_index": pixel_index}
-        # this is temporary
+        
 
 
 
@@ -169,13 +166,14 @@ class TapeAnalyzer(Analyzer):
         self.metadata['boundary'] = np.array(self.metadata['boundary'])
         self.metadata['boundary'][:, 0] = self.metadata['boundary'][:, 0]*-1 + self.image.shape[1]
         if 'coordinate_based' in self.metadata['analysis']:
-            coords  = np.array(self.metadata['analysis']['coordinate_based']['data'])
-            # slops  = np.array(self.metadata['analysis']['coordinate_based']['slops'])
-            # coords = np.flipud(coords)
+            coords  = np.array(self.metadata['analysis']['coordinate_based']['coordinates'])
+
+            # # slopes  = np.array(self.metadata['analysis']['coordinate_based']['slopes'])
+            # # coords = np.flipud(coords)
             coords[:, 0] *= -1
-            # slops[:, 0] *= -1
-            self.metadata['analysis']['coordinate_based']['data'] = coords
-            # self.metadata['analysis']['coordinate_based']['slops'] = slops
+            # # slopes[:, 0] *= -1
+            self.metadata['analysis']['coordinate_based']['coordinates'] = coords
+            # self.metadata['analysis']['coordinate_based']['slopes'] = slopes
         if 'bin_based' in self.metadata['analysis']:
             dynamic_positions = np.array(self.metadata['analysis']['bin_based']['dynamic_positions'])
             for i, pos in enumerate(dynamic_positions):
@@ -192,8 +190,8 @@ class TapeAnalyzer(Analyzer):
         self.metadata['boundary'] = np.array(self.metadata['boundary'])
         self.metadata['boundary'][:, 1] = self.metadata['boundary'][:, 1]*-1 + self.image.shape[0]
         if 'coordinate_based' in self.metadata['analysis']:
-            coords  = np.array(self.metadata['analysis']['coordinate_based']['data'])
-            coords[:, 1] *= -1
+            coords = np.array(self.metadata['analysis']['coordinate_based']['data'])
+            coords[:, 1] = np.flipud(coords[:, 1])
             self.metadata['analysis']['coordinate_based']['data'] = coords
         if 'bin_based' in self.metadata['analysis']:
             dynamic_positions = np.array(self.metadata['analysis']['bin_based']['dynamic_positions'])
@@ -289,7 +287,7 @@ class TapeAnalyzer(Analyzer):
             ax = plt.subplot(111)
             self.plot_boundary(color='black', ax=ax)
         for idivision in range(self.metadata.n_divisions-2):
-
+            
             y_interval = y_max-y_min
             cond1 = boundary[:, 1] > y_max-y_interval/self.metadata.n_divisions
             cond2 = boundary[:, 1] < y_max+y_interval/self.metadata.n_divisions
@@ -518,7 +516,7 @@ class TapeAnalyzer(Analyzer):
         # cond_12 = cond1
         data = np.zeros((n_points, 2))
         stds = np.zeros((n_points,))
-        slops = np.zeros((n_points, 2))
+        slopes = np.zeros((n_points, 2))
         y_min = self.ymin
         y_max = self.ymax
         y_interval = y_max - y_min
@@ -537,18 +535,17 @@ class TapeAnalyzer(Analyzer):
                                                  x_trim_param=x_trim_param-1)
             data[i_point, :2] = np.average(points, axis=0)
             stds[i_point] = np.std(points[:, 0])
-            slops[i_point, :] = np.polyfit(
+            slopes[i_point, :] = np.polyfit(
                 x=points[:, 0], 
                 y=points[:, 1], 
                 deg=1, 
                 full=True)[0]
-            
         self.metadata['analysis']['coordinate_based'] = {
             "n_points": n_points, 
             "x_trim_param": x_trim_param, 
             'coordinates': data,
             'stds': stds,
-            'slops': slops}
+            'slopes': slopes}
         if was_flipped:
             self.flip_v()
         return 
@@ -638,6 +635,7 @@ class TapeAnalyzer(Analyzer):
 
         metadata = {"dynamic_positions": dynamic_positions,
                     "n_bins": n_bins,
+                    "overlap": overlap,
                     "dynamic_window": dynamic_window,
                     "window_background": window_background,
                     "window_tape": window_tape,
@@ -731,34 +729,50 @@ class TapeAnalyzer(Analyzer):
                 + ((pad_x_start, pad_x_end),) 
                 + ((0, 0),)*(len(ret.shape)-2),
                 'constant', 
-                constant_values=(0, )
+                constant_values=(0,)
                 )
             
             return ret
         elif 'bin_based' in x:
             if 'coordinate_based' in x:
                 ret = []
-                coordinates = self['coordinate_based']['coordinates']
+                n_bins = self.metadata.analysis['bin_based']['n_bins']
                 n_points = self.metadata.analysis[
-                    'coordinate_based']['n_points']
+                    'coordinate_based']['n_points']//n_bins
+                if self.metadata.analysis['bin_based']['overlap']>50:
+                    n_points+=2
                 for x, y in self.metadata.analysis[
                     'bin_based']['dynamic_positions']:
-                    
                     data = np.zeros((n_points, 2))
                     stds = np.zeros((n_points,))
-                    slops = np.zeros((n_points, 2))
+                    slopes = np.zeros((n_points, 2))
                     y_min = y[0]
                     y_max = y[1]
+                    pad_y_min = -1*(min(y_min, 0))
+                    pad_y_max = -1*(min(self.image.shape[0]-y_max, 0))
+                    y_min = max(y_min, 0)
+                    y_max = min(self.image.shape[0], y_max)
+                    if self.metadata.padding == 'tape':
+                        y_min -= pad_y_max
+                        y_max += pad_y_min
                     y_interval = y_max - y_min
-                    print(y_max, y_min)
+                    if n_points > len(self._get_points_from_boundary(
+                        x[0],x[1],
+                        y_min, y_max
+                    )):
+                        print('The number of points per bin is smaller than'
+                              ' the number of points in this bin.'
+                              'Consider decreasnig the numbers of points for '
+                              'the coordinate based method (n_points).')
                     for i_point in range(0, n_points):
                         y_start = y_min+i_point*(y_interval/n_points)
                         y_end = y_min+(i_point+1)*(y_interval/n_points)
                         points = self._get_points_from_boundary(x[0], x[1], y_start, y_end)
-                        print(len(points))
+                        assert len(points) != 0, ("No points in this window, " 
+                                                  "increase the background window")
                         data[i_point, :2] = np.average(points, axis=0)
                         stds[i_point] = np.std(points[:, 0])
-                        slops[i_point, :] = np.polyfit(
+                        slopes[i_point, :] = np.polyfit(
                             x=points[:, 0], 
                             y=points[:, 1], 
                             deg=1, 
@@ -766,9 +780,11 @@ class TapeAnalyzer(Analyzer):
                     ret.append({
                         'coordinates': data,
                         'stds': stds,
-                        'slops': slops})
-                    
-                    
+                        'slopes': slopes})
+                if self.metadata.analysis['bin_based']['overlap']>50:
+                    for i, item in enumerate(ret):
+                        for key in item:
+                            ret[i][key] = np.delete(item[key], [0, -1], 0)
                 return ret
             elif x == 'bin_based':
                 image = self['image']

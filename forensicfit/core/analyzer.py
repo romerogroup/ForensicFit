@@ -11,6 +11,8 @@ from matplotlib import pylab as plt
 from matplotlib.axes import Axes
 from scipy.stats import norm
 
+from forensicfit import utils
+
 from ..utils.image_tools import IMAGE_EXTENSIONS
 from .metadata import Metadata
 
@@ -122,58 +124,64 @@ class Analyzer:
         """
         
         if which == "coordinate_based":
-            coordinates = self.metadata['analysis']['coordinate_based']['coordinates']
-            stds = self.metadata['analysis']['coordinate_based']['stds']
-            slops = self.metadata['analysis']['coordinate_based']['slops']
-            n_points = len(coordinates)
-            if ax is None:
-                plt.figure(figsize=(3, 10))
-                ax = plt.subplot(111)
-            if mode == "gaussians":
-                dy = (self.ymax-self.ymin)/n_points
-                # norm = Normalize(vmin, vmax)
-                cmap=plt.get_cmap('gray')
-                coordinates[:, 1] = np.flip(coordinates[:, 1])
-                for i, ig in enumerate(coordinates):
-                    x = np.linspace(ig[0]-3*stds[i], ig[0]+3*stds[i])
-                    dx = (x[2]-x[1])
-                    y = np.ones_like(x)*ig[1]
-                    y_prime = norm.pdf(x, ig[0], stds[i])
-                    y_prime /= sum(y_prime)/dx
-                    colors = cmap(y_prime)
-                    y_prime*=dy
-                    ax.fill_between(x, y, y+y_prime, cmap='gray')
-                    ax.scatter(coordinates[:, 0],
-                        coordinates[:, 1],
-                        c='black',
-                        s=0.01)
-            elif mode == "error_bars":
-                ax.errorbar(coordinates[:, 0],
-                            np.flip(coordinates[:, 1]),
-                            xerr=stds,
-                            ecolor='blue',
-                            color='red',
-                            markersize=0.5,
-                            fmt='o')
-            elif mode == 'slops':
-                dy = coordinates[0, 1] - coordinates[1, 1]
-                for i, iseg in enumerate(slops):
-                    m = iseg[0]
-                    b0 = iseg[1]
-                    # y = np.linspace(coordinates[i, 1])
-            else:
-                ax.scatter(coordinates[:, 0],
-                        np.flip(coordinates[:, 1]),
-                        c='red',
-                        s=1)
-            ax.set_ylim(min(coordinates[:, 1]),max(coordinates[:, 1]))            
-            xmin = min(coordinates[:, 0])
-            xmax = max(coordinates[:, 0])
-            ax.set_xlim(xmin-abs(xmin)*0.9, xmax+abs(xmax)*1.1)
+            coordinates = self['coordinate_based']['coordinates']
+            stds = self['coordinate_based']['stds']
+            slopes = self['coordinate_based']['slopes']
+            ax = utils.plotter.plot_coordinate_based(coordinates,
+                                                slopes,
+                                                stds,
+                                                mode,
+                                                ax)
+            ax.set_xlim(0, self.image.shape[1])
+            ax.set_ylim(0, self.image.shape[0])
+            ax.invert_yaxis()
         elif which == 'boundary':
             ax = self.plot('image', cmap=cmap, ax=ax)
             ax = self.plot_boundary(ax=ax)
-           
+        elif which in ['bin_based+coordinate_based',
+                       'coordinate_based+bin_based']:
+            if mode == 'individual_bins':
+                n_bins = self.metadata['analysis']['bin_based']['n_bins']
+                if ax is None:
+                    figure = plt.figure(figsize=(5, 2*n_bins))
+                    ax = figure.subplots(
+                        n_bins, 1,
+                        sharex=True, 
+                        gridspec_kw={'hspace':2e-2})
+                
+                elif isinstance(ax, list):
+                    assert len(ax) >= n_bins, 'Number of Axes provided ' \
+                        "smaller than the number of bins"
+                if n_bins == 1: ax=[ax]
+                for i, i_bin in enumerate(self[which]):
+                    coordinates = i_bin['coordinates']
+                    stds = i_bin['stds']
+                    slopes = i_bin['slopes']
+                    ax[i] = utils.plotter.plot_coordinate_based(coordinates,
+                                                    slopes,
+                                                    stds,
+                                                    mode,
+                                                    ax[i])
+                    ax[i].invert_yaxis()
+                ax = ax[-1]
+                ax.set_xlim(0, self.image.shape[1])
+            else:
+                if ax is None:
+                    plt.figure(figsize=(16, 9))
+                    ax = plt.subplot(111)
+                for i_bin in self[which]:
+                    coordinates = i_bin['coordinates']
+                    stds = i_bin['stds']
+                    slopes = i_bin['slopes']
+                    ax = utils.plotter.plot_coordinate_based(coordinates,
+                                                    slopes,
+                                                    stds,
+                                                    mode,
+                                                    ax)
+                ax.set_xlim(0, self.image.shape[1])
+                ax.set_ylim(0, self.image.shape[0])
+                ax.invert_yaxis()
+            
         elif which in [
             'bin_based', 
             'bin_based+max_contrast', 
@@ -238,7 +246,7 @@ class Analyzer:
                 ax = plt.subplot(111)
             ax.imshow(self[which], cmap=cmap)
             ax.set_xlim(0, self[which].shape[1])
-        if which != 'coordinate_based':
+        if 'coordinate_based' not in which:
             ax.xaxis.set_visible(False)
             ax.yaxis.set_visible(False)
         if savefig is not None:

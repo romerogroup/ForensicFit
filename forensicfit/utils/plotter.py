@@ -3,6 +3,7 @@ from typing import Any, List, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
+import numpy.typing as npt
 from .. import HAS_TENSORFLOW
 from scipy import stats
 from matplotlib.axes import Axes
@@ -17,6 +18,59 @@ plt.rc("xtick", labelsize=12)  # fontsize of the tick labels
 plt.rc("ytick", labelsize=12)  # fontsize of the tick labels
 plt.rc("legend", fontsize=12)  # legend fontsize
 
+
+def plot_coordinate_based(coordinates: npt.ArrayLike,
+                          slopes: npt.ArrayLike,
+                          stds: npt.ArrayLike,
+                          mode: str = None,
+                          ax: Axes = None,
+                          show: bool=True):
+    n_points = len(coordinates)
+    if ax is None:
+        plt.figure(figsize=(16, 9))
+        ax = plt.subplot(111)
+    # if mode == "gaussians":
+    #     dy = (self.ymax-self.ymin)/n_points
+    #     # norm = Normalize(vmin, vmax)
+    #     cmap=plt.get_cmap('gray')
+    #     coordinates[:, 1] = np.flip(coordinates[:, 1])
+    #     for i, ig in enumerate(coordinates):
+    #         x = np.linspace(ig[0]-3*stds[i], ig[0]+3*stds[i])
+    #         dx = (x[2]-x[1])
+    #         y = np.ones_like(x)*ig[1]
+    #         y_prime = norm.pdf(x, ig[0], stds[i])
+    #         y_prime /= sum(y_prime)/dx
+    #         colors = cmap(y_prime)
+    #         y_prime*=dy
+    #         ax.fill_between(x, y, y+y_prime, cmap='gray')
+    #         ax.scatter(coordinates[:, 0],
+    #             coordinates[:, 1],
+    #             c='black',
+    #             s=0.01)
+    if mode == "error_bars":
+        ax.errorbar(coordinates[:, 0],
+                    np.flip(coordinates[:, 1]),
+                    xerr=stds,
+                    ecolor='blue',
+                    color='red',
+                    markersize=0.5,
+                    fmt='o')
+    elif mode == 'slopes':
+        dy = coordinates[0, 1] - coordinates[1, 1]
+        for i, iseg in enumerate(slopes):
+            m = iseg[0]
+            b0 = iseg[1]
+            # y = np.linspace(coordinates[i, 1])
+    else:
+        ax.scatter(coordinates[:, 0],
+                   coordinates[:, 1],
+                s=1)
+    # ax.set_ylim(min(coordinates[:, 1]),max(coordinates[:, 1]))            
+    xmin = min(coordinates[:, 0])
+    xmax = max(coordinates[:, 0])
+    # ax.set_xlim(xmin-abs(xmin)*0.9, xmax+abs(xmax)*1.1)
+    return ax
+    
 
 def plot_pair(obj_1: Any,
               obj_2: Any,
