@@ -8,6 +8,8 @@ HQHT-Set_1/*
 HQHT-Set_C/*
 MQHT/*
 
+.ipynb_checkpoints/
+
 .spyproject
 __pycache__
 

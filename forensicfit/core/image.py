@@ -19,11 +19,10 @@ import numpy as np
 import numpy.typing as npt
 from matplotlib import pylab as plt
 from scipy import ndimage
-
 from ..utils import image_tools
 from .metadata import Metadata
 
-IMAGE_EXTENSIONS = image_tools.IMAGE_EXTENSIONS 
+IMAGE_EXTENSIONS = image_tools.IMAGE_EXTENSIONS
 
 
 class Image(Mapping):

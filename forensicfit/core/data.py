@@ -15,8 +15,6 @@ TODO :
 class DatasetNumpy:
 
     def __init__(self, X :np.array, y: np.array, extra={}, name=''):
-
-
         self.X = X
         self.y = y
         self.extra = {key:np.array(extra[key]) for key in extra}

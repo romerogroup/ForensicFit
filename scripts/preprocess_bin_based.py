@@ -51,7 +51,6 @@ def get_item(name: str,
         criteria['$and'].append({'metadata.mask_threshold':args.mask_threshold})
         criteria['$and'].append({'metadata.n_divisions':args.n_divisions})
         criteria['$and'].append({'metadata.cropped':args.auto_crop})
-
         criteria['$and'].append(
             {'metadata.analysis.bin_based.dynamic_window':args.dynamic_window}
             )
@@ -85,19 +84,21 @@ def get_item(name: str,
         key = fname
         if fname+'_mod' in lookup:
             key += '_mod'
-        tape = ff.core.tape.from_file(lookup[key]["source"])
+        tape = ff.core.Tape.from_file(lookup[key]["source"])
     tape.split_v(side=side)
     tape_analyzer = ff.core.TapeAnalyzer(tape,
                                         mask_threshold=args.mask_threshold,
                                         gaussian_blur=args.gaussian_blur,
                                         n_divisions=args.n_divisions,
                                         auto_crop=args.auto_crop,
-                                        calculate_tilt=args.correct_tilt,
+                                        correct_tilt=args.correct_tilt,
                                         )
     tape_analyzer.get_bin_based(window_background=args.window_background,
                                 window_tape=args.window_tape,
                                 dynamic_window=args.dynamic_window,
                                 n_bins=args.n_bins, overlap=args.overlap)
+    if args.coordinate_based:
+        tape_analyzer.get_coordinate_based(n_points=args.n_points)
     return tape_analyzer
 
 def preprocess(entry: dict, 
@@ -115,28 +116,65 @@ def preprocess(entry: dict,
             if tape == 'Tape 1' and entry[rotation_map[side]]:
                 tape_analyzer.flip_h()
                 rotated = 1
-            for ibin in range(args.n_bins):
-                image = ff.core.Image(tape_analyzer['bin_based'][ibin])
-                if args.color:
-                    image.convert_to_rgb()
-                else:
-                    image.convert_to_gray()
-                if args.output_shape is not None:
-                    image.resize(args.output_shape)
-                image.metadata.update(tape_analyzer.metadata.to_serial_dict)
-                image.metadata['bin'] = ibin
-                image.metadata['index'] = entry['idx']
-                image.metadata['filename'] = f"{fname}_{ibin}"
-                if args.cln_name is not None:
-                    db = lookup
-                    db.insert(image,
-                            ext='.png', 
-                            collection=args.cln_name)
-                elif args.output is not None:
+            if args.bin_based:
+                bins = tape_analyzer['bin_based']
+                for ibin, b in enumerate(bins):
+                    image = ff.core.Image(b)
+                    if args.color:
+                        image.convert_to_rgb()
+                    else:
+                        image.convert_to_gray()
+                    if args.output_shape is not None:
+                        image.resize(args.output_shape)
+                    image.metadata.update(tape_analyzer.metadata.to_serial_dict)
+                    image.metadata['bin'] = ibin
+                    image.metadata['index'] = entry['idx']
+                    image.metadata['filename'] = f"{fname}-{ibin}"
+                    if args.cln_name is not None:
+                        db = lookup
+                        db.insert(image,
+                                ext='.png', 
+                                collection=args.cln_name)
+                    elif args.output is not None:
+                        path = Path(args.output)
+                        path /= f'{fname}{rot[rotated]}'
+                        path /= f"{ibin}{args.ext}"
+                        image.to_file(path)
+            if args.max_contrast:
+                bins = tape_analyzer['bin_based+max_contrast']
+                for ibin, b in enumerate(bins):
+                    image = ff.core.Image(b)
+                    if args.color:
+                        image.convert_to_rgb()
+                    else:
+                        image.convert_to_gray()
+                    if args.output_shape is not None:
+                        image.resize(args.output_shape)
+                    image.metadata.update(tape_analyzer.metadata.to_serial_dict)
+                    image.metadata['bin'] = ibin
+                    image.metadata['index'] = entry['idx']
+                    image.metadata['filename'] = f"{fname}-mxc-{ibin}"
+                    if args.cln_name is not None:
+                        db = lookup
+                        db.insert(image,
+                                ext='.png', 
+                                collection=args.cln_name)
+                    elif args.output is not None:
+                        path = Path(args.output)
+                        path /= f'{fname}{rot[rotated]}'
+                        path /= f"{ibin}-mxc-{args.ext}"
+                        image.to_file(path)
+            if args.coordinate_based:
+                bins = tape_analyzer['bin_based+coordinate_based']
+                ret = {}
+                if args.output is not None:
+                    for ibin, b in enumerate(bins):
+                        ret[f'bin_{ibin}'] = ff.utils.array_tools.serializer(b)
                     path = Path(args.output)
                     path /= f'{fname}{rot[rotated]}'
-                    path /= f"{ibin}{args.ext}"
-                    image.to_file(path)
+                    path /= f"coordinate_based.json"
+                    with open(path, 'w') as wf:
+                        json.dump(ret, wf, indent=2)
     return
 
 def get_chunks(entries: List[Dict], n_processors: int) -> List:
@@ -151,13 +189,13 @@ def worker(args: Dict[str, List]):
     args = args['parsed_args']
     if args.db_name is not None:
         lookup = ff.db.Database(name=args.db_name, 
-                            host=args.db_host,
-                            port=args.db_port)
+                                host=args.db_host,
+                                port=args.db_port)
     elif args.input is not None:
         with open(args.input, 'r') as rf:
             metadata = json.load(rf)
             lookup = {}
-            for x in lookup:
+            for x in metadata:
                 name = x["filename"]
                 if x['modified']:
                     name += '_mod'
@@ -311,21 +349,49 @@ if __name__ == '__main__':
     parser.add_argument('--individual-entry', 
                         dest='individual_entry',
                         help=('files the individual entry from the excel files ' 
-                              'and only processes those.')
+                              'and only processes those.'),
                         )
+    parser.add_argument('--bin-based',
+                        dest='bin_based',
+                        help=('To generate the bin-based bins'),
+                        action=argparse.BooleanOptionalAction,
+                        type=bool,
+                        default=True)
+
+    parser.add_argument('--coordinate-based',
+                        dest='coordinate_based',
+                        help=('To generate the coordinate based for each bin'),
+                        action=argparse.BooleanOptionalAction,
+                        type=bool,
+                        default=False)
+    parser.add_argument('--n-points',
+                        dest='n_points',
+                        type=int,
+                        help='Number of points (in total) for coordinate based',
+                        )
+    parser.add_argument('--max-contrast',
+                        dest='max_contrast',
+                        help=('To generate the maximum contrast for each bin'),
+                        action=argparse.BooleanOptionalAction,
+                        type=bool,
+                        default=False)
+
+    
     parsed_args = parser.parse_args()
     dfs = [pd.read_excel(x, engine='openpyxl') for x in parsed_args.path_excel]
     df = pd.concat(dfs)
+    df = df[[x for x in df.columns if 'Tape' in x or 'Rotation' in x]]
     df['idx'] = np.arange(1, len(df) + 1 )
     df['Rotation?'] = df['Rotation?'].astype(bool)
     df['Rotation?.1'] = df['Rotation?.1'].astype(bool)
     if parsed_args.individual_entry is not None:
         dfs = []
         for col in df.columns:
-            dfs.append(df[df[col] == parsed_args.individual_entry]) 
-        df = pd.concat(dfs)        
+            dfs.append(df[df[col] == parsed_args.individual_entry])
+        df = pd.concat(dfs)
     else:
         df = df[parsed_args.start:parsed_args.end]
+
     print(df)
     del dfs
     chunks = get_chunks(df.to_dict('records'), parsed_args.n_processors)
