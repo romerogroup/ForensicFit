@@ -81,7 +81,7 @@ class Analyzer:
         
     def plot(self,
              which: str, 
-             cmap: str='gray', 
+             cmap: str='gray',
              savefig: str = None, 
              ax: Axes or List[Axes]= None, 
              show: bool = False,
@@ -164,7 +164,12 @@ class Analyzer:
                                                     ax[i])
                     ax[i].invert_yaxis()
                 ax = ax[-1]
-                ax.set_xlim(0, self.image.shape[1])
+                dynamic_positions = np.array(self.metadata[
+                    'analysis']['bin_based']['dynamic_positions'])
+                xmin = min(dynamic_positions[:, 0, 0])
+                xmax = max(dynamic_positions[:, 0, 1])
+                ax.set_xlim(xmin, xmax)
+
             else:
                 if ax is None:
                     plt.figure(figsize=(16, 9))
@@ -178,9 +183,11 @@ class Analyzer:
                                                     stds,
                                                     mode,
                                                     ax)
-                ax.set_xlim(0, self.image.shape[1])
+
                 ax.set_ylim(0, self.image.shape[0])
+                ax.set_xlim(0, self.image.shape[1])
                 ax.invert_yaxis()
+                
             
         elif which in [
             'bin_based', 

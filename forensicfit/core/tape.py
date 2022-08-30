@@ -762,7 +762,7 @@ class TapeAnalyzer(Analyzer):
                     )):
                         print('The number of points per bin is smaller than'
                               ' the number of points in this bin.'
-                              'Consider decreasnig the numbers of points for '
+                              'Consider decreasing the numbers of points for '
                               'the coordinate based method (n_points).')
                     for i_point in range(0, n_points):
                         y_start = y_min+i_point*(y_interval/n_points)
