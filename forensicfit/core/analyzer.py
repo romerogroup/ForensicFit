@@ -87,7 +87,6 @@ class Analyzer:
              show: bool = False,
              mode: str = None, 
              **kwargs):
-       
         """
         Parameters
         ----------
@@ -122,7 +121,7 @@ class Analyzer:
         None.
 
         """
-        
+
         if which == "coordinate_based":
             coordinates = self['coordinate_based']['coordinates']
             stds = self['coordinate_based']['stds']
@@ -141,6 +140,13 @@ class Analyzer:
         elif which in ['bin_based+coordinate_based',
                        'coordinate_based+bin_based']:
             if mode == 'individual_bins':
+                dynamic_positions = np.array(self.metadata[
+                    'analysis']['bin_based']['dynamic_positions'])
+                xmin = min(dynamic_positions[:, 0, 0])
+                xmax = max(dynamic_positions[:, 0, 1])
+                
+                
+                
                 n_bins = self.metadata['analysis']['bin_based']['n_bins']
                 if ax is None:
                     figure = plt.figure(figsize=(5, 2*n_bins))
@@ -153,6 +159,7 @@ class Analyzer:
                     assert len(ax) >= n_bins, 'Number of Axes provided ' \
                         "smaller than the number of bins"
                 if n_bins == 1: ax=[ax]
+
                 for i, i_bin in enumerate(self[which]):
                     coordinates = i_bin['coordinates']
                     stds = i_bin['stds']
@@ -161,14 +168,17 @@ class Analyzer:
                                                     slopes,
                                                     stds,
                                                     mode,
-                                                    ax[i])
+                                                    ax[i], **kwargs)
+                    dy = coordinates[1, 1] - coordinates[0, 1]
+                    y_min, y_max = min(coordinates[:, 1]), max(coordinates[:, 1])
+                    print(y_max - y_min)
+                    ax[i].set_ylim(y_min-dy, y_max+dy)
                     ax[i].invert_yaxis()
                 ax = ax[-1]
-                dynamic_positions = np.array(self.metadata[
-                    'analysis']['bin_based']['dynamic_positions'])
-                xmin = min(dynamic_positions[:, 0, 0])
-                xmax = max(dynamic_positions[:, 0, 1])
+                
+                
                 ax.set_xlim(xmin, xmax)
+                # ax.set_ylim(xmin, xmax)
 
             else:
                 if ax is None:
@@ -182,7 +192,7 @@ class Analyzer:
                                                     slopes,
                                                     stds,
                                                     mode,
-                                                    ax)
+                                                    ax, **kwargs)
 
                 ax.set_ylim(0, self.image.shape[0])
                 ax.set_xlim(0, self.image.shape[1])

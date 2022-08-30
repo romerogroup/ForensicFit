@@ -24,6 +24,7 @@ def plot_coordinate_based(coordinates: npt.ArrayLike,
                           stds: npt.ArrayLike,
                           mode: str = None,
                           ax: Axes = None,
+                          plot_slope: bool=False,
                           show: bool=True):
     n_points = len(coordinates)
     if ax is None:
@@ -47,6 +48,20 @@ def plot_coordinate_based(coordinates: npt.ArrayLike,
     #             coordinates[:, 1],
     #             c='black',
     #             s=0.01)
+    color=['red', 'blue', 'green', 'cyan', 'magenta', 'black', 'orange']
+    if plot_slope:
+        dy = coordinates[1, 1] - coordinates[0, 1]
+        dy *= 0.7
+        for i, iseg in enumerate(slopes):
+            m = iseg[0]
+            b0 = iseg[1]
+            y0 = coordinates[i, 1]
+            y_min = y0 - dy/2
+            y_max = y0 + dy/2
+            y = np.linspace(y_min, y_max, 100)
+            x = y/m - b0/m
+            ax.plot(x, y, color='blue')
+        color=['red']
     if mode == "error_bars":
         ax.errorbar(coordinates[:, 0],
                     np.flip(coordinates[:, 1]),
@@ -55,16 +70,11 @@ def plot_coordinate_based(coordinates: npt.ArrayLike,
                     color='red',
                     markersize=0.5,
                     fmt='o')
-    elif mode == 'slopes':
-        dy = coordinates[0, 1] - coordinates[1, 1]
-        for i, iseg in enumerate(slopes):
-            m = iseg[0]
-            b0 = iseg[1]
-            # y = np.linspace(coordinates[i, 1])
     else:
         ax.scatter(coordinates[:, 0],
                    coordinates[:, 1],
-                s=1)
+                s=1,
+                color=np.random.choice(color, size=(1,),)[0])
     # ax.set_ylim(min(coordinates[:, 1]),max(coordinates[:, 1]))            
     xmin = min(coordinates[:, 0])
     xmax = max(coordinates[:, 0])

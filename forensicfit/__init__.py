@@ -14,6 +14,7 @@ def has_package(name):
 
 
 HAS_OPENCV = has_package("cv2")
+HAS_SKIMAGE = has_package("skimage")
 HAS_PYMONGO = has_package("pymongo")
 HAS_TENSORFLOW = has_package("tensorflow")
 

@@ -19,6 +19,8 @@ import numpy as np
 import numpy.typing as npt
 from matplotlib import pylab as plt
 from scipy import ndimage
+from skimage import exposure, filters
+
 from ..utils import image_tools
 from .metadata import Metadata
 
