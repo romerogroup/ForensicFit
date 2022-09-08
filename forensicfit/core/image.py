@@ -110,6 +110,56 @@ class Image(Mapping):
         image_tools.imwrite(filepath, self.image)
         return 
     
+    
+    def exposure_control(self, mode:str='equalize_hist', **kwargs):
+        """modifies the exposure
+
+        Parameters
+        ----------
+        mode : str, optional
+            Type of exposure correction. It can be selected from the options:
+            ``'equalize_hist'`` or ``'equalize_adapthist'``. 
+            `equalize_hist <https://scikit-image.org/docs/stable/api/skimage.exposure.html#equalize-hist>`_ 
+            and `equalize_adapthist <https://scikit-image.org/docs/stable/api/skimage.exposure.html#equalize-adapthist>`
+            use sk-image. by default 'equalize_hist'
+        """
+        exps = {'equalize_hist':exposure.equalize_hist,
+                'equalize_adapthist':exposure.equalize_adapthist}
+        assert mode in exps, 'Mode not valid.'
+        self.image = exps[mode](self.image, **kwargs)
+        self.metadata['exposure_control'] = mode
+        if len(kwargs) != 0:
+            for key in kwargs:
+                self.metadata[key] = kwargs[key]
+        return
+
+    def apply_filter(self, mode:str, **kwargs):
+        """Applies different types of filters to the image
+
+        Parameters
+        ----------
+        mode : str
+            Type of filter to be applied. The options are
+            * ``'meijering'``: <Meijering neuriteness filter https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.meijering>_,
+            * ``'frangi'``: < Frangi vesselness filter https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.frangi>_,
+            * ``'prewitt'``: <Prewitt transform https://scikit-image.org/docs/stable/api/skimage.filters.html#prewitt>_,
+            * ``'sobel'``: <Sobel filter https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.sobel>_,
+            * ``'scharr'``: <Scharr transform https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.scharr>,
+            * ``'roberts'``: <Roberts' Cross operator https://scikit-image.org/docs/stable/api/skimage.filters.html#examples-using-skimage-filters-roberts>_,
+            * ``'sato'``: <Sato tubeness filter https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.sato>_.
+        """
+        flts = {
+            'meijering':filters.meijering,
+            'frangi': filters.frangi,
+            'prewitt': filters.prewitt,
+            'sobel': filters.sobel,
+            'scharr': filters.scharr,
+            'roberts': filters.roberts,
+            'sato': filters.sato
+        }
+        assert mode in flts, 'Filter not valid.'
+        
+
     def isolate(self,
                 x_start: int, 
                 x_end: int, 
