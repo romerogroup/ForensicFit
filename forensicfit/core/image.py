@@ -158,7 +158,16 @@ class Image(Mapping):
             'sato': filters.sato
         }
         assert mode in flts, 'Filter not valid.'
-        
+        if mode == 'roberts':
+            if self.image.ndim != 2:
+                print('Cannot apply roberts to color images')
+                return
+        self.image = flts[mode](self.image, **kwargs)
+        self.metadata['filter'] = mode
+        if len(kwargs) != 0:
+            for key in kwargs:
+                self.metadata[key] = kwargs[key]
+        return
 
     def isolate(self,
                 x_start: int, 
