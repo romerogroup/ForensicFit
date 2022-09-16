@@ -205,7 +205,6 @@ def resize(image, size):
 
     """
     size = tuple(size)
-
     assert len(size) == 2, 'Resizing needs two dimensions'
     image = cv2.resize(image,size)
     return image
