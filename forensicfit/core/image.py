@@ -14,6 +14,7 @@ from abc import ABCMeta, abstractmethod
 from collections.abc import Mapping
 from pathlib import Path
 
+import PIL
 import cv2
 import numpy as np
 import numpy.typing as npt
@@ -25,7 +26,7 @@ from ..utils import image_tools
 from .metadata import Metadata
 
 IMAGE_EXTENSIONS = image_tools.IMAGE_EXTENSIONS
-
+PIL.Image.MAX_IMAGE_PIXELS = None
 
 class Image(Mapping):
     __metaclass__ = ABCMeta
@@ -53,7 +54,10 @@ class Image(Mapping):
         path = Path(filepath)
         if path.exists():
             image = cv2.imread(path.as_posix())
-            return cls(image, path=path, filename=path.name)
+            pillow_image = PIL.Image.open(path)
+            image_info = pillow_image.info
+            pillow_image.close()
+            return cls(image, path=path, filename=path.name, **image_info)
         else:
             raise Exception(f"File {path.as_posix()} does not exist")
         
@@ -281,11 +285,23 @@ class Image(Mapping):
         if savefig is not None:
             cv2.imwrite(savefig, self.image)
 
-    def resize(self, size):
-        self.image = image_tools.resize(self.image, size)
-        self.values['image'] = self.image
-        self.metadata['resize'] = size
-        self.metadata['resolution'] = self.image.shape
+    def resize(self, size: tuple = None, dpi: tuple = None):
+        if dpi is None and size is not None:
+            self.image = image_tools.resize(self.image, size)
+            self.values['image'] = self.image
+            self.metadata['resize'] = size
+            self.metadata['resolution'] = self.image.shape
+        elif dpi is not None and 'dpi' in self.metadata:
+            dpi = np.array(dpi, dtype=np.int_)
+            dpi_old = np.array(self.metadata.dpi, dtype=np.int_)
+            ratio = dpi/dpi_old
+            size = np.flip((np.array(self.shape)[:2]*ratio).round().astype(int))
+            self.image = image_tools.resize(self.image, size)
+            self.values['image'] = self.image
+            self.metadata['resize'] = size
+            self.metadata['resolution'] = self.image.shape
+            self.metadata['resolution'] = self.image.shape
+            self.metadata['dpi'] = dpi
 
     def flip_h(self):
         self.image = image_tools.flip(self.image)
