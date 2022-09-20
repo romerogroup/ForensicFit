@@ -19,6 +19,13 @@ plt.rc("ytick", labelsize=12)  # fontsize of the tick labels
 plt.rc("legend", fontsize=12)  # legend fontsize
 
 
+def get_figure_size(obj):
+    dpi = (1000, 1000)
+    if 'dpi' in obj.metadata:
+        dpi = np.array(obj.metadata.dpi, dtype=np.float_)
+    figsize = np.flip(obj.shape[:2]/dpi)*4
+    return figsize
+
 def plot_coordinate_based(coordinates: npt.ArrayLike,
                           slopes: npt.ArrayLike,
                           stds: npt.ArrayLike,
@@ -28,6 +35,7 @@ def plot_coordinate_based(coordinates: npt.ArrayLike,
                           show: bool=True):
     n_points = len(coordinates)
     if ax is None:
+        
         plt.figure(figsize=(16, 9))
         ax = plt.subplot(111)
     # if mode == "gaussians":

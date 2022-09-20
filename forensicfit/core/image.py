@@ -8,6 +8,7 @@ __all__ = []
 __version__ = '1.0'
 __author__ = 'Pedram Tavadze'
 
+from importlib.metadata import metadata
 import io
 import pathlib
 from abc import ABCMeta, abstractmethod
@@ -57,6 +58,7 @@ class Image(Mapping):
             pillow_image = PIL.Image.open(path)
             image_info = pillow_image.info
             pillow_image.close()
+            del image_info['icc_profile']
             return cls(image, path=path, filename=path.name, **image_info)
         else:
             raise Exception(f"File {path.as_posix()} does not exist")
@@ -258,7 +260,11 @@ class Image(Mapping):
         """
 
         if ax is None:
-            plt.figure(figsize=(16, 9))
+            dpi = (1000, 1000)
+            if 'dpi' in self.metadata:
+                dpi = np.array(self.metadata.dpi, dtype=np.float_)
+            figsize = np.flip(self.shape[:2]/dpi)*4
+            plt.figure(figsize=figsize)
             ax = plt.subplot(111)
         image = self.image
         if rotate != 0.0:
@@ -266,6 +272,7 @@ class Image(Mapping):
         ax.imshow(image, cmap=cmap)
         ax.xaxis.set_visible(False)
         ax.yaxis.set_visible(False)
+        plt.tight_layout()
         if show:
             plt.show()
         # if savefig is not None:
@@ -339,3 +346,10 @@ class Image(Mapping):
     def __len__(self):
         return self.values.__len__()
 
+    def __repr__(self):
+        self.plot(show=True)
+        
+        ret = ''
+        for key in self.metadata:
+            ret += f'{key}: {self.metadata[key]}\n'
+        return ret

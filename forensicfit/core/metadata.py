@@ -40,13 +40,14 @@ class Metadata(MutableMapping):
     def __len__(self):
         return self.mapping.__len__()
 
-    def __str__(self):
+    def __repr__(self):
         ret = ''
         for key in self.mapping:
             value = self.mapping[key]
             ret += f'{key} : {value}\n'
         return ret
     
+   
     def __add__(self, new):
         for key in new.mapping:
             if key not in self:

@@ -171,7 +171,6 @@ class Analyzer:
                                                     ax[i], **kwargs)
                     dy = coordinates[1, 1] - coordinates[0, 1]
                     y_min, y_max = min(coordinates[:, 1]), max(coordinates[:, 1])
-                    print(y_max - y_min)
                     ax[i].set_ylim(y_min-dy, y_max+dy)
                     ax[i].invert_yaxis()
                 ax = ax[-1]
@@ -324,3 +323,8 @@ class Analyzer:
 
     def __len__(self):
         return self.values.__len__()
+
+    def __repr__(self) -> str:
+        self.plot(which='boundary', show=True)
+        ret = self.metadata.__str__()
+        return ret

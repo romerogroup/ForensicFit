@@ -55,6 +55,7 @@ class Tape(Material):
         self.values['image'] = self.image
         self.metadata['split_v'] = {
             "side": side, "pixel_index": pixel_index}
+        self.metadata['resolution'] = self.shape
         
 
 
@@ -556,7 +557,7 @@ class TapeAnalyzer(Analyzer):
                       dynamic_window=True,
                       size=None,
                       n_bins=10,
-                      overlap=100,
+                      overlap=0,
                       border: str = 'avg',
                       ):
         """
