@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import List, Union
 
 import cv2
+from forensicfit.utils import plotter
 import numpy as np
 from matplotlib import pylab as plt
 from matplotlib.axes import Axes
@@ -82,6 +83,7 @@ class Analyzer:
     def plot(self,
              which: str, 
              cmap: str='gray',
+             zoom: int=4,
              savefig: str = None, 
              ax: Axes or List[Axes]= None, 
              show: bool = False,
@@ -258,7 +260,8 @@ class Analyzer:
                     ax = self.plot('image', ax=ax, cmap=cmap)
         else:
             if ax is None:
-                plt.figure(figsize = (16, 9))
+                figsize = plotter.get_figure_size(self, zoom)
+                plt.figure(figsize = figsize)
                 ax = plt.subplot(111)
             ax.imshow(self[which], cmap=cmap)
             ax.set_xlim(0, self[which].shape[1])
@@ -276,6 +279,10 @@ class Analyzer:
     @abstractmethod
     def load_dict(self):
         pass
+
+    @property
+    def shape(self):
+        return self.image.shape
 
     @abstractmethod
     def from_dict(self):

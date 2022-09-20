@@ -20,10 +20,11 @@ import cv2
 import numpy as np
 import numpy.typing as npt
 from matplotlib import pylab as plt
+from matplotlib.axes import Axes
 from scipy import ndimage
 from skimage import exposure, filters
 
-from ..utils import image_tools
+from ..utils import image_tools, plotter
 from .metadata import Metadata
 
 IMAGE_EXTENSIONS = image_tools.IMAGE_EXTENSIONS
@@ -222,23 +223,13 @@ class Image(Mapping):
         self.metadata['resolution'] = self.image.shape
             
         
-    @property
-    def aspect_ratio(self):
-        """
-        
-
-        Returns
-        -------
-        TYPE
-            DESCRIPTION.
-        TYPE
-            DESCRIPTION.
-
-        """
-        gcd = np.gcd(self.image.shape[0], self.image.shape[1])
-        return (self.image.shape[1]//gcd, self.image.shape[0]//gcd)
-
-    def plot(self, savefig = None, cmap = 'gray', ax = None, rotate=0.0, show=False, **kwargs):
+    def plot(self,
+             savefig: str = None, 
+             cmap:str='gray',
+             ax: Axes = None,
+             show: bool=False, 
+             zoom: int=4,
+             **kwargs):
         """
         
 
@@ -260,15 +251,10 @@ class Image(Mapping):
         """
 
         if ax is None:
-            dpi = (1000, 1000)
-            if 'dpi' in self.metadata:
-                dpi = np.array(self.metadata.dpi, dtype=np.float_)
-            figsize = np.flip(self.shape[:2]/dpi)*4
+            figsize = plotter.get_figure_size(self, zoom)
             plt.figure(figsize=figsize)
             ax = plt.subplot(111)
         image = self.image
-        if rotate != 0.0:
-            image = ndimage.rotate(image, rotate)
         ax.imshow(image, cmap=cmap)
         ax.xaxis.set_visible(False)
         ax.yaxis.set_visible(False)
