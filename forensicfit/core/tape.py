@@ -168,11 +168,9 @@ class TapeAnalyzer(Analyzer):
         self.metadata['boundary'][:, 0] = self.metadata['boundary'][:, 0]*-1 + self.image.shape[1]
         if 'coordinate_based' in self.metadata['analysis']:
             coords  = np.array(self.metadata['analysis']['coordinate_based']['coordinates'])
-
-            # # slopes  = np.array(self.metadata['analysis']['coordinate_based']['slopes'])
-            # # coords = np.flipud(coords)
+            slopes  = np.array(self.metadata['analysis']['coordinate_based']['slopes'])
             coords[:, 0] *= -1
-            # # slopes[:, 0] *= -1
+            slopes[:, 0] *= -1
             self.metadata['analysis']['coordinate_based']['coordinates'] = coords
             # self.metadata['analysis']['coordinate_based']['slopes'] = slopes
         if 'bin_based' in self.metadata['analysis']:

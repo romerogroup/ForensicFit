@@ -125,6 +125,10 @@ class Analyzer:
         """
 
         if which == "coordinate_based":
+            if ax is None:
+                figsize = plotter.get_figure_size(self, zoom)
+                fig = plt.figure(figsize=figsize)
+                ax = fig.add_subplot(111)
             coordinates = self['coordinate_based']['coordinates']
             stds = self['coordinate_based']['stds']
             slopes = self['coordinate_based']['slopes']
@@ -132,9 +136,9 @@ class Analyzer:
                                                 slopes,
                                                 stds,
                                                 mode,
-                                                ax)
-            ax.set_xlim(0, self.image.shape[1])
-            ax.set_ylim(0, self.image.shape[0])
+                                                ax, **kwargs)
+            # ax.set_xlim(0, self.image.shape[1])
+            # ax.set_ylim(0, self.image.shape[0])
             ax.invert_yaxis()
         elif which == 'boundary':
             ax = self.plot('image', cmap=cmap, ax=ax)

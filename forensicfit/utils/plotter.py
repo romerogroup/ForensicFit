@@ -31,13 +31,14 @@ def plot_coordinate_based(coordinates: npt.ArrayLike,
                           stds: npt.ArrayLike,
                           mode: str = None,
                           ax: Axes = None,
-                          plot_slope: bool=False,
-                          show: bool=True):
-    n_points = len(coordinates)
+                          plot_slope: bool=True,
+                          plot_error_bars: bool=True,
+                          plot_edge: bool=True,
+                          show: bool=True,
+                          **kwargs) -> Axes:
     if ax is None:
-        
-        plt.figure(figsize=(16, 9))
-        ax = plt.subplot(111)
+        fig = plt.figure()
+        ax = fig.subplot(111)
     # if mode == "gaussians":
     #     dy = (self.ymax-self.ymin)/n_points
     #     # norm = Normalize(vmin, vmax)
@@ -56,10 +57,11 @@ def plot_coordinate_based(coordinates: npt.ArrayLike,
     #             coordinates[:, 1],
     #             c='black',
     #             s=0.01)
-    color=['red', 'blue', 'green', 'cyan', 'magenta', 'black', 'orange']
+    ax.set_facecolor('black')
+    color=['cyan', 'magenta', 'black', 'orange', 'red', 'blue', 'green']
     if plot_slope:
         dy = coordinates[1, 1] - coordinates[0, 1]
-        dy *= 0.7
+        dy *= 0.5
         for i, iseg in enumerate(slopes):
             m = iseg[0]
             b0 = iseg[1]
@@ -68,24 +70,32 @@ def plot_coordinate_based(coordinates: npt.ArrayLike,
             y_max = y0 + dy/2
             y = np.linspace(y_min, y_max, 100)
             x = y/m - b0/m
-            ax.plot(x, y, color='blue')
+            ax.plot(x, y, color='orange')
         color=['red']
-    if mode == "error_bars":
+    fig = ax.get_figure()
+    large_dim = fig.get_size_inches().max()
+    marker_size = large_dim/4
+    if plot_error_bars:
         ax.errorbar(coordinates[:, 0],
-                    np.flip(coordinates[:, 1]),
+                    coordinates[:, 1],
                     xerr=stds,
-                    ecolor='blue',
-                    color='red',
-                    markersize=0.5,
+                    ecolor='cyan',
+                    color=np.random.choice(color, size=(1,),)[0],
+                    ms=marker_size,
                     fmt='o')
     else:
         ax.scatter(coordinates[:, 0],
-                   coordinates[:, 1],
-                s=1,
-                color=np.random.choice(color, size=(1,),)[0])
+                    coordinates[:, 1],
+                    s=marker_size*4,
+                    color=np.random.choice(color, size=(1,),)[0],
+                    marker='o')
+    if plot_edge:
+        ax.plot(coordinates[:, 0],
+                coordinates[:, 1],
+                color='#f3ff6b')
     # ax.set_ylim(min(coordinates[:, 1]),max(coordinates[:, 1]))            
-    xmin = min(coordinates[:, 0])
-    xmax = max(coordinates[:, 0])
+    # xmin = min(coordinates[:, 0])
+    # xmax = max(coordinates[:, 0])
     # ax.set_xlim(xmin-abs(xmin)*0.9, xmax+abs(xmax)*1.1)
     return ax
     
