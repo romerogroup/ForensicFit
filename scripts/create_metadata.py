@@ -14,7 +14,10 @@ from pathlib import Path
 import re
 import json
 import argparse
+from PIL import Image, ExifTags
 from typing import Union, Dict, List
+
+Image.MAX_IMAGE_PIXELS = None
 
 
 def get_files(path: Path, 
@@ -52,15 +55,22 @@ def get_metadata(file_path: Path, key: str) -> Dict[str, str]:
     else:
         modified = False
     filename = file_path.stem.replace('_mod','')
-    
-    return {'filename': filename,
+    pillow_image = Image.open(file_path)
+    dpi = [int(x) for x in pillow_image.info['dpi']]
+    pillow_image.close()
+    ret = {'filename': filename,
             'surface': surface,
             'quality': quality,
             'separation_method': separation_method,
             'stretched': stretched,
             'modified': modified, 
+            'dpi': dpi,
             'source': file_path.absolute().as_posix(),
             }
+    
+    xr, yr = dpi
+    print(f'{filename:<15} | {surface:<10} | {quality:<20} | dpi: {xr}, {yr}')
+    return ret
 
 def get_lookup(files_dict: Dict[str, str], 
                df: pd.DataFrame) -> List[Dict]:

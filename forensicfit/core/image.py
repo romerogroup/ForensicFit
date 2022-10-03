@@ -8,7 +8,6 @@ __all__ = []
 __version__ = '1.0'
 __author__ = 'Pedram Tavadze'
 
-from importlib.metadata import metadata
 import io
 import pathlib
 from abc import ABCMeta, abstractmethod
@@ -23,12 +22,14 @@ from matplotlib import pylab as plt
 from matplotlib.axes import Axes
 from scipy import ndimage
 from skimage import exposure, filters
+from typing import Union
 
 from ..utils import image_tools, plotter
 from .metadata import Metadata
 
 IMAGE_EXTENSIONS = image_tools.IMAGE_EXTENSIONS
 PIL.Image.MAX_IMAGE_PIXELS = None
+# mpl.rcParams['image.origin'] = 'lower'
 
 class Image(Mapping):
     __metaclass__ = ABCMeta
@@ -51,7 +52,7 @@ class Image(Mapping):
         self.metadata.update(kwargs)
 
     @classmethod
-    def from_file(cls, filepath: str or pathlib.Path):
+    def from_file(cls, filepath: Union[str, pathlib.Path]):
 
         path = Path(filepath)
         if path.exists():
@@ -221,7 +222,10 @@ class Image(Mapping):
     def convert_to_rgb(self):
         self.image = image_tools.to_rbg(self.image)
         self.metadata['resolution'] = self.image.shape
-            
+
+
+    def rotate(angle):
+        self.image = image_tools.rotate_image(self.image, angle)
         
     def plot(self,
              savefig: str = None, 
@@ -332,10 +336,7 @@ class Image(Mapping):
     def __len__(self):
         return self.values.__len__()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         self.plot(show=True)
-        
-        ret = ''
-        for key in self.metadata:
-            ret += f'{key}: {self.metadata[key]}\n'
+        ret = self.metadata.__str__()
         return ret

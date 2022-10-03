@@ -9,6 +9,7 @@ import cv2
 from forensicfit.utils import plotter
 import numpy as np
 from matplotlib import pylab as plt
+import matplotlib as mpl
 from matplotlib.axes import Axes
 from scipy.stats import norm
 
@@ -17,6 +18,7 @@ from forensicfit import utils
 from ..utils.image_tools import IMAGE_EXTENSIONS
 from .metadata import Metadata
 
+# mpl.rcParams['image.origin'] = 'lower'
 
 class Analyzer:
     
@@ -79,6 +81,64 @@ class Analyzer:
             plt.show()
         return ax
 
+    # TODO: this is a repeat from the Image class. Make it more efficient.
+    def exposure_control(self, mode:str='equalize_hist', **kwargs):
+        """modifies the exposure
+
+        Parameters
+        ----------
+        mode : str, optional
+            Type of exposure correction. It can be selected from the options:
+            ``'equalize_hist'`` or ``'equalize_adapthist'``. 
+            `equalize_hist <https://scikit-image.org/docs/stable/api/skimage.exposure.html#equalize-hist>`_ 
+            and `equalize_adapthist <https://scikit-image.org/docs/stable/api/skimage.exposure.html#equalize-adapthist>`
+            use sk-image. by default 'equalize_hist'
+        """
+        exps = {'equalize_hist':exposure.equalize_hist,
+                'equalize_adapthist':exposure.equalize_adapthist}
+        assert mode in exps, 'Mode not valid.'
+        self.image = exps[mode](self.image, **kwargs)
+        self.metadata['exposure_control'] = mode
+        if len(kwargs) != 0:
+            for key in kwargs:
+                self.metadata[key] = kwargs[key]
+        return
+
+    def apply_filter(self, mode:str, **kwargs):
+        """Applies different types of filters to the image
+
+        Parameters
+        ----------
+        mode : str
+            Type of filter to be applied. The options are
+            * ``'meijering'``: <Meijering neuriteness filter https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.meijering>_,
+            * ``'frangi'``: < Frangi vesselness filter https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.frangi>_,
+            * ``'prewitt'``: <Prewitt transform https://scikit-image.org/docs/stable/api/skimage.filters.html#prewitt>_,
+            * ``'sobel'``: <Sobel filter https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.sobel>_,
+            * ``'scharr'``: <Scharr transform https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.scharr>,
+            * ``'roberts'``: <Roberts' Cross operator https://scikit-image.org/docs/stable/api/skimage.filters.html#examples-using-skimage-filters-roberts>_,
+            * ``'sato'``: <Sato tubeness filter https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.sato>_.
+        """
+        flts = {
+            'meijering':filters.meijering,
+            'frangi': filters.frangi,
+            'prewitt': filters.prewitt,
+            'sobel': filters.sobel,
+            'scharr': filters.scharr,
+            'roberts': filters.roberts,
+            'sato': filters.sato
+        }
+        assert mode in flts, 'Filter not valid.'
+        if mode == 'roberts':
+            if self.image.ndim != 2:
+                print('Cannot apply roberts to color images')
+                return
+        self.image = flts[mode](self.image, **kwargs)
+        self.metadata['filter'] = mode
+        if len(kwargs) != 0:
+            for key in kwargs:
+                self.metadata[key] = kwargs[key]
+        return
         
     def plot(self,
              which: str, 
@@ -137,12 +197,14 @@ class Analyzer:
                                                 stds,
                                                 mode,
                                                 ax, **kwargs)
+            ax.set_xlim(0, self['image'].shape[1])
             # ax.set_xlim(0, self.image.shape[1])
             # ax.set_ylim(0, self.image.shape[0])
             ax.invert_yaxis()
         elif which == 'boundary':
             ax = self.plot('image', cmap=cmap, ax=ax)
             ax = self.plot_boundary(ax=ax)
+            ax_ = ax
         elif which in ['bin_based+coordinate_based',
                        'coordinate_based+bin_based']:
             if mode == 'individual_bins':
@@ -177,19 +239,28 @@ class Analyzer:
                                                     ax[i], **kwargs)
                     dy = coordinates[1, 1] - coordinates[0, 1]
                     y_min, y_max = min(coordinates[:, 1]), max(coordinates[:, 1])
-                    ax[i].set_ylim(y_min-dy, y_max+dy)
-                    ax[i].invert_yaxis()
-                ax = ax[-1]
+                    ax[i].xaxis.set_visible(False)
+                    ax[i].yaxis.set_visible(False)
+                    # ax[i].set_ylim(y_min-dy, y_max+dy)
+                    y1 = dynamic_positions[i][1][0]
+                    y2 = dynamic_positions[i][1][1]
+                    x1 = dynamic_positions[i][0][0]
+                    x2 = dynamic_positions[i][0][1]
+                    ax[i].set_xlim(x1, x2)
+                    ax[i].set_ylim(y2, y1)
+                    if not ax[i].yaxis_inverted():
+                        ax[i].invert_yaxis()
+                ax_ = ax[-1]
                 
                 
-                ax.set_xlim(xmin, xmax)
+                # ax_.set_xlim(xmin, xmax)
                 # ax.set_ylim(xmin, xmax)
 
             else:
                 if ax is None:
                     plt.figure(figsize=(16, 9))
                     ax = plt.subplot(111)
-                for i_bin in self[which]:
+                for i, i_bin in enumerate(self[which]):
                     coordinates = i_bin['coordinates']
                     stds = i_bin['stds']
                     slopes = i_bin['slopes']
@@ -198,6 +269,7 @@ class Analyzer:
                                                     stds,
                                                     mode,
                                                     ax, **kwargs)
+
 
                 ax.set_ylim(0, self.image.shape[0])
                 ax.set_xlim(0, self.image.shape[1])
@@ -216,7 +288,6 @@ class Analyzer:
                     figure = plt.figure(figsize=(10, 20))
                     ax = figure.subplots(
                         n_bins, 1,
-                        sharex=True, 
                         gridspec_kw={'hspace':2e-2})
                 
                 elif isinstance(ax, list):
@@ -226,10 +297,18 @@ class Analyzer:
                 
                 bins = self[which]
                 for i, seg in enumerate(bins):
-                    ax[i].imshow(seg, cmap=cmap)
+                    y1 = dynamic_positions[i][1][0]
+                    y2 = dynamic_positions[i][1][1]
+                    x1 = dynamic_positions[i][0][0]
+                    x2 = dynamic_positions[i][0][1]
+                    # ax[i].set_facecolor('black')
+                    ax[i].imshow(seg, cmap=cmap, extent=(x1, x2, y1, y2))
+                    # ax[i].set_xlim(x1, x2)
+                    # ax[i].set_ylim(y1, y2)
                     ax[i].xaxis.set_visible(False)
                     ax[i].yaxis.set_visible(False)
-                ax = ax[-1]
+                    # ax[i].imshow(seg, cmap=cmap)
+                ax_ = ax[-1]
             else:
                 if ax is None:
                     plt.figure(figsize=(16, 9))
@@ -260,18 +339,21 @@ class Analyzer:
                             linestyle=styles[i], linewidth=1)
                 if 'max_contrast' in which:
                     ax = self.plot('edge_bw', ax=ax, cmap=cmap)
+                    ax_ = ax
                 else:
                     ax = self.plot('image', ax=ax, cmap=cmap)
+                    ax_ = ax
         else:
             if ax is None:
                 figsize = plotter.get_figure_size(self, zoom)
                 plt.figure(figsize = figsize)
                 ax = plt.subplot(111)
             ax.imshow(self[which], cmap=cmap)
+            ax_ = ax
             ax.set_xlim(0, self[which].shape[1])
         if 'coordinate_based' not in which:
-            ax.xaxis.set_visible(False)
-            ax.yaxis.set_visible(False)
+            ax_.xaxis.set_visible(False)
+            ax_.yaxis.set_visible(False)
         if savefig is not None:
             plt.savefig(savefig)
             return ax

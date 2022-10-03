@@ -107,14 +107,13 @@ class TapeAnalyzer(Analyzer):
             self.metadata += tape.metadata
             self.metadata['resolution'] = self.image.shape
             self.preprocess()
-            self.metadata['cropped'] = False
-            self.metadata['tilt_corrected'] = False
+            self.metadata['cropped'] = auto_crop
+            self.metadata['tilt_corrected'] = correct_tilt
             if correct_tilt:
                 angle = self.get_image_tilt()
                 self.image = image_tools.rotate_image(self.image, angle)
                 self.metadata.tilt_corrected = True
             if auto_crop:
-                self.metadata['cropped'] = True
                 self.get_image_tilt()
                 self.auto_crop_y()
                 self.metadata.cropped = True
@@ -162,17 +161,19 @@ class TapeAnalyzer(Analyzer):
         self.metadata['boundary'] = largest_contour.reshape(-1, 2)
 
     def flip_v(self):
-        # TODO coordinate based
         self.image = np.fliplr(self.image)
         self.metadata['boundary'] = np.array(self.metadata['boundary'])
         self.metadata['boundary'][:, 0] = self.metadata['boundary'][:, 0]*-1 + self.image.shape[1]
         if 'coordinate_based' in self.metadata['analysis']:
             coords  = np.array(self.metadata['analysis']['coordinate_based']['coordinates'])
             slopes  = np.array(self.metadata['analysis']['coordinate_based']['slopes'])
-            coords[:, 0] *= -1
+            coords[:, 0] *= -1 
+            coords[:, 0] += self.image.shape[1]
+            slopes[:, 1] += slopes[:, 0]*self.image.shape[1]
             slopes[:, 0] *= -1
+            # slopes[:, 1] += self.image.shape[1]
             self.metadata['analysis']['coordinate_based']['coordinates'] = coords
-            # self.metadata['analysis']['coordinate_based']['slopes'] = slopes
+            self.metadata['analysis']['coordinate_based']['slopes'] = slopes
         if 'bin_based' in self.metadata['analysis']:
             dynamic_positions = np.array(self.metadata['analysis']['bin_based']['dynamic_positions'])
             for i, pos in enumerate(dynamic_positions):
@@ -368,11 +369,6 @@ class TapeAnalyzer(Analyzer):
         angle_d = np.rad2deg(angle)
         self.metadata.image_tilt = angle_d
         return angle_d
-
-
-        
-        
-
 
     @property
     def xmin(self):
@@ -589,6 +585,9 @@ class TapeAnalyzer(Analyzer):
         An array of 2d numpy arrays with images of each segment.
 
         """
+        was_flipped = self.metadata['flip_v']
+        if was_flipped:
+            self.flip_v()
         overlap = abs(overlap)
         boundary = self.boundary
         x_min = self.xmin
@@ -642,6 +641,8 @@ class TapeAnalyzer(Analyzer):
 
         self.bin_based = segments
         self.metadata['analysis']['bin_based'] = metadata
+        if was_flipped:
+            self.flip_v()
         return dynamic_positions
 
     def get_max_contrast(self,
@@ -763,10 +764,14 @@ class TapeAnalyzer(Analyzer):
                               ' the number of points in this bin.'
                               'Consider decreasing the numbers of points for '
                               'the coordinate based method (n_points).')
-                    for i_point in range(0, n_points):
+                    for i_point in range(n_points):
                         y_start = y_min+i_point*(y_interval/n_points)
                         y_end = y_min+(i_point+1)*(y_interval/n_points)
-                        points = self._get_points_from_boundary(x[0], x[1], y_start, y_end)
+                        points = self._get_points_from_boundary(
+                            x[0], 
+                            x[1], 
+                            y_start, 
+                            y_end)
                         assert len(points) != 0, ("No points in this window, " 
                                                   "increase the background window")
                         data[i_point, :2] = np.average(points, axis=0)

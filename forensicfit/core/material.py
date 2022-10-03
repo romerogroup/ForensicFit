@@ -30,4 +30,3 @@ class Material(Image):
         self.metadata['mode'] = 'material'
         self.metadata['material'] = None
         
-
