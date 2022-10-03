@@ -8,23 +8,23 @@ __all__ = []
 __version__ = '1.0'
 __author__ = 'Pedram Tavadze'
 
-from importlib.metadata import metadata
 import io
 import pathlib
 from abc import ABCMeta, abstractmethod
 from collections.abc import Mapping
+from importlib.metadata import metadata
 from pathlib import Path
 
-import PIL
+
 import cv2
 import numpy as np
 import numpy.typing as npt
+import PIL
 from matplotlib import pylab as plt
 from matplotlib.axes import Axes
 from scipy import ndimage
-from skimage import exposure, filters
 
-from ..utils import image_tools, plotter
+from ..utils import copy_doc, image_tools, plotter
 from .metadata import Metadata
 
 IMAGE_EXTENSIONS = image_tools.IMAGE_EXTENSIONS
@@ -117,59 +117,18 @@ class Image(Mapping):
         image_tools.imwrite(filepath, self.image)
         return 
     
-    
+    @copy_doc(image_tools.exposure_control)
     def exposure_control(self, mode:str='equalize_hist', **kwargs):
-        """modifies the exposure
-
-        Parameters
-        ----------
-        mode : str, optional
-            Type of exposure correction. It can be selected from the options:
-            ``'equalize_hist'`` or ``'equalize_adapthist'``. 
-            `equalize_hist <https://scikit-image.org/docs/stable/api/skimage.exposure.html#equalize-hist>`_ 
-            and `equalize_adapthist <https://scikit-image.org/docs/stable/api/skimage.exposure.html#equalize-adapthist>`
-            use sk-image. by default 'equalize_hist'
-        """
-        exps = {'equalize_hist':exposure.equalize_hist,
-                'equalize_adapthist':exposure.equalize_adapthist}
-        assert mode in exps, 'Mode not valid.'
-        self.image = exps[mode](self.image, **kwargs)
+        self.image = image_tools.exposure_control(self.image)
         self.metadata['exposure_control'] = mode
         if len(kwargs) != 0:
             for key in kwargs:
                 self.metadata[key] = kwargs[key]
         return
 
+    @copy_doc(image_tools.apply_filter)
     def apply_filter(self, mode:str, **kwargs):
-        """Applies different types of filters to the image
-
-        Parameters
-        ----------
-        mode : str
-            Type of filter to be applied. The options are
-            * ``'meijering'``: <Meijering neuriteness filter https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.meijering>_,
-            * ``'frangi'``: < Frangi vesselness filter https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.frangi>_,
-            * ``'prewitt'``: <Prewitt transform https://scikit-image.org/docs/stable/api/skimage.filters.html#prewitt>_,
-            * ``'sobel'``: <Sobel filter https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.sobel>_,
-            * ``'scharr'``: <Scharr transform https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.scharr>,
-            * ``'roberts'``: <Roberts' Cross operator https://scikit-image.org/docs/stable/api/skimage.filters.html#examples-using-skimage-filters-roberts>_,
-            * ``'sato'``: <Sato tubeness filter https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.sato>_.
-        """
-        flts = {
-            'meijering':filters.meijering,
-            'frangi': filters.frangi,
-            'prewitt': filters.prewitt,
-            'sobel': filters.sobel,
-            'scharr': filters.scharr,
-            'roberts': filters.roberts,
-            'sato': filters.sato
-        }
-        assert mode in flts, 'Filter not valid.'
-        if mode == 'roberts':
-            if self.image.ndim != 2:
-                print('Cannot apply roberts to color images')
-                return
-        self.image = flts[mode](self.image, **kwargs)
+        self.image = image_tools.apply_filter(self.image, **kwargs)
         self.metadata['filter'] = mode
         if len(kwargs) != 0:
             for key in kwargs:

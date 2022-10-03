@@ -3,6 +3,7 @@
 import cv2
 import numpy as np
 import matplotlib.pylab as plt
+from skimage import exposure, filters
 from forensicfit import HAS_OPENCV
 from pathlib import Path
 
@@ -208,8 +209,59 @@ def resize(image, size):
     assert len(size) == 2, 'Resizing needs two dimensions'
     image = cv2.resize(image,size)
     return image
-    
-    
+
+def exposure_control(image: np.ndarray, 
+                        mode:str='equalize_hist', 
+                        **kwargs) -> np.ndarray:
+    """modifies the exposure
+
+    Parameters
+    ----------
+    mode : str, optional
+        Type of exposure correction. It can be selected from the options:
+        ``'equalize_hist'`` or ``'equalize_adapthist'``. 
+        `equalize_hist <https://scikit-image.org/docs/stable/api/skimage.exposure.html#equalize-hist>`_ 
+        and `equalize_adapthist <https://scikit-image.org/docs/stable/api/skimage.exposure.html#equalize-adapthist>`
+        use sk-image. by default 'equalize_hist'
+    """
+    exps = {'equalize_hist':exposure.equalize_hist,
+            'equalize_adapthist':exposure.equalize_adapthist}
+    assert mode in exps, 'Mode not valid.'
+    image = exps[mode](image, **kwargs)
+    return image
+
+def apply_filter(image: np.ndarray, mode:str, **kwargs) -> np.ndarray:
+    """Applies different types of filters to the image
+
+    Parameters
+    ----------
+    mode : str
+        Type of filter to be applied. The options are
+        * ``'meijering'``: <Meijering neuriteness filter https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.meijering>_,
+        * ``'frangi'``: < Frangi vesselness filter https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.frangi>_,
+        * ``'prewitt'``: <Prewitt transform https://scikit-image.org/docs/stable/api/skimage.filters.html#prewitt>_,
+        * ``'sobel'``: <Sobel filter https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.sobel>_,
+        * ``'scharr'``: <Scharr transform https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.scharr>,
+        * ``'roberts'``: <Roberts' Cross operator https://scikit-image.org/docs/stable/api/skimage.filters.html#examples-using-skimage-filters-roberts>_,
+        * ``'sato'``: <Sato tubeness filter https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.sato>_.
+    """
+    flts = {
+        'meijering':filters.meijering,
+        'frangi': filters.frangi,
+        'prewitt': filters.prewitt,
+        'sobel': filters.sobel,
+        'scharr': filters.scharr,
+        'roberts': filters.roberts,
+        'sato': filters.sato
+    }
+    assert mode in flts, 'Filter not valid.'
+    if mode == 'roberts':
+        if image.ndim != 2:
+            print('Cannot apply roberts to color images')
+            return
+    image = flts[mode](image, **kwargs)
+    return
+
 
 def binerized_mask(image, masked):
     """

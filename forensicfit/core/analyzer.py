@@ -14,9 +14,10 @@ from scipy.stats import norm
 
 from forensicfit import utils
 
-from ..utils.image_tools import IMAGE_EXTENSIONS
+from ..utils import copy_doc, image_tools, plotter
 from .metadata import Metadata
 
+IMAGE_EXTENSIONS = image_tools.IMAGE_EXTENSIONS
 
 class Analyzer:
     
@@ -39,6 +40,26 @@ class Analyzer:
                                   'label': None, 
                                   'material': None})
         self.metadata.update(kwargs)
+
+    @copy_doc(image_tools.exposure_control)
+    def exposure_control(self, mode:str='equalize_hist', **kwargs):
+        self.original_image = self.image
+        self.image = image_tools.exposure_control(self.image)
+        self.metadata['exposure_control'] = mode
+        if len(kwargs) != 0:
+            for key in kwargs:
+                self.metadata[key] = kwargs[key]
+        return
+
+    @copy_doc(image_tools.apply_filter)
+    def apply_filter(self, mode:str, **kwargs):
+        self.original_image = self.image
+        self.image = image_tools.apply_filter(self['gray_scale'], **kwargs)
+        self.metadata['filter'] = mode
+        if len(kwargs) != 0:
+            for key in kwargs:
+                self.metadata[key] = kwargs[key]
+        return
 
     def plot_boundary(self, 
                       savefig: Union[str, Path] = None, 
@@ -126,7 +147,9 @@ class Analyzer:
 
         if which == "coordinate_based":
             if ax is None:
-                figsize = plotter.get_figure_size(self, zoom)
+                figsize = plotter.get_figure_size(self.metadata['dpi'],
+                                                  self.shape[:2], 
+                                                  zoom)
                 fig = plt.figure(figsize=figsize)
                 ax = fig.add_subplot(111)
             coordinates = self['coordinate_based']['coordinates']
@@ -264,7 +287,9 @@ class Analyzer:
                     ax = self.plot('image', ax=ax, cmap=cmap)
         else:
             if ax is None:
-                figsize = plotter.get_figure_size(self, zoom)
+                figsize = plotter.get_figure_size(self.metadata['dpi'],
+                                                  self.shape[:2], 
+                                                  zoom)
                 plt.figure(figsize = figsize)
                 ax = plt.subplot(111)
             ax.imshow(self[which], cmap=cmap)

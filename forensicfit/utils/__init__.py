@@ -6,3 +6,4 @@ if HAS_PYMONGO:
 if HAS_OPENCV:
     from . import image_tools
 from . import plotter
+from .general import copy_doc

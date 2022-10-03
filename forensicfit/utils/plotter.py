@@ -1,5 +1,7 @@
+from email.mime import image
 import itertools
-from typing import Any, List, Union
+from turtle import tilt
+from typing import Any, List, Tuple, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -7,6 +9,7 @@ import numpy.typing as npt
 from .. import HAS_TENSORFLOW
 from scipy import stats
 from matplotlib.axes import Axes
+from matplotlib.figure import Figure
 from pathlib import Path
 from matplotlib.ticker import MaxNLocator, MultipleLocator
 
@@ -19,13 +22,15 @@ plt.rc("ytick", labelsize=12)  # fontsize of the tick labels
 plt.rc("legend", fontsize=12)  # legend fontsize
 
 
-def get_figure_size(obj, zoom=4):
-    dpi = (1000, 1000)
-    if 'dpi' in obj.metadata:
-        dpi = np.array(obj.metadata.dpi, dtype=np.float_)
-    figsize = np.flip(obj.shape[:2]/dpi)*zoom
-    return figsize
-
+def get_figure_size(dpi: Tuple[int, int],
+                    image_shape: Tuple[int, int], 
+                    zoom=4) -> Tuple[float, float]:
+    dpi = np.array(dpi, dtype=np.float_)
+    image_shape = np.array(image_shape, dtype=np.float_)
+    fig_size = tuple(np.flip(image_shape/dpi)*zoom)
+    print(fig_size, dpi, image_shape)
+    return fig_size
+    
 def plot_coordinate_based(coordinates: npt.ArrayLike,
                           slopes: npt.ArrayLike,
                           stds: npt.ArrayLike,
@@ -103,15 +108,17 @@ def plot_coordinate_based(coordinates: npt.ArrayLike,
 def plot_pair(obj_1: Any,
               obj_2: Any,
               text: List[str] = None,
-              which: str = None,
+              which: str='boundary',
               mode: str = None,
               savefig: str = None,
-              cmap: str = 'gray',
+              cmap: str='gray',
               show: bool = True,
               figsize: tuple = None,
               labels: List[str] = None,
+              title: str = None,
+              zoom:int=4,
               **kwargs,
-              ):
+              ) -> Tuple[Figure, Axes]:
     if text is not None:
         n_columns = 3
     else:
@@ -121,14 +128,21 @@ def plot_pair(obj_1: Any,
             obj_1.metadata['analysis']['bin_based']['n_bins'],
             obj_1.metadata['analysis']['bin_based']['n_bins']
         )
-        figsize = figsize or (n_bins/4, 2*n_bins)
+        x = obj_1.shape[0]
+        y = obj_1.metadata['analysis']['bin_based']['window_background']
+        y += obj_1.metadata['analysis']['bin_based']['window_tape']
+        y *= 2
+        x *= 2
+        figsize = figsize or get_figure_size(obj_1.metadata['dpi'], 
+                                             (x, y), 
+                                             zoom) #(n_bins/4, 2*n_bins)
         figure = plt.figure(figsize=figsize)
         axes = figure.subplots(
             n_bins, n_columns,
             gridspec_kw={'hspace': 0.1, 'wspace': 0.001})
         ax = [axes[:, 0], axes[:, 1]]
     else:
-        figsize = figsize or (20, 10)
+        figsize = figsize or get_figure_size(obj_1, zoom)
         figure = plt.figure(figsize=figsize)
         axes = figure.subplots(1, n_columns)
         ax = [axes[0], axes[1]]
@@ -136,6 +150,8 @@ def plot_pair(obj_1: Any,
         axi = obj.plot(which, ax=ax[i], mode=mode, cmap=cmap, **kwargs)
         if labels is not None:
             axi.set_title(labels[i])
+    if title is not None:
+        figure.suptitle(title)
     if text is not None:
         for i, tex in enumerate(text):
             axes[i, 2].text(0.5, 0.5, tex)
@@ -145,7 +161,7 @@ def plot_pair(obj_1: Any,
         plt.show()
     if savefig is not None:
         plt.savefig(savefig)
-    return
+    return figure, ax
 
 
 

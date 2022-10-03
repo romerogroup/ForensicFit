@@ -18,8 +18,6 @@ if not HAS_OPENCV:
 else:
     import cv2
 
-
-
 class Tape(Material):
     def __init__(self,
                  image: npt.ArrayLike,
@@ -688,6 +686,8 @@ class TapeAnalyzer(Analyzer):
     def __getitem__(self, x):
         if x == 'image':
             return self.image
+        elif x == 'original_image':
+            return self.original_image
         elif x == 'masked':
             return image_tools.remove_background(self['image'], 
                                                  self.largest_contour)

@@ -139,5 +139,5 @@ if __name__ == '__main__':
     print('The following files do not exist on this storage.')
     for x in not_exists:
         print(x)
-    with open('metadata.json','w') as wf:
+    with open(args.output,'w') as wf:
         json.dump(lookup, wf, indent=2)
