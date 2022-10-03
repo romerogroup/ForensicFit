@@ -178,10 +178,10 @@ class Image(Mapping):
         return
 
     def isolate(self,
-                x_start: int, 
-                x_end: int, 
-                y_start: int, 
-                y_end: int) -> np.ndarray:
+                x_start: int = None, 
+                x_end: int = None, 
+                y_start: int = None, 
+                y_end: int = None) -> np.ndarray:
         """isolates a rectangle from the image
 
         Parameters
@@ -200,6 +200,10 @@ class Image(Mapping):
         np.ndarray
             _description_
         """
+        x_start = x_start or 0
+        x_end = x_end or self.image.shape[1]
+        y_start = y_start or 0
+        y_end = y_end or self.image.shape[0]
         return self.image[y_start:y_end, x_start:x_end]
     
     def crop(self,
@@ -224,7 +228,7 @@ class Image(Mapping):
         self.metadata['resolution'] = self.image.shape
 
 
-    def rotate(angle):
+    def rotate(angle: float):
         self.image = image_tools.rotate_image(self.image, angle)
         
     def plot(self,

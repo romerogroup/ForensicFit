@@ -472,6 +472,33 @@ class TapeAnalyzer(Analyzer):
         cond = np.bitwise_and(cond_x, cond_y)
         return coordinates[cond]
 
+    def exposure_control(self, mode:str='equalize_hist', **kwargs):
+        """modifies the exposure
+
+        Parameters
+        ----------
+        mode : str, optional
+            Type of exposure correction. It can be selected from the options:
+            ``'equalize_hist'`` or ``'equalize_adapthist'``. 
+            `equalize_hist <https://scikit-image.org/docs/stable/api/skimage.exposure.html#equalize-hist>`_ 
+            and `equalize_adapthist <https://scikit-image.org/docs/stable/api/skimage.exposure.html#equalize-adapthist>`
+            use sk-image. by default 'equalize_hist'
+        """
+        exps = {'equalize_hist':exposure.equalize_hist,
+                'equalize_adapthist':exposure.equalize_adapthist}
+        assert mode in exps, 'Mode not valid.'
+        self.image = exps[mode](self.image, **kwargs)
+        self.metadata['exposure_control'] = mode
+        if len(kwargs) != 0:
+            for key in kwargs:
+                self.metadata[key] = kwargs[key]
+        return
+
+    def apply_filter(self, mode:str, **kwargs):
+        image = Material(self['image'])
+        image.apply_filter(mode, **kwargs)
+        self.image = image.image
+
     def get_coordinate_based(self,
                              n_points: int=64,
                              x_trim_param: int=6) -> None:

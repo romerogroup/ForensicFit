@@ -277,8 +277,8 @@ class Analyzer:
                 
             
         elif which in [
-            'bin_based', 
-            'bin_based+max_contrast', 
+            'bin_based',
+            'bin_based+max_contrast',
             'max_contrast+bin_based']:
             if mode == 'individual_bins':
                 dynamic_positions = self.metadata[
