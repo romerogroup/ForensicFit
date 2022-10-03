@@ -43,8 +43,13 @@ class Metadata(MutableMapping):
     def __repr__(self):
         ret = ''
         for key in self.mapping:
-            value = self.mapping[key]
-            ret += f'{key} : {value}\n'
+            if key not in ['boundary', 'analysis']:
+                value = self.mapping[key] 
+                desc = key.capitalize() if key != 'dpi' else key.upper()
+                desc = desc.replace('_', ' ')
+                desc = desc.replace(' h', ' horizontal')
+                desc = desc.replace(' v', ' vertical')
+                ret += f'{desc}: {value}\n'
         return ret
     
    

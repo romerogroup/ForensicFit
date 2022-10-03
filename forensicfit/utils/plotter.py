@@ -66,7 +66,7 @@ def plot_coordinate_based(coordinates: npt.ArrayLike,
     color=['cyan', 'magenta', 'black', 'orange', 'red', 'blue', 'green']
     if plot_slope:
         dy = coordinates[1, 1] - coordinates[0, 1]
-        dy *= 0.5
+        dy *= 0.7
         for i, iseg in enumerate(slopes):
             m = iseg[0]
             b0 = iseg[1]
@@ -75,7 +75,7 @@ def plot_coordinate_based(coordinates: npt.ArrayLike,
             y_max = y0 + dy/2
             y = np.linspace(y_min, y_max, 100)
             x = y/m - b0/m
-            ax.plot(x, y, color='orange')
+            ax.plot(x, y, color='green')
         color=['red']
     fig = ax.get_figure()
     large_dim = fig.get_size_inches().max()
@@ -123,7 +123,7 @@ def plot_pair(obj_1: Any,
         n_columns = 3
     else:
         n_columns = 2
-    if which == 'bin_based' and mode == 'individual_bins':
+    if 'bin_based' in which and mode == 'individual_bins':
         n_bins = max(
             obj_1.metadata['analysis']['bin_based']['n_bins'],
             obj_1.metadata['analysis']['bin_based']['n_bins']
@@ -162,9 +162,6 @@ def plot_pair(obj_1: Any,
     if savefig is not None:
         plt.savefig(savefig)
     return figure, ax
-
-
-
 
 def plot_confusion_matrix(matrix: np.asarray,
                           class_names: np.asarray,

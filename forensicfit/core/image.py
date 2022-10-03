@@ -23,12 +23,18 @@ import PIL
 from matplotlib import pylab as plt
 from matplotlib.axes import Axes
 from scipy import ndimage
+<<<<<<< HEAD
+=======
+from skimage import exposure, filters
+from typing import Union
+>>>>>>> f1a787c819a37349f56213a22739c02eaf7ef7a7
 
 from ..utils import copy_doc, image_tools, plotter
 from .metadata import Metadata
 
 IMAGE_EXTENSIONS = image_tools.IMAGE_EXTENSIONS
 PIL.Image.MAX_IMAGE_PIXELS = None
+# mpl.rcParams['image.origin'] = 'lower'
 
 class Image(Mapping):
     __metaclass__ = ABCMeta
@@ -51,7 +57,7 @@ class Image(Mapping):
         self.metadata.update(kwargs)
 
     @classmethod
-    def from_file(cls, filepath: str or pathlib.Path):
+    def from_file(cls, filepath: Union[str, pathlib.Path]):
 
         path = Path(filepath)
         if path.exists():
@@ -136,10 +142,10 @@ class Image(Mapping):
         return
 
     def isolate(self,
-                x_start: int, 
-                x_end: int, 
-                y_start: int, 
-                y_end: int) -> np.ndarray:
+                x_start: int = None, 
+                x_end: int = None, 
+                y_start: int = None, 
+                y_end: int = None) -> np.ndarray:
         """isolates a rectangle from the image
 
         Parameters
@@ -158,6 +164,10 @@ class Image(Mapping):
         np.ndarray
             _description_
         """
+        x_start = x_start or 0
+        x_end = x_end or self.image.shape[1]
+        y_start = y_start or 0
+        y_end = y_end or self.image.shape[0]
         return self.image[y_start:y_end, x_start:x_end]
     
     def crop(self,
@@ -180,7 +190,10 @@ class Image(Mapping):
     def convert_to_rgb(self):
         self.image = image_tools.to_rbg(self.image)
         self.metadata['resolution'] = self.image.shape
-            
+
+
+    def rotate(angle: float):
+        self.image = image_tools.rotate_image(self.image, angle)
         
     def plot(self,
              savefig: str = None, 
@@ -291,10 +304,15 @@ class Image(Mapping):
     def __len__(self):
         return self.values.__len__()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         self.plot(show=True)
+<<<<<<< HEAD
         
         ret = ''
         for key in self.metadata:
             ret += f'{key}: {self.metadata[key]}\n'
         return ret
+=======
+        ret = self.metadata.__str__()
+        return ret
+>>>>>>> f1a787c819a37349f56213a22739c02eaf7ef7a7
