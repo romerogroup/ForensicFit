@@ -28,7 +28,7 @@ def get_figure_size(dpi: Tuple[int, int],
     dpi = np.array(dpi, dtype=np.float_)
     image_shape = np.array(image_shape, dtype=np.float_)
     fig_size = tuple(np.flip(image_shape/dpi)*zoom)
-    print(fig_size, dpi, image_shape)
+    # print(fig_size, dpi, image_shape)
     return fig_size
     
 def plot_coordinate_based(coordinates: npt.ArrayLike,
@@ -139,7 +139,7 @@ def plot_pair(obj_1: Any,
         figure = plt.figure(figsize=figsize)
         axes = figure.subplots(
             n_bins, n_columns,
-            gridspec_kw={'hspace': 0.1, 'wspace': 0.001})
+            gridspec_kw={'hspace': 0.0, 'wspace': 0.00})
         ax = [axes[:, 0], axes[:, 1]]
     else:
         figsize = figsize or get_figure_size(obj_1, zoom)
@@ -148,6 +148,9 @@ def plot_pair(obj_1: Any,
         ax = [axes[0], axes[1]]
     for i, obj in enumerate([obj_1, obj_2]):
         axi = obj.plot(which, ax=ax[i], mode=mode, cmap=cmap, **kwargs)
+        for a in axi:
+            a.set_xticklabels([])
+            a.set_yticklabels([])
         if labels is not None:
             axi.set_title(labels[i])
     if title is not None:

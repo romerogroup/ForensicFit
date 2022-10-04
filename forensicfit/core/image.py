@@ -8,6 +8,7 @@ __all__ = []
 __version__ = '1.0'
 __author__ = 'Pedram Tavadze'
 
+from asyncore import dispatcher_with_send
 import io
 import pathlib
 from abc import ABCMeta, abstractmethod
@@ -23,11 +24,8 @@ import PIL
 from matplotlib import pylab as plt
 from matplotlib.axes import Axes
 from scipy import ndimage
-<<<<<<< HEAD
-=======
 from skimage import exposure, filters
 from typing import Union
->>>>>>> f1a787c819a37349f56213a22739c02eaf7ef7a7
 
 from ..utils import copy_doc, image_tools, plotter
 from .metadata import Metadata
@@ -223,7 +221,10 @@ class Image(Mapping):
         """
 
         if ax is None:
-            figsize = plotter.get_figure_size(self, zoom)
+            
+            figsize = plotter.get_figure_size(dpi=self.metadata.dpi, 
+                                              image_shape=self.shape[:2],
+                                              zoom=zoom)
             plt.figure(figsize=figsize)
             ax = plt.subplot(111)
         image = self.image
@@ -301,18 +302,10 @@ class Image(Mapping):
     def __iter__(self):
         return self.values.__iter__()
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self.values.__len__()
 
     def __repr__(self) -> str:
         self.plot(show=True)
-<<<<<<< HEAD
-        
-        ret = ''
-        for key in self.metadata:
-            ret += f'{key}: {self.metadata[key]}\n'
-        return ret
-=======
         ret = self.metadata.__str__()
         return ret
->>>>>>> f1a787c819a37349f56213a22739c02eaf7ef7a7

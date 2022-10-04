@@ -260,7 +260,7 @@ def apply_filter(image: np.ndarray, mode:str, **kwargs) -> np.ndarray:
             print('Cannot apply roberts to color images')
             return
     image = flts[mode](image, **kwargs)
-    return
+    return image
 
 
 def binerized_mask(image, masked):
