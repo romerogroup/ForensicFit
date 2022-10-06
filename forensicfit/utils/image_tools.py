@@ -178,10 +178,8 @@ def remove_background(image: np.array,
     """
     bkg = np.ones_like(image)*pixel_value
     bkg = cv2.fillPoly(bkg, [contour], (255, 255, 255))
-
     image = cv2.bitwise_and(image,
                         bkg)
-                        # mask=bkg)
     return image
 
 def get_masked(image, mask_threshold):
@@ -219,8 +217,8 @@ def resize(image, size):
     return image
 
 def exposure_control(image: np.ndarray, 
-                        mode:str='equalize_hist', 
-                        **kwargs) -> np.ndarray:
+                     mode:str='equalize_hist', 
+                     **kwargs) -> np.ndarray:
     """modifies the exposure
 
     Parameters
@@ -236,7 +234,7 @@ def exposure_control(image: np.ndarray,
             'equalize_adapthist':exposure.equalize_adapthist}
     assert mode in exps, 'Mode not valid.'
     image = exps[mode](image, **kwargs)
-    return image
+    return image*255
 
 def apply_filter(image: np.ndarray, mode:str, **kwargs) -> np.ndarray:
     """Applies different types of filters to the image
@@ -268,7 +266,7 @@ def apply_filter(image: np.ndarray, mode:str, **kwargs) -> np.ndarray:
             print('Cannot apply roberts to color images')
             return
     image = flts[mode](image, **kwargs)
-    return image
+    return image*255
 
 
 def binerized_mask(image, masked):

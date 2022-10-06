@@ -118,7 +118,7 @@ class TapeAnalyzer(Analyzer):
             if correct_tilt or auto_crop:
                 self.preprocess()
             if remove_background:
-                self.image = self.masked
+                self.image = self['masked']
             
         return
 
@@ -148,7 +148,7 @@ class TapeAnalyzer(Analyzer):
                                         self.metadata.mask_threshold)
         largest_contour = image_tools.largest_contour(contours)
         self.metadata['boundary'] = largest_contour.reshape(-1, 2)
-
+            
     def flip_v(self):
         self.image = np.fliplr(self.image)
         self.metadata['boundary'] = np.array(self.metadata['boundary'])
@@ -663,8 +663,6 @@ class TapeAnalyzer(Analyzer):
             "window_tape": window_tape}
         return 
 
-    
-
     def __getattr__(self, name):
         return self[name]
 
@@ -674,10 +672,10 @@ class TapeAnalyzer(Analyzer):
         elif x == 'original_image':
             return self.original_image
         elif x == 'masked':
-            return image_tools.remove_background(self['image'], 
+            return image_tools.remove_background(self.image, 
                                                  self.largest_contour)
         elif x == 'gray_scale':
-            return image_tools.to_gray(self['image'])
+            return image_tools.to_gray(self.image)
         elif x == 'binarized':
             return image_tools.binerized_mask(
                 self['image'], self['masked'])

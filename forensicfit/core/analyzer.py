@@ -46,6 +46,9 @@ class Analyzer:
     def exposure_control(self, mode:str='equalize_hist', **kwargs):
         self.original_image = self.image
         self.image = image_tools.exposure_control(self.image, mode, **kwargs)
+        if self.metadata['remove_background']:
+            self.image = image_tools.remove_background(self.image, 
+                                                       self.largest_contour)
         self.metadata['exposure_control'] = mode
         if len(kwargs) != 0:
             for key in kwargs:
