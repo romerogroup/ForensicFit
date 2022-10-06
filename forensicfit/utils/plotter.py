@@ -1,6 +1,5 @@
 from email.mime import image
 import itertools
-from turtle import tilt
 from typing import Any, List, Tuple, Union
 
 import matplotlib.pyplot as plt

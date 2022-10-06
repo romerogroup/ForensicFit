@@ -60,6 +60,8 @@ class Analyzer:
         if len(kwargs) != 0:
             for key in kwargs:
                 self.metadata[key] = kwargs[key]
+        if self.metadata['remove_background']:
+            
         return
 
     def plot_boundary(self, 

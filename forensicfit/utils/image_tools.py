@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
+from skimage.color import rgb2gray
 import cv2
 import numpy as np
 import matplotlib.pylab as plt
 from skimage import exposure, filters
-from forensicfit import HAS_OPENCV
 from pathlib import Path
+
 
 IMAGE_EXTENSIONS = ['.png', '.bmp', '.dib', '.jpeg', 
                     '.jpg', '.jpe', '.jp2', '.webp',
@@ -88,9 +89,12 @@ def split_v(image, pixel_index=None,pick_side='L', flip=True):
             image = image[:, pixel_index:width]
     return image
 
-def to_gray(image):
-    """
-    Gray Scale image of the input image.
+def to_gray(image: np.ndarray, mode='SD') -> np.ndarray:
+    """Gray Scale image of the input image.
+    
+    modes: 'BT.470' and 'BT.709'
+    SD 'BT.470' : Y = 0.299 R + 0.587 G + 0.114 B
+    HD 'BT.709' : Y = 0.2125 R + 0.7154 G + 0.0721 B
 
     Returns
     -------
@@ -104,7 +108,11 @@ def to_gray(image):
         if image.shape[2] == 1:
             return image
         elif image.shape[2] == 3:
-            return cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+            if mode == 'SD':
+                return cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+            elif mode == 'HD':
+                return rgb2gray(image)
+            
 
 def to_rbg(image):
     if len(image.shape) == 3 and image.shape[2] == 3:

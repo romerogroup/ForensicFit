@@ -141,20 +141,11 @@ class TapeAnalyzer(Analyzer):
         # if self.metadata.gaussian_blur is not None:
         #     image = image_tools.gaussian_blur(
         #         self.image, window=self.metadata.gaussian_blur)
-        gray = image_tools.to_gray(image)
+        gray = image_tools.to_gray(image, mode='SD')
         image = image_tools.gaussian_blur(
                 gray, window=self.metadata.gaussian_blur)
         contours = image_tools.contours(image,
                                         self.metadata.mask_threshold)
-        largest_contour = image_tools.largest_contour(contours)
-        self.metadata['boundary'] = largest_contour.reshape(-1, 2)
-            
-        
-        gray = image_tools.to_gray(self.image)
-        image = image_tools.gaussian_blur(
-            gray, window=self.metadata.gaussian_blur)
-        contours = image_tools.contours(
-            image, self.metadata.mask_threshold)
         largest_contour = image_tools.largest_contour(contours)
         self.metadata['boundary'] = largest_contour.reshape(-1, 2)
 
