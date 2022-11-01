@@ -138,6 +138,8 @@ class TapeAnalyzer(Analyzer):
 
         """
         image = self.image
+        if np.average(image) > 200:
+            image = 255 - self.image
         # if self.metadata.gaussian_blur is not None:
         #     image = image_tools.gaussian_blur(
         #         self.image, window=self.metadata.gaussian_blur)
