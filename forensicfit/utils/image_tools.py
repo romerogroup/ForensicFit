@@ -8,6 +8,7 @@ from skimage import exposure, filters
 from pathlib import Path
 
 
+
 IMAGE_EXTENSIONS = ['.png', '.bmp', '.dib', '.jpeg', 
                     '.jpg', '.jpe', '.jp2', '.webp',
                     '.pbm', '.pgm', '.ppm', '.pxm', 
@@ -234,7 +235,7 @@ def exposure_control(image: np.ndarray,
             'equalize_adapthist':exposure.equalize_adapthist}
     assert mode in exps, 'Mode not valid.'
     image = exps[mode](image, **kwargs)
-    return image*255
+    return (image*255).astype('uint8')
 
 def apply_filter(image: np.ndarray, mode:str, **kwargs) -> np.ndarray:
     """Applies different types of filters to the image
@@ -266,7 +267,7 @@ def apply_filter(image: np.ndarray, mode:str, **kwargs) -> np.ndarray:
             print('Cannot apply roberts to color images')
             return
     image = flts[mode](image, **kwargs)
-    return image*255
+    return (image*255).astype('uint8')
 
 
 def binerized_mask(image, masked):
@@ -299,7 +300,6 @@ def imwrite(fname: str, image: np.array):
     fname = Path(fname)
     fname.parent.mkdir(exist_ok=True)
     fname = fname.as_posix()
-    if HAS_OPENCV:
-        cv2.imwrite(fname, image)
-    else:
-        plt.imsave(fname, image)
+    # cv2.imwrite(fname, image)
+    # else:
+    plt.imsave(fname, image, cmap='gray')

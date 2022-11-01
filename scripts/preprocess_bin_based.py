@@ -11,21 +11,23 @@ __status__ = 'Production'
 import argparse
 from multiprocessing import Pool
 from pathlib import Path
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Any
 
 import forensicfit as ff
 
 import json
 import numpy as np
 import pandas as pd
-import gridfs
-import pymongo
-from bson.objectid import ObjectId
-from gridfs.grid_file import GridOut
+import sys
+if ff.HAS_PYMONGO:
+    import gridfs
+    import pymongo
+    from bson.objectid import ObjectId
+    from gridfs.grid_file import GridOut
 
 
 def get_item(name: str, 
-             lookup: Union[ff.db.Database, Dict],
+             lookup: Any,
              args: argparse.Namespace) -> ff.core.TapeAnalyzer: 
     """Gets a scan from the source database
 
@@ -76,7 +78,10 @@ def get_item(name: str,
             if n_docs == 0:
                 return
             else:
-                criteria = {"$and":[{'filename':fname}, {'metadata.modified':True}]}
+                criteria = {"$and":[
+                    {'filename':fname}, 
+                    {'metadata.modified':True}]
+                            }
                 if db.count_documents(filter=criteria, collection='material') == 0 :
                     criteria = {'filename':fname}
             tape = db.find_one(filter=criteria, collection='material')
@@ -84,8 +89,16 @@ def get_item(name: str,
         key = fname
         if fname+'_mod' in lookup:
             key += '_mod'
-        tape = ff.core.Tape.from_file(lookup[key]["source"])
+        if key in lookup:
+            path = Path(lookup[key]["source"])
+            if path.exists():
+                tape = ff.core.Tape.from_file(path)
+            else:
+                return
+        else:
+            return
     tape.split_v(side=side)
+    tape.resize(dpi=tuple(args.dpi))
     tape_analyzer = ff.core.TapeAnalyzer(tape,
                                         mask_threshold=args.mask_threshold,
                                         gaussian_blur=args.gaussian_blur,
@@ -99,10 +112,14 @@ def get_item(name: str,
                                 n_bins=args.n_bins, overlap=args.overlap)
     if args.coordinate_based:
         tape_analyzer.get_coordinate_based(n_points=args.n_points)
+    if args.exposure_control is not None:
+        tape_analyzer.exposure_control(mode=args.exposure_control)
+    if args.apply_filter is not None:
+        tape_analyzer.apply_filter(mode=args.apply_filter)
     return tape_analyzer
 
 def preprocess(entry: dict, 
-               lookup: Union[ff.db.Database, Dict],
+               lookup: Any,
                args: argparse.Namespace):
     rotation_map = {'Backing' : 'Rotation?', 'Scrim' : 'Rotation?.1'}
     rot = ['', '-rotated']
@@ -170,8 +187,10 @@ def preprocess(entry: dict,
                 if args.output is not None:
                     for ibin, b in enumerate(bins):
                         ret[f'bin_{ibin}'] = ff.utils.array_tools.serializer(b)
+                    
                     path = Path(args.output)
                     path /= f'{fname}{rot[rotated]}'
+                    path.mkdir(exist_ok=True)
                     path /= f"coordinate_based.json"
                     with open(path, 'w') as wf:
                         json.dump(ret, wf, indent=2)
@@ -210,6 +229,7 @@ def worker(args: Dict[str, List]):
         
 
 if __name__ == '__main__':
+    version = [int(x[:2]) for x in sys.version.replace(']','').replace('[','').split('.')][2]
     parser = argparse.ArgumentParser()
     parser.add_argument('-dbn', '--database-name', 
                            dest='db_name',
@@ -240,32 +260,13 @@ if __name__ == '__main__':
                         help=('Path to the directory for the output '
                               'image')
                         )
-    parser.add_argument('--dynamic-window', 
-                        dest='dynamic_window',
-                        type=bool,
-                        default=True,
-                        help='Use a dynamic window when scanning the edge',
-                        action=argparse.BooleanOptionalAction,
-                        )
+
     parser.add_argument('-np', '--n-processors', 
                         dest='n_processors',
                         type=int,
                         help='Number of processors available for this task.',
                         default=2)
-    parser.add_argument('--auto-crop',
-                        dest='auto_crop',
-                        type=bool,
-                        default=True,
-                        action=argparse.BooleanOptionalAction,
-                        help=('To crop the image according to the boundaries in '
-                              'the y direction'))
-    parser.add_argument('--correct-tilt',
-                        dest='correct_tilt',
-                        type=bool,
-                        default=True,
-                        action=argparse.BooleanOptionalAction,
-                        help=('To calculate the angle of the image with the '
-                              'horizontal line'))
+
     parser.add_argument('-nb', '--n-bins',
                         dest='n_bins',
                         type=int,
@@ -319,12 +320,7 @@ if __name__ == '__main__':
                         dest='path_excel',
                         required=True,
                         nargs='+')
-    parser.add_argument('--color', 
-                        dest='color',
-                        type=bool,
-                        action=argparse.BooleanOptionalAction,
-                        help='The output to be in gray scale or color.'
-                        )
+
     parser.add_argument('--output-shape', 
                         dest='output_shape',
                         type=int,
@@ -351,33 +347,149 @@ if __name__ == '__main__':
                         help=('files the individual entry from the excel files ' 
                               'and only processes those.'),
                         )
-    parser.add_argument('--bin-based',
-                        dest='bin_based',
-                        help=('To generate the bin-based bins'),
-                        action=argparse.BooleanOptionalAction,
-                        type=bool,
-                        default=True)
-
-    parser.add_argument('--coordinate-based',
-                        dest='coordinate_based',
-                        help=('To generate the coordinate based for each bin'),
-                        action=argparse.BooleanOptionalAction,
-                        type=bool,
-                        default=False)
     parser.add_argument('--n-points',
                         dest='n_points',
                         type=int,
                         help='Number of points (in total) for coordinate based',
                         )
-    parser.add_argument('--max-contrast',
-                        dest='max_contrast',
-                        help=('To generate the maximum contrast for each bin'),
-                        action=argparse.BooleanOptionalAction,
-                        type=bool,
-                        default=False)
 
-    
+    parser.add_argument('--exposure-control',
+                        dest='exposure_control',
+                        default=None,
+                        help=(
+                            'Fixes the exposure of the image. options are: '
+                            'equalize_hist and equalize_adapthist.'))
+    parser.add_argument('--apply-filter',
+                        dest='apply_filter',
+                        default=None,
+                        help=('Applies filter to the images. options are: '
+                              'meijering, frangi, prewitt, sobel, scharr, '
+                              'roberts, sato.'))
+    parser.add_argument('--dpi',
+                        dest='dpi',
+                        default=None,
+                        type=int,
+                        nargs=2,
+                        help=('Output image, DPI.'))
+    if version < 9:
+        parser.add_argument('--max-contrast',
+                            dest='max_contrast',
+                            help=('To generate the maximum contrast for each bin'),
+                            action=argparse.BooleanOptionalAction,
+                            type=bool,
+                            default=False)
+        parser.add_argument('--coordinate-based',
+                            dest='coordinate_based',
+                            help=('To generate the coordinate based for each bin'),
+                            action=argparse.BooleanOptionalAction,
+                            type=bool,
+                            default=False)
+        parser.add_argument('--bin-based',
+                            dest='bin_based',
+                            help=('To generate the bin-based bins'),
+                            action=argparse.BooleanOptionalAction,
+                            type=bool,
+                            default=True)
+        parser.add_argument('--color', 
+                            dest='color',
+                            type=bool,
+                            action=argparse.BooleanOptionalAction,
+                            help='The output to be in gray scale or color.',
+                            default=False,
+                            )
+        parser.add_argument('--auto-crop',
+                            dest='auto_crop',
+                            type=bool,
+                            default=True,
+                            action=argparse.BooleanOptionalAction,
+                            help=('To crop the image according to the boundaries in '
+                                'the y direction'))
+        parser.add_argument('--correct-tilt',
+                            dest='correct_tilt',
+                            type=bool,
+                            default=True,
+                            action=argparse.BooleanOptionalAction,
+                            help=('To calculate the angle of the image with the '
+                                'horizontal line'))
+        parser.add_argument('--dynamic-window', 
+                            dest='dynamic_window',
+                            type=bool,
+                            default=True,
+                            help='Use a dynamic window when scanning the edge',
+                            action=argparse.BooleanOptionalAction,
+                            )
+    else:
+        parser.add_argument('--max-contrast',
+                            dest='max_contrast',
+                            help=('To generate the maximum contrast for each bin'),
+                            action='store_true')
+        parser.add_argument('--no-max-contrast',
+                            dest='max_contrast',
+                            help=('To generate the maximum contrast for each bin'),
+                            action='store_false')
+        parser.add_argument('--coordinate-based',
+                            dest='coordinate_based',
+                            help=('To generate the coordinate based for each bin'),
+                            action='store_true')
+        parser.add_argument('--no-coordinate-based',
+                            dest='coordinate_based',
+                            help=('To generate the coordinate based for each bin'),
+                            action='store_false')                            
+        parser.add_argument('--bin-based',
+                            dest='bin_based',
+                            help=('To generate the bin-based bins'),
+                            action='store_true')
+        parser.add_argument('--no-bin-based',
+                            dest='bin_based',
+                            help=('To generate the bin-based bins'),
+                            action='store_false')
+        parser.add_argument('--color', 
+                            dest='color',
+                            help='The output to be in gray scale or color.',
+                            action='store_true')
+        parser.add_argument('--no-color', 
+                            dest='color',
+                            help='The output to be in gray scale or color.',
+                            action='store_false')
+        parser.add_argument('--auto-crop',
+                            dest='auto_crop',
+                            action='store_true',
+                            help=('To crop the image according to the boundaries in '
+                                'the y direction'))
+        parser.add_argument('--no-auto-crop',
+                            dest='auto_crop',
+                            action='store_false',
+                            help=('To crop the image according to the boundaries in '
+                                'the y direction'))
+        parser.add_argument('--correct-tilt',
+                            dest='correct_tilt',
+                            action='store_true',
+                            help=('To calculate the angle of the image with the '
+                                'horizontal line'))
+        parser.add_argument('--no-correct-tilt',
+                            dest='correct_tilt',
+                            action='store_false',
+                            help=('To calculate the angle of the image with the '
+                                'horizontal line'))
+        parser.add_argument('--dynamic-window', 
+                            dest='dynamic_window',
+                            help='Use a dynamic window when scanning the edge',
+                            action='store_true',
+                            )
+        parser.add_argument('--no-dynamic-window', 
+                            dest='dynamic_window',
+                            help='Use a dynamic window when scanning the edge',
+                            action='store_false',
+                            )
+        parser.set_defaults(max_contrast=False, 
+                            coordinate_based=False,
+                            bin_based=True,
+                            color=False,
+                            auto_crop=True,
+                            correct_tilt=True,
+                            synamic_window=True)
     parsed_args = parser.parse_args()
+    print('\n'.join(f'{k}={v}' for k, v in vars(parsed_args).items()))
     dfs = [pd.read_excel(x, engine='openpyxl') for x in parsed_args.path_excel]
     df = pd.concat(dfs)
     df = df[[x for x in df.columns if 'Tape' in x or 'Rotation' in x]]
@@ -391,8 +503,6 @@ if __name__ == '__main__':
         df = pd.concat(dfs)
     else:
         df = df[parsed_args.start:parsed_args.end]
-
-    print(df)
     del dfs
     chunks = get_chunks(df.to_dict('records'), parsed_args.n_processors)
     args = [

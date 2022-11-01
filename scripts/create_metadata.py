@@ -5,9 +5,6 @@ extension, compares it excel file provided, and returns a json
 style lookup table.
 """
 __author__ = "Pedram Tavadze"
-   
-
-
 
 import pandas as pd
 from pathlib import Path
@@ -136,6 +133,7 @@ if __name__ == '__main__':
                         default='metadata.json',
                         help='Output (metadata) filename',
                         )
+    
     args = parser.parse_args()
     
     file_dict = get_files(Path(args.path), ext=args.ext, avoid=args.avoid)

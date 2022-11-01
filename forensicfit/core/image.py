@@ -63,7 +63,8 @@ class Image(Mapping):
             pillow_image = PIL.Image.open(path)
             image_info = pillow_image.info
             pillow_image.close()
-            del image_info['icc_profile']
+            if 'icc_profile' in image_info:
+                del image_info['icc_profile']
             return cls(image, path=path, filename=path.name, **image_info)
         else:
             raise Exception(f"File {path.as_posix()} does not exist")

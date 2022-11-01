@@ -275,6 +275,7 @@ class TapeAnalyzer(Analyzer):
             _ = plt.figure(figsize=figsize)
             ax = plt.subplot(111)
             self.plot_boundary(color='black', ax=ax)
+            ax.invert_yaxis()
         for idivision in range(self.metadata.n_divisions-2):
             
             y_interval = y_max-y_min
@@ -325,6 +326,8 @@ class TapeAnalyzer(Analyzer):
             if plot:
                 ax.plot(
                     boundary[cond_and_bottom][:, 0], boundary[cond_and_bottom][:, 1], linewidth=3)
+                ax.set_xlim(0, self.image.shape[1])
+
             m_bottom.append(np.polyfit(
                 boundary[cond_and_bottom][:, 0], boundary[cond_and_bottom][:, 1], 1)[0])
 
@@ -339,16 +342,20 @@ class TapeAnalyzer(Analyzer):
         cond_and_top = conditions_top[arg_mins[0]]
         cond_and_bottom = conditions_bottom[arg_mins[1]]
         if plot:
-            plt.figure(figsize=figsize)
-            plt.plot(boundary[:, 0], boundary[:, 1], color='black')
-            plt.scatter(boundary[cond_and_top][:, 0],
+            fig = plt.figure(figsize=figsize)
+            ax = fig.add_subplot(111)
+            ax.plot(boundary[:, 0], boundary[:, 1], color='black')
+            ax.scatter(boundary[cond_and_top][:, 0],
                         boundary[cond_and_top][:, 1], color='blue')
-            plt.scatter(boundary[cond_and_bottom][:, 0],
+            ax.scatter(boundary[cond_and_bottom][:, 0],
                         boundary[cond_and_bottom][:, 1], color='red')
+            ax.set_xlim(0, self.image.shape[1])
+            ax.invert_yaxis()
+            
         top = boundary[cond_and_top][:, 1]
         bottom = boundary[cond_and_bottom][:, 1]
-        self.metadata.crop_y_top = np.average(top) if len(top) != 0 else self.ymax
-        self.metadata.crop_y_bottom = np.average(bottom) if len(bottom) !=0 else self.ymin
+        self.metadata.crop_y_top = np.min(top) if len(top) != 0 else self.ymax
+        self.metadata.crop_y_bottom = np.max(bottom) if len(bottom) !=0 else self.ymin
         if np.min(stds, axis=0)[0] > 10:
             self.metadata.crop_y_top = y_max
         if np.min(stds, axis=0)[1] > 10:
@@ -754,8 +761,10 @@ class TapeAnalyzer(Analyzer):
                             x[1], 
                             y_start, 
                             y_end)
+
                         assert len(points) != 0, ("No points in this window, " 
                                                   "increase the background window")
+                        # assert len(points) != 0, self.metadata.filename
                         data[i_point, :2] = np.average(points, axis=0)
                         stds[i_point] = np.std(points[:, 0])
                         slopes[i_point, :] = np.polyfit(
@@ -809,6 +818,10 @@ class TapeAnalyzer(Analyzer):
                     y_end += pad_y_start
                     img = image[y_start:y_end, x_start:x_end]
                 ret.append(img)
+            n = [x.shape for x in ret]
+            if len(set(n)) > 1:
+                print(self.metadata.path)
+                print(set(n))
             return np.asarray(ret)
         else:
             raise ValueError(f"TapeAnalyzer does not have attrib {x}")    

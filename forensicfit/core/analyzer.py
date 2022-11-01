@@ -63,9 +63,25 @@ class Analyzer:
         if len(kwargs) != 0:
             for key in kwargs:
                 self.metadata[key] = kwargs[key]
-        if self.metadata['remove_background']:
-            
         return
+
+    def resize(self, size: tuple = None, dpi: tuple = None):
+        if dpi is None and size is not None:
+            self.image = image_tools.resize(self.image, size)
+            self.values['image'] = self.image
+            self.metadata['resize'] = size
+            self.metadata['resolution'] = self.image.shape
+        elif dpi is not None and 'dpi' in self.metadata:
+            dpi = np.array(dpi, dtype=np.int_)
+            dpi_old = np.array(self.metadata.dpi, dtype=np.int_)
+            ratio = dpi/dpi_old
+            size = np.flip((np.array(self.shape)[:2]*ratio).round().astype(int))
+            self.image = image_tools.resize(self.image, size)
+            self.values['image'] = self.image
+            self.metadata['resize'] = size
+            self.metadata['resolution'] = self.image.shape
+            self.metadata['resolution'] = self.image.shape
+            self.metadata['dpi'] = dpi
 
     def plot_boundary(self, 
                       savefig: Union[str, Path] = None, 

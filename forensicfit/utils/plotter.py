@@ -12,23 +12,24 @@ from matplotlib.figure import Figure
 from pathlib import Path
 from matplotlib.ticker import MaxNLocator, MultipleLocator
 
-plt.rcParams["font.family"] = "Arial"
-plt.rc("font", size=11)  # controls default text sizes
-plt.rc("axes", titlesize=14)  # fontsize of the axes title
-plt.rc("axes", labelsize=14)  # fontsize of the x and y labels
-plt.rc("xtick", labelsize=12)  # fontsize of the tick labels
-plt.rc("ytick", labelsize=12)  # fontsize of the tick labels
-plt.rc("legend", fontsize=12)  # legend fontsize
+# plt.rcParams["font.family"] = "Arial"
+# plt.rc("font", size=11)  # controls default text sizes
+# plt.rc("axes", titlesize=14)  # fontsize of the axes title
+# plt.rc("axes", labelsize=14)  # fontsize of the x and y labels
+# plt.rc("xtick", labelsize=12)  # fontsize of the tick labels
+# plt.rc("ytick", labelsize=12)  # fontsize of the tick labels
+# plt.rc("legend", fontsize=12)  # legend fontsize
 
 
 def get_figure_size(dpi: Tuple[int, int],
                     image_shape: Tuple[int, int], 
-                    zoom=4) -> Tuple[float, float]:
+                    zoom=4,
+                    margin=4) -> Tuple[float, float]:
     dpi = np.array(dpi, dtype=np.float_)
     image_shape = np.array(image_shape, dtype=np.float_)
-    fig_size = tuple(np.flip(image_shape/dpi)*zoom)
+    fig_size = np.flip(image_shape/dpi)*zoom
     # print(fig_size, dpi, image_shape)
-    return fig_size
+    return fig_size+margin
     
 def plot_coordinate_based(coordinates: npt.ArrayLike,
                           slopes: npt.ArrayLike,
@@ -163,6 +164,83 @@ def plot_pair(obj_1: Any,
         plt.show()
     if savefig is not None:
         plt.savefig(savefig)
+    return figure, ax
+
+def plot_pairs(objs: List[Any],
+              text: List[str] = None,
+              which: str='boundary',
+              mode: str = None,
+              savefig: str = None,
+              cmap: str='gray',
+              show: bool = False,
+              figsize: tuple = None,
+              labels: List[str] = None,
+              title: str = None,
+              zoom:int=4,
+              **kwargs,
+              ) -> Tuple[Figure, Axes]:
+    n_objs = len(objs)
+    if text is not None:
+        n_columns = n_objs + 1
+    else:
+        n_columns = n_objs
+    if 'bin_based' in which and mode == 'individual_bins':
+        n_bins = max(
+            [x.metadata['analysis']['bin_based']['n_bins'] for x in objs]
+            )
+        overlap = objs[0].metadata['analysis']['bin_based']['overlap']
+        X = objs[0].shape[0] + overlap*(n_bins-2)
+        Y = 0
+        for obj in objs:
+            for window in ['window_background', 'window_tape']:
+                Y += obj.metadata.analysis['bin_based'][window]
+        if text is not None:
+            Y += Y/n_objs
+        figsize = figsize or get_figure_size(objs[0].metadata.dpi,
+                                             (X, Y), 
+                                             zoom
+                                             )
+        figure, axes = plt.subplots(n_bins, n_columns, 
+                                    figsize=figsize
+                                    )
+        # figure = plt.figure(figsize=figsize)
+        #  = figure.subplots(
+            # 
+        #     gridspec_kw={'hspace': 0.0, 'wspace': 0.0})
+        ax = [axes[:, i] for i in range(n_objs)]
+    else:
+        X = objs[0].shape[0]
+        Y = objs[0].shape[1]*n_objs
+        figsize = figsize or get_figure_size(objs[0].metadata.dpi,
+                                             (X, Y), 
+                                             zoom)
+        figure = plt.figure(figsize=figsize)
+        axes = figure.subplots(1, n_columns, 
+                               gridspec_kw={'hspace': 0.0, 'wspace': 0.0})
+        ax = [axes[i] for i in range(n_objs)]
+    print(f'Created a figure with the dimensions: {figsize[0]}, {figsize[1]}')
+    for i, obj in enumerate(objs):
+        axi = obj.plot(which, ax=ax[i], mode=mode, cmap=cmap, **kwargs)
+        # if not isinstance(axi, list): 
+        #     axi = [axi]
+        for a in axi:
+            a.set_xticklabels([])
+            a.set_yticklabels([])
+        if labels is not None:
+            axi.set_title(labels[i])
+    if title is not None:
+        figure.suptitle(title)
+    if text is not None:
+        for i, tex in enumerate(text):
+            axes[i, -1].text(0.1, 0.1, tex)
+            axes[i, -1].xaxis.set_visible(False)
+            axes[i, -1].yaxis.set_visible(False)
+    plt.tight_layout()
+    if savefig is not None:
+        plt.savefig(savefig)
+    if show:
+        plt.show()
+
     return figure, ax
 
 def plot_confusion_matrix(matrix: np.asarray,
