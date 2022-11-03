@@ -235,8 +235,8 @@ class Image(Mapping):
         plt.tight_layout()
         if show:
             plt.show()
-        # if savefig is not None:
-        #     cv2.imwrite(savefig, self.image)
+        if savefig is not None:
+            plt.savefig(savefig)
         return ax
                 
     def show(self, wait=0, savefig = None):

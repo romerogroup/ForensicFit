@@ -71,11 +71,13 @@ setup(
     install_requires=[
         "opencv-python",
         "numpy>=1.20",
-        "scipy"
+        "scipy",
         "matplotlib",
     ],
     data_files=[("", ["LICENSE.txt"])],
     package_data={"": ["setup.json"]},
-    scripts=["forensicfit/script_process_dir.py"],
+    scripts=["scripts/create_metadata.py", 
+             'scripts/preprocess_bin_based.py', 
+             'scripts/store_on_db.py'],
     packages=find_packages(exclude=[".ML-convlolutional_net", "docs"]),
 )

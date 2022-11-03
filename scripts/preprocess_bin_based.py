@@ -105,11 +105,13 @@ def get_item(name: str,
                                         n_divisions=args.n_divisions,
                                         auto_crop=args.auto_crop,
                                         correct_tilt=args.correct_tilt,
+                                        padding=args.padding,
                                         )
     tape_analyzer.get_bin_based(window_background=args.window_background,
                                 window_tape=args.window_tape,
                                 dynamic_window=args.dynamic_window,
-                                n_bins=args.n_bins, overlap=args.overlap)
+                                n_bins=args.n_bins, overlap=args.overlap,
+                                border=args.border)
     if args.coordinate_based:
         tape_analyzer.get_coordinate_based(n_points=args.n_points)
     if args.exposure_control is not None:
@@ -150,7 +152,7 @@ def preprocess(entry: dict,
                     if args.cln_name is not None:
                         db = lookup
                         db.insert(image,
-                                ext='.png', 
+                                ext=args.ext,
                                 collection=args.cln_name)
                     elif args.output is not None:
                         path = Path(args.output)
@@ -365,6 +367,18 @@ if __name__ == '__main__':
                         help=('Applies filter to the images. options are: '
                               'meijering, frangi, prewitt, sobel, scharr, '
                               'roberts, sato.'))
+    parser.add_argument('--padding',
+                        dest='padding',
+                        default='tape',
+                        help=('Padding in the y direction for the overlap.'
+                              'black or tape'
+                              ))
+    parser.add_argument('--bin-based-border',
+                        dest='border',
+                        default='avg',
+                        help=('The border used when applying window tape and '
+                              'window background. avg or min.'
+                              ))
     parser.add_argument('--dpi',
                         dest='dpi',
                         default=None,
