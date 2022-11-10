@@ -21,8 +21,6 @@ HAS_TENSORFLOW = has_package("tensorflow")
 
 from . import core
 from . import utils
-if HAS_TENSORFLOW:
-    from . import machine_learning
 if HAS_OPENCV and HAS_PYMONGO:
     from . import database as db
     # from .script_process_dir import process_directory
