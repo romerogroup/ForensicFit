@@ -189,7 +189,7 @@ class Image(Mapping):
         self.metadata['resolution'] = self.image.shape
 
 
-    def rotate(angle: float):
+    def rotate(self, angle: float):
         self.image = image_tools.rotate_image(self.image, angle)
         
     def plot(self,
