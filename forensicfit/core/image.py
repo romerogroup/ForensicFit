@@ -8,12 +8,10 @@ __all__ = []
 __version__ = '1.0'
 __author__ = 'Pedram Tavadze'
 
-from asyncore import dispatcher_with_send
 import io
 import pathlib
 from abc import ABCMeta, abstractmethod
 from collections.abc import Mapping
-from importlib.metadata import metadata
 from pathlib import Path
 
 
@@ -123,7 +121,7 @@ class Image(Mapping):
         return 
     
     @copy_doc(image_tools.exposure_control)
-    def exposure_control(self, mode:str='equalize_hist', **kwargs):
+    def exposure_control(self, mode:str='equalize_adapthist', **kwargs):
         self.image = image_tools.exposure_control(self.image)
         self.metadata['exposure_control'] = mode
         if len(kwargs) != 0:
@@ -233,10 +231,11 @@ class Image(Mapping):
         ax.xaxis.set_visible(False)
         ax.yaxis.set_visible(False)
         plt.tight_layout()
-        if show:
-            plt.show()
         if savefig is not None:
             plt.savefig(savefig)
+        if show:
+            plt.show()
+
         return ax
                 
     def show(self, wait=0, savefig = None):

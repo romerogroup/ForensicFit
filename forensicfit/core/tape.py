@@ -11,14 +11,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 from ..utils import image_tools
-from . import Material, Analyzer
+from . import Image, Analyzer
 from . import HAS_OPENCV
 if not HAS_OPENCV:
     print("To enable analyzer please install opencv")
 else:
     import cv2
 
-class Tape(Material):
+class Tape(Image):
     def __init__(self,
                  image: npt.ArrayLike,
                  label: str = None,
@@ -41,7 +41,8 @@ class Tape(Material):
         self.metadata['material'] = 'tape'
         self.metadata['surface'] = surface
         self.metadata['stretched'] = stretched
-
+        self.metadata['mode'] = 'material'
+        
     def split_v(self, side, pixel_index=None):
         self.values['original_image'] = self.image.copy()
         if pixel_index is None:
