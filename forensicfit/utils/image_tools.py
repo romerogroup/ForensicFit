@@ -37,7 +37,6 @@ def rotate_image(image, angle):
         image, rot_mat, image.shape[1::-1], flags=cv2.INTER_LINEAR)
     return image
 
-
 def gaussian_blur(image, window=(15, 15)):
     """
     This method applies Gaussian Blur filter to the image. 
@@ -114,7 +113,6 @@ def to_gray(image: np.ndarray, mode='SD') -> np.ndarray:
             elif mode == 'HD':
                 return rgb2gray(image)
             
-
 def to_rbg(image):
     if len(image.shape) == 3 and image.shape[2] == 3:
         return image
@@ -138,7 +136,6 @@ def contours(image, mask_threshold=60):
     contours,_ = cv2.findContours(
         masked,cv2.RETR_TREE,cv2.CHAIN_APPROX_NONE)
     return contours
-
 
 def largest_contour(contours):
     """
@@ -268,7 +265,6 @@ def apply_filter(image: np.ndarray, mode:str, **kwargs) -> np.ndarray:
             return
     image = flts[mode](image, **kwargs)
     return (image*255).astype('uint8')
-
 
 def binerized_mask(image, masked):
     """

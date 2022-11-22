@@ -8,8 +8,6 @@ from numpy import typing as npt
 
 from .. import HAS_PYMONGO
 
-
-
 def serializer(indict: dict) -> dict:
     """Serilizes any given dictionary for mongodb.
 
