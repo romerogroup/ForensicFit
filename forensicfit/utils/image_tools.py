@@ -287,7 +287,7 @@ def binerized_mask(image, masked):
                            image,
                            mask=masked)
     
-def imwrite(fname: str, image: np.array):
+def imwrite(fname: str, image: np.array, cmap='gray', **kwargs):
     """save any 2d numpy array (or list) to an image file
 
     Parameters
@@ -302,4 +302,4 @@ def imwrite(fname: str, image: np.array):
     fname = fname.as_posix()
     # cv2.imwrite(fname, image)
     # else:
-    plt.imsave(fname, image, cmap='gray')
+    plt.imsave(fname, image, cmap=cmap, **kwargs)
