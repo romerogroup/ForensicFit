@@ -501,7 +501,7 @@ if __name__ == '__main__':
                             color=False,
                             auto_crop=True,
                             correct_tilt=True,
-                            synamic_window=True)
+                            dynamic_window=True)
     parsed_args = parser.parse_args()
     print('\n'.join(f'{k}={v}' for k, v in vars(parsed_args).items()))
     dfs = [pd.read_excel(x, engine='openpyxl') for x in parsed_args.path_excel]
