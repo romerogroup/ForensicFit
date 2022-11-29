@@ -7,11 +7,8 @@ used PyChemia Database class as a guide
 https://github.com/MaterialsDiscovery/PyChemia/blob/master/pychemia/db/db.py
 """
 import subprocess
-import numpy as np
 import pymongo
-import bson
 import gridfs
-import pathlib
 from pathlib import Path
 from random import choice
 from bson.objectid import ObjectId
@@ -19,7 +16,6 @@ from collections.abc import Mapping
 from typing import Callable, List, Optional, Union
 from ..core import Tape, TapeAnalyzer, Image, Metadata
 from ..utils.array_tools import read_bytes_io, write_bytes_io
-
 
 class ClassMap(Mapping):
     def __init__(self):
@@ -42,7 +38,6 @@ class ClassMap(Mapping):
     def __len__(self):
         return self.mapping.__len__()   
             
-
 class Database:
     def __init__(self,
                  name: str = 'forensicfit',
@@ -61,7 +56,6 @@ class Database:
         self.password = password
         self.verbose = verbose
         
-
         if len(password) != 0:
             self.password = ":"+password+"@"
         else:
@@ -86,7 +80,6 @@ class Database:
             print("----------------")
             print("connected to:")
             print(self)
-
 
     def disconnect(self):
         """Closes the connection with the mongodb Client.
@@ -123,7 +116,7 @@ class Database:
             return False
 
     def insert(self,    
-               obj: Image or Tape or TapeAnalyzer,
+               obj: Union[Image, Tape, TapeAnalyzer],
                ext: str = '.png',
                overwrite: bool = False, 
                skip: bool = False,
@@ -148,11 +141,10 @@ class Database:
         metadata = obj.metadata.to_serial_dict
         metadata['ext'] = ext
         filename = obj.metadata.filename
-        _id = fs.put(obj.to_buffer(ext), 
+        _id = fs.put(obj.to_buffer(ext),
                      filename = filename,
                      metadata = metadata)
         return _id
-
 
     def find(self,
              filter: dict, 
@@ -171,7 +163,6 @@ class Database:
             for iq in queries:
                 ret.append(Class.from_buffer(iq.read(), iq.metadata))
         return ret
-
 
     def map_to(self,
                func: Callable,
@@ -194,9 +185,6 @@ class Database:
                 print(iq.filename)
             self.insert(func(obj), ext=ext, collection=collection_target)
             
-                
-    
-    
     def find_one(self, filter = None, collection: str = None) -> object:
         """finds one entry that matches the filter. 
         kwargs must be chosen by filter=
@@ -220,7 +208,6 @@ class Database:
             return Class.from_buffer(iq.read(), iq.metadata)
         else:
             raise ValueError(f'No entry found with the filter: {str(filter)}')
-        
         
     def find_with_id(self, _id: str, collection: str) -> object:
         """Retrieves core object based on the MongoDB _id
@@ -289,9 +276,6 @@ class Database:
                 print(path.as_posix())
             obj.to_file(path.with_suffix(ext))
 
-
-
-
     def drop_collection(self, collection: str):
         for x in ['files', 'chunks']:
             print(f'drop {collection}.{x}')
@@ -325,8 +309,6 @@ class Database:
     def server_info(self):
         return self.client.server_info()
     
-
-
 def dict2mongo_query(inp: dict, previous_key: str = '') -> dict:
     ret = []
     for key in inp:
@@ -348,7 +330,6 @@ def dict2mongo_query(inp: dict, previous_key: str = '') -> dict:
             ret_p.append(item_1)
     return ret_p
             
-
 def list_databases(host='localhost',
                    port=27017,
                    username='',

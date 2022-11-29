@@ -471,7 +471,6 @@ class TapeAnalyzer(Analyzer):
         cond = np.bitwise_and(cond_x, cond_y)
         return coordinates[cond]
 
-
     def get_coordinate_based(self,
                              n_points: int=64,
                              x_trim_param: int=6) -> None:
@@ -532,18 +531,18 @@ class TapeAnalyzer(Analyzer):
             stds[i_point] = np.std(points[:, 0])
             slopes[i_point, :] = np.polyfit(
                 x=points[:, 0], 
-                y=points[:, 1], 
-                deg=1, 
+                y=points[:, 1],
+                deg=1,
                 full=True)[0]
         self.metadata['analysis']['coordinate_based'] = {
-            "n_points": n_points, 
-            "x_trim_param": x_trim_param, 
+            "n_points": n_points,
+            "x_trim_param": x_trim_param,
             'coordinates': data,
             'stds': stds,
             'slopes': slopes}
         if was_flipped:
             self.flip_v()
-        return 
+        return self['coordinate_based']
 
     def get_bin_based(self,
                       window_background=50,
@@ -555,16 +554,16 @@ class TapeAnalyzer(Analyzer):
                       border: str = 'avg',
                       ):
         """
-        This method returns the detected edge as a set of croped images from 
+        This method returns the detected edge as a set of cropped images from 
         the edge. The number if images is defined by n_bins. The goal is 
         to try to match the segmentation to the wefts of the tape. 
-        In the future this method will try to detecte the wefts automatically.
+        In the future this method will try to detected the wefts automatically.
 
 
         Parameters
         ----------
         window_background : int, optional
-            Number of pixels to be included in each segment in the backgroung 
+            Number of pixels to be included in each segment in the background 
             side of the image. The default is 20.
         window_tape : int, optional
             Number of pixels to be included in each segment in the tape side 
@@ -639,7 +638,6 @@ class TapeAnalyzer(Analyzer):
                     "window_tape": window_tape,
                     "size": size}
 
-        self.bin_based = segments
         self.metadata['analysis']['bin_based'] = metadata
         if was_flipped:
             self.flip_v()
