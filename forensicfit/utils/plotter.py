@@ -40,6 +40,7 @@ def plot_coordinate_based(coordinates: npt.ArrayLike,
                           plot_error_bars: bool=True,
                           plot_edge: bool=True,
                           show: bool=True,
+                          dark_bg: bool=True,
                           **kwargs) -> Axes:
     if ax is None:
         fig = plt.figure()
@@ -62,7 +63,8 @@ def plot_coordinate_based(coordinates: npt.ArrayLike,
     #             coordinates[:, 1],
     #             c='black',
     #             s=0.01)
-    ax.set_facecolor('black')
+    if dark_bg:
+        ax.set_facecolor('black')
     color=['cyan', 'magenta', 'black', 'orange', 'red', 'blue', 'green']
     if plot_slope:
         dy = coordinates[1, 1] - coordinates[0, 1]
@@ -75,8 +77,8 @@ def plot_coordinate_based(coordinates: npt.ArrayLike,
             y_max = y0 + dy/2
             y = np.linspace(y_min, y_max, 100)
             x = y/m - b0/m
-            ax.plot(x, y, color='green')
-        color=['red']
+            ax.plot(x, y, color='C9')
+        color=['C1']
     fig = ax.get_figure()
     large_dim = fig.get_size_inches().max()
     marker_size = large_dim/4
@@ -84,20 +86,18 @@ def plot_coordinate_based(coordinates: npt.ArrayLike,
         ax.errorbar(coordinates[:, 0],
                     coordinates[:, 1],
                     xerr=stds,
-                    ecolor='cyan',
+                    ecolor='C4',
                     color=np.random.choice(color, size=(1,),)[0],
-                    ms=marker_size,
-                    fmt='o')
+                    )
     else:
         ax.scatter(coordinates[:, 0],
-                    coordinates[:, 1],
-                    s=marker_size*4,
-                    color=np.random.choice(color, size=(1,),)[0],
-                    marker='o')
+                   coordinates[:, 1],
+                   color=np.random.choice(color, size=(1,),)[0])
+
     if plot_edge:
         ax.plot(coordinates[:, 0],
                 coordinates[:, 1],
-                color='#f3ff6b')
+                color='C0')
     # ax.set_ylim(min(coordinates[:, 1]),max(coordinates[:, 1]))            
     # xmin = min(coordinates[:, 0])
     # xmax = max(coordinates[:, 0])

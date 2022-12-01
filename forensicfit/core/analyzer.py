@@ -223,14 +223,14 @@ class Analyzer:
                                                     ax[i], **kwargs)
                     dy = coordinates[1, 1] - coordinates[0, 1]
                     y_min, y_max = min(coordinates[:, 1]), max(coordinates[:, 1])
-                    ax[i].xaxis.set_visible(False)
-                    ax[i].yaxis.set_visible(False)
+                    # ax[i].xaxis.set_visible(False)
+                    # ax[i].yaxis.set_visible(False)
                     # ax[i].set_ylim(y_min-dy, y_max+dy)
                     y1 = dynamic_positions[i][1][0]
                     y2 = dynamic_positions[i][1][1]
                     x1 = dynamic_positions[i][0][0]
                     x2 = dynamic_positions[i][0][1]
-                    ax[i].set_xlim(x1, x2)
+                    ax[i].set_xlim(0, self.xmax)
                     ax[i].set_ylim(y2, y1)
                     if not ax[i].yaxis_inverted():
                         ax[i].invert_yaxis()

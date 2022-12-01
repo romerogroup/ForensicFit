@@ -97,14 +97,13 @@ def get_item(name: str,
                 return
         else:
             return
-    tape.split_v(side=side)
+    tape.split_v(side=side, correct_tilt=args.correct_tilt)
     tape.resize(dpi=tuple(args.dpi))
     tape_analyzer = ff.core.TapeAnalyzer(tape,
                                         mask_threshold=args.mask_threshold,
                                         gaussian_blur=args.gaussian_blur,
                                         n_divisions=args.n_divisions,
                                         auto_crop=args.auto_crop,
-                                        correct_tilt=args.correct_tilt,
                                         padding=args.padding,
                                         )
     tape_analyzer.get_bin_based(window_background=args.window_background,
@@ -181,10 +180,22 @@ def preprocess(entry: dict,
                     elif args.output is not None:
                         path = Path(args.output)
                         path /= f'{fname}{rot[rotated]}'
-                        path /= f"{ibin}-mxc-{args.ext}"
+                        path /= f"{ibin}-mxc{args.ext}"
                         image.to_file(path)
             if args.coordinate_based:
                 bins = tape_analyzer['bin_based+coordinate_based']
+                ret = {}
+                if args.output is not None:
+                    for ibin, b in enumerate(bins):
+                        ret[f'bin_{ibin}'] = ff.utils.array_tools.serializer(b)
+                    
+                    path = Path(args.output)
+                    path /= f'{fname}{rot[rotated]}'
+                    path.mkdir(exist_ok=True)
+                    path /= f"coordinate_based+bin_based.json"
+                    with open(path, 'w') as wf:
+                        json.dump(ret, wf, indent=2)
+                bins = tape_analyzer['coordinate_based']
                 ret = {}
                 if args.output is not None:
                     for ibin, b in enumerate(bins):
@@ -200,7 +211,6 @@ def preprocess(entry: dict,
 
 def get_chunks(entries: List[Dict], n_processors: int) -> List:
     ret = [ [] for x in range(n_processors)]
-    n_entries = len(entries)
     for i, entry in enumerate(entries):
         ret[i % n_processors].append(entry)
     return ret

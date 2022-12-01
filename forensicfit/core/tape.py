@@ -43,12 +43,15 @@ class Tape(Image):
         self.metadata['stretched'] = stretched
         self.metadata['mode'] = 'material'
         
-    def split_v(self, side, pixel_index=None):
+    def split_v(self, side, correct_tilt=True, pixel_index=None):
         self.values['original_image'] = self.image.copy()
         if pixel_index is None:
-            tape_analyzer = TapeAnalyzer(self)
+            tape_analyzer = TapeAnalyzer(self, correct_tilt=correct_tilt, auto_crop=True)
             x = tape_analyzer.boundary[:, 0]
             pixel_index = int((x.max()-x.min())/2+x.min())
+            self.image = tape_analyzer['image']
+            self.metadata['image_tilt'] = tape_analyzer.metadata.image_tilt
+            self.metadata['tilt_corrected'] = tape_analyzer.metadata.tilt_corrected
         self.image = image_tools.split_v(
             self.image, pixel_index, side)
         self.values['image'] = self.image
@@ -66,7 +69,7 @@ class TapeAnalyzer(Analyzer):
                  gaussian_blur: tuple=(15, 15),
                  n_divisions: int=6,
                  auto_crop: bool=False,
-                 correct_tilt: bool=True,
+                 correct_tilt: bool=False,
                  padding: str='tape',
                  remove_background: bool=True):
         """
@@ -95,6 +98,7 @@ class TapeAnalyzer(Analyzer):
 
         """
         super().__init__()
+        self.debug = {}
         self.metadata['n_divisions'] = n_divisions
         self.metadata['gaussian_blur'] = gaussian_blur
         self.metadata['mask_threshold'] = int(mask_threshold)
@@ -159,7 +163,7 @@ class TapeAnalyzer(Analyzer):
         if 'coordinate_based' in self.metadata['analysis']:
             coords  = np.array(self.metadata['analysis']['coordinate_based']['coordinates'])
             slopes  = np.array(self.metadata['analysis']['coordinate_based']['slopes'])
-            coords[:, 0] *= -1 
+            coords[:, 0] *= -1
             coords[:, 0] += self.image.shape[1]
             slopes[:, 1] += slopes[:, 0]*self.image.shape[1]
             slopes[:, 0] *= -1
@@ -177,14 +181,18 @@ class TapeAnalyzer(Analyzer):
         self.metadata['flip_v'] =  not(self.metadata['flip_v'])
 
     def flip_h(self):
-        # TODO coordinate based
         self.image = np.flipud(self.image)
         self.metadata['boundary'] = np.array(self.metadata['boundary'])
         self.metadata['boundary'][:, 1] = self.metadata['boundary'][:, 1]*-1 + self.image.shape[0]
         if 'coordinate_based' in self.metadata['analysis']:
-            coords = np.array(self.metadata['analysis']['coordinate_based']['data'])
-            coords[:, 1] = np.flipud(coords[:, 1])
-            self.metadata['analysis']['coordinate_based']['data'] = coords
+            coords = np.array(self.metadata['analysis']['coordinate_based']['coordinates'])
+            slopes  = np.array(self.metadata['analysis']['coordinate_based']['slopes'])
+            coords[:, 1] *= -1
+            coords[:, 1] += self.image.shape[0]
+            slopes *= -1
+            slopes[:, 1] += self.image.shape[0]
+            self.metadata['analysis']['coordinate_based']['coordinates'] = coords
+            self.metadata['analysis']['coordinate_based']['slopes'] = slopes
         if 'bin_based' in self.metadata['analysis']:
             dynamic_positions = np.array(self.metadata['analysis']['bin_based']['dynamic_positions'])
             for i, pos in enumerate(dynamic_positions):
@@ -198,7 +206,6 @@ class TapeAnalyzer(Analyzer):
     def load_metadata(self):
         """
         
-
         Returns
         -------
         None.
@@ -517,16 +524,18 @@ class TapeAnalyzer(Analyzer):
         edge = boundary[cond_12]
         self.metadata['edge_x_std'] = float(np.std(edge[:, 0]))
         self.metadata['edge_x_range'] = int(edge[:, 0].max()-edge[:, 0].min())
-        
+        self.debug['cb_points'] = []
         for i_point in range(0, n_points):
             y_start = y_min+i_point*(y_interval/n_points)
             y_end = y_min+(i_point+1)*(y_interval/n_points)
             points = self._get_points_from_boundary(x_0, x_1, y_start, y_end)
+            
             if len(points) == 0 and x_trim_param != 1:
                 if was_flipped:
                     self.flip_v()
                 return self.get_coordinate_based(n_points=n_points, 
                                                  x_trim_param=x_trim_param-1)
+            self.debug['cb_points'].append(points)
             data[i_point, :2] = np.average(points, axis=0)
             stds[i_point] = np.std(points[:, 0])
             slopes[i_point, :] = np.polyfit(
@@ -726,6 +735,7 @@ class TapeAnalyzer(Analyzer):
         elif 'bin_based' in x:
             if 'coordinate_based' in x:
                 ret = []
+                self.debug['cbbb_points'] = []
                 n_bins = self.metadata.analysis['bin_based']['n_bins']
                 n_points = self.metadata.analysis[
                     'coordinate_based']['n_points']//n_bins
@@ -746,8 +756,9 @@ class TapeAnalyzer(Analyzer):
                         y_min -= pad_y_max
                         y_max += pad_y_min
                     y_interval = y_max - y_min
+                   
                     if n_points > len(self._get_points_from_boundary(
-                        x[0],x[1],
+                        x[0], x[1],
                         y_min, y_max
                     )):
                         print('The number of points per bin is smaller than'
@@ -757,15 +768,22 @@ class TapeAnalyzer(Analyzer):
                     for i_point in range(n_points):
                         y_start = y_min+i_point*(y_interval/n_points)
                         y_end = y_min+(i_point+1)*(y_interval/n_points)
-                        points = self._get_points_from_boundary(
-                            x[0], 
-                            x[1], 
-                            y_start, 
-                            y_end)
-
-                        assert len(points) != 0, ("No points in this window, " 
-                                                  "increase the background window")
-                        # assert len(points) != 0, self.metadata.filename
+                        points = []
+                        ratios = np.linspace(1, 2, 20)
+                        j = 0
+                        while len(points) == 0:
+                            assert j < len(ratios), ("No points in this window, " 
+                                                    "increase the tape window"
+                                                    f" {self.metadata.filename}-{self.metadata.split_v['side']}")
+                            points = self._get_points_from_boundary(
+                                x[0], 
+                                x[1]*ratios[j],
+                                y_start, 
+                                y_end)
+                            j += 1
+                        
+                        
+                        self.debug['cbbb_points'].append(points)
                         data[i_point, :2] = np.average(points, axis=0)
                         stds[i_point] = np.std(points[:, 0])
                         slopes[i_point, :] = np.polyfit(
