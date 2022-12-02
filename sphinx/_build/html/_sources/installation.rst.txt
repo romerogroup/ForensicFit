@@ -29,7 +29,7 @@ This package relies on the following python packages::
 	numpy 
 	scipy 
 	opencv 
-	keras
+	pymongo
 	scikit-image
 	
 

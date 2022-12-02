@@ -1,196 +1,327 @@
 
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" />
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Tutorials &#8212; Forensic Fit  documentation</title>
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Tutorials &mdash; Forensic Fit  documentation</title>
   
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
 
   
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
 
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
   
-  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
 
-  
-  
-
-  
-
-  
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Preprocessing" href="preprocess.html" />
-    <link rel="prev" title="Developers" href="developers.html" /> 
-</head>
-
-<body class="wy-body-for-nav">
-
-   
-  <div class="wy-grid-for-nav">
-    
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-          
-
-          
-            <a href="index.html" class="icon icon-home"> Forensic Fit
-          
-
-          
-          </a>
-
-          
-            
-            
-          
-
-          
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="developers.html">Developers</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorials</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#preprocessing">Preprocessing</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#single-image-processing">1. Single image processing</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#loading-the-image-and-show">1.1. Loading the image and show</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#splitting-the-image-vertically">1.2. Splitting the image vertically</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#finding-the-tilt-of-the-image">1.3. Finding the tilt of the image</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#plot-boundaries">1.4. Plot Boundaries</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#auto-crop-in-y-direction">1.5. Auto Crop in Y direction</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#rotate-image">1.6. Rotate Image</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#coordinate-based">1.7. Coordinate Based</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#weft-based">1.8. Weft based</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#max-contrast">1.9. Max Contrast</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">Package API</a></li>
-</ul>
-
-            
-          
-        </div>
-        
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">Forensic Fit</a>
-        
-      </nav>
-
-
-      <div class="wy-nav-content">
-        
-        <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
-  <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
-      <li>Tutorials</li>
-    
-    
-      <li class="wy-breadcrumbs-aside">
-        
-          
-            <a href="_sources/tutorials.rst.txt" rel="nofollow"> View page source</a>
-          
-        
-      </li>
-    
-  </ul>
+    <link rel="prev" title="Developers" href="developers.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
 
   
-  <hr/>
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+    <p class="title logo__title">Forensic Fit  documentation</p>
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="installation.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="developers.html">
+                        Developers
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="#">
+                        Tutorials
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="modules.html">
+                        Package API
+                      </a>
+                    </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="installation.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="developers.html">
+                        Developers
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="#">
+                        Tutorials
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="modules.html">
+                        Package API
+                      </a>
+                    </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="preprocess.html">Preprocessing</a></li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
             
-  <div class="section" id="tutorials">
-<h1>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this headline">¶</a></h1>
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="tutorials">
+<h1>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this heading">#</a></h1>
 <p>The following set of tutorials explains the basic usage of this package.
 The examples provide information on how to use the preprocessing method for different
 approaches. Later it will explain how one can use the data generated in this
 section in different Machine Learning approaches using keras package.</p>
-<div class="section" id="preprocessing">
-<h2>Preprocessing<a class="headerlink" href="#preprocessing" title="Permalink to this headline">¶</a></h2>
+<section id="preprocessing">
+<h2>Preprocessing<a class="headerlink" href="#preprocessing" title="Permalink to this heading">#</a></h2>
 <p>At first we will explain the steps one has to take to process a single image,
 Then we will move to processing directories of images. Each gray scale image is constructed from a grid of pixels. Each pixel contains a number from 0 to 255 representing the gray shade of that specific pixel.</p>
-<div class="section" id="single-image-processing">
-<h3>1. Single image processing<a class="headerlink" href="#single-image-processing" title="Permalink to this headline">¶</a></h3>
+<section id="single-image-processing">
+<h3>1. Single image processing<a class="headerlink" href="#single-image-processing" title="Permalink to this heading">#</a></h3>
 <p>All of our tutorials are eplained in ipython interactive session, However these
 commands can be easily moved to a python script for more automation.</p>
-<div class="section" id="loading-the-image-and-show">
-<h4>1.1. Loading the image and show<a class="headerlink" href="#loading-the-image-and-show" title="Permalink to this headline">¶</a></h4>
+<section id="loading-the-image-and-show">
+<h4>1.1. Loading the image and show<a class="headerlink" href="#loading-the-image-and-show" title="Permalink to this heading">#</a></h4>
 <p>Given the path to the image forensicfit will create a TapeImage object.</p>
 <p>Usage:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">forensicfit</span>
@@ -224,9 +355,9 @@ by odd numbers.</p>
 </pre></div>
 </div>
 <img alt="_images/1.gaussian_blur.png" class="align-center" src="_images/1.gaussian_blur.png" />
-</div>
-<div class="section" id="splitting-the-image-vertically">
-<h4>1.2. Splitting the image vertically<a class="headerlink" href="#splitting-the-image-vertically" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="splitting-the-image-vertically">
+<h4>1.2. Splitting the image vertically<a class="headerlink" href="#splitting-the-image-vertically" title="Permalink to this heading">#</a></h4>
 <p>Sometimes one does not need one side of the image. To address this issue <code class="docutils literal notranslate"><span class="pre">split</span></code>
 parameter is implemented.One has to turn on the split paramter by <code class="docutils literal notranslate"><span class="pre">split=True</span></code>,
 Then select the side of the image that is important to us (<code class="docutils literal notranslate"><span class="pre">'L'</span></code> for left or <code class="docutils literal notranslate"><span class="pre">'R'</span></code> for right)
@@ -244,9 +375,9 @@ Let’s also view the split image by using the <code class="docutils literal not
 </pre></div>
 </div>
 <img alt="_images/2.split_L.png" class="align-center" src="_images/2.split_L.png" />
-</div>
-<div class="section" id="finding-the-tilt-of-the-image">
-<h4>1.3. Finding the tilt of the image<a class="headerlink" href="#finding-the-tilt-of-the-image" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="finding-the-tilt-of-the-image">
+<h4>1.3. Finding the tilt of the image<a class="headerlink" href="#finding-the-tilt-of-the-image" title="Permalink to this heading">#</a></h4>
 <p>During the scanning process one might not position the image exactly parallel to the
 horizontal line. The property of <code class="docutils literal notranslate"><span class="pre">image_tilt</span></code> can calculate the tilt of the tape. To calculate
 this number the algorithm finds the boundaries at the top and the bottom of the image.
@@ -270,9 +401,9 @@ One can use the <code class="docutils literal notranslate"><span class="pre">get
 <img alt="_images/3.tilt_1_all.png" class="align-center" src="_images/3.tilt_1_all.png" />
 <p>and one with the two segments with the least standard deviation, plotted over the detected boundary.</p>
 <img alt="_images/3.tilt_2_best.png" class="align-center" src="_images/3.tilt_2_best.png" />
-</div>
-<div class="section" id="plot-boundaries">
-<h4>1.4. Plot Boundaries<a class="headerlink" href="#plot-boundaries" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="plot-boundaries">
+<h4>1.4. Plot Boundaries<a class="headerlink" href="#plot-boundaries" title="Permalink to this heading">#</a></h4>
 <p>This class automatically(using opencv) detects the boundaries. To plot this boundary
 one has to use, <code class="docutils literal notranslate"><span class="pre">plot_boundary(color='red')</span></code>. As it’s self explanatory the color
 parameter changes the color of the boundary. To plot this boundary one has to plot
@@ -282,9 +413,9 @@ the image first then use the plot boundary similar to the following example.</p>
 <span class="n">tape_image</span><span class="o">.</span><span class="n">plot_boundary</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="auto-crop-in-y-direction">
-<h4>1.5. Auto Crop in Y direction<a class="headerlink" href="#auto-crop-in-y-direction" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="auto-crop-in-y-direction">
+<h4>1.5. Auto Crop in Y direction<a class="headerlink" href="#auto-crop-in-y-direction" title="Permalink to this heading">#</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">auto_crop_y()</span></code> will automatically crop the image based on the boundaries that it found.
 To make this example more interesting we add a plot boundary function as well.</p>
 <p>Usage:</p>
@@ -294,18 +425,18 @@ To make this example more interesting we add a plot boundary function as well.</
 </pre></div>
 </div>
 <img alt="_images/5.auto_crop_y.png" class="align-center" src="_images/5.auto_crop_y.png" />
-</div>
-<div class="section" id="rotate-image">
-<h4>1.6. Rotate Image<a class="headerlink" href="#rotate-image" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="rotate-image">
+<h4>1.6. Rotate Image<a class="headerlink" href="#rotate-image" title="Permalink to this heading">#</a></h4>
 <p>As the name suggests This method will perform an rotation around the center of the image.</p>
 <p>Usage:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tape_image</span><span class="o">.</span><span class="n">rotate_image</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
 <span class="n">tape_image</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="coordinate-based">
-<h4>1.7. Coordinate Based<a class="headerlink" href="#coordinate-based" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="coordinate-based">
+<h4>1.7. Coordinate Based<a class="headerlink" href="#coordinate-based" title="Permalink to this heading">#</a></h4>
 <p>This method will return a 2 dimentional array of coordinates of points on the edge.
 The most important parameter for this method is <code class="docutils literal notranslate"><span class="pre">npoints</span></code> representing the number of
 points in the returned array. This method divides the edge into the small sections and
@@ -318,9 +449,9 @@ the resulting array.</p>
 </div>
 <img alt="_images/7.coordinate_based_zoomed.png" src="_images/7.coordinate_based_zoomed.png" />
 <img alt="_images/7.coordinate_based.png" src="_images/7.coordinate_based.png" />
-</div>
-<div class="section" id="weft-based">
-<h4>1.8. Weft based<a class="headerlink" href="#weft-based" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="weft-based">
+<h4>1.8. Weft based<a class="headerlink" href="#weft-based" title="Permalink to this heading">#</a></h4>
 <p>In order to get as close as possible to a regular examination, this method was
 added. This method will divide the edge of the image by the number of segments
 defined by <code class="docutils literal notranslate"><span class="pre">nsegments</span></code>. If this value is chose to be as close as the number of
@@ -347,9 +478,9 @@ boundary and window selection by plotting the results.</p>
 <a class="reference internal image-reference" href="_images/6.weft_based.png"><img alt="_images/6.weft_based.png" src="_images/6.weft_based.png" style="width: 49.5%;" /></a>
 <p>If <code class="docutils literal notranslate"><span class="pre">nsegments</span></code> is set to a small number, this approach can be looked at as a
 big picture approach that can help improve the weft base approach.</p>
-</div>
-<div class="section" id="max-contrast">
-<h4>1.9. Max Contrast<a class="headerlink" href="#max-contrast" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="max-contrast">
+<h4>1.9. Max Contrast<a class="headerlink" href="#max-contrast" title="Permalink to this heading">#</a></h4>
 <p>This method makes a maximum contrast between the edge and the rest of the image.
 The rest of the image is represneted by a white color(255) and the rest of the
 image is represented by a black color(0). Similar to the weft based one can choose
@@ -372,57 +503,183 @@ we choose the default for the <code class="docutils literal notranslate"><span c
 <li class="toctree-l1"><a class="reference internal" href="preprocess.html">Preprocessing</a></li>
 </ul>
 </div>
-</div>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
+</section>
 
 
-           </div>
-           
-          </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="preprocess.html" class="btn btn-neutral float-right" title="Preprocessing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="developers.html" class="btn btn-neutral float-left" title="Developers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-    </div>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>
-        &#169; Copyright 2020, Pedram Tavadze.
-
-    </p>
-  </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
-
-</footer>
-        </div>
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="developers.html" title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">Developers</p>
       </div>
+  </a>
+  <a class='right-next' id="next-link" href="preprocess.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">Preprocessing</p>
+  </div>
+  <i class="fa-solid fa-angle-right"></i>
+  </a>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#preprocessing">
+   Preprocessing
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#single-image-processing">
+     1. Single image processing
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#loading-the-image-and-show">
+       1.1. Loading the image and show
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#splitting-the-image-vertically">
+       1.2. Splitting the image vertically
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#finding-the-tilt-of-the-image">
+       1.3. Finding the tilt of the image
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#plot-boundaries">
+       1.4. Plot Boundaries
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#auto-crop-in-y-direction">
+       1.5. Auto Crop in Y direction
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#rotate-image">
+       1.6. Rotate Image
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#coordinate-based">
+       1.7. Coordinate Based
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#weft-based">
+       1.8. Weft based
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#max-contrast">
+       1.9. Max Contrast
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+</ul>
 
-    </section>
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="_sources/tutorials.rst.txt">
+        <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2020, Pedram Tavadze.<br>
+
+</p>
 
   </div>
   
-
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script>
-
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
   
-  
+  <div class="footer-item">
     
-   
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.2.<br>
+</p>
 
-</body>
+  </div>
+  
+</div>
+  </footer>
+  </body>
 </html>

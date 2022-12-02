@@ -5,36 +5,22 @@ Subpackages
 -----------
 
 .. toctree::
+   :maxdepth: 4
 
-   forensicfit.preprocess
+   forensicfit.core
+   forensicfit.database
+   forensicfit.utils
 
 Submodules
 ----------
 
-forensicfit module
-------------------
+forensicfit.version module
+--------------------------
 
-.. automodule:: forensicfit
+.. automodule:: forensicfit.version
    :members:
    :undoc-members:
    :show-inheritance:
-
-forensicfit module
-------------------
-
-.. automodule:: forensicfit
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-forensicfit.script\_process\_dir module
----------------------------------------
-
-.. automodule:: forensicfit.script_process_dir
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 
 Module contents
 ---------------

@@ -195,12 +195,9 @@ def preprocess(entry: dict,
                     path /= f"coordinate_based+bin_based.json"
                     with open(path, 'w') as wf:
                         json.dump(ret, wf, indent=2)
-                bins = tape_analyzer['coordinate_based']
-                ret = {}
+                ret = ff.utils.array_tools.serializer(
+                    tape_analyzer['coordinate_based'])
                 if args.output is not None:
-                    for ibin, b in enumerate(bins):
-                        ret[f'bin_{ibin}'] = ff.utils.array_tools.serializer(b)
-                    
                     path = Path(args.output)
                     path /= f'{fname}{rot[rotated]}'
                     path.mkdir(exist_ok=True)

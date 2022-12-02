@@ -1,5 +1,5 @@
-Package API
-=======================
+forensicfit
+===========
 
 .. toctree::
    :maxdepth: 4
