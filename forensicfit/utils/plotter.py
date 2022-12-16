@@ -201,13 +201,16 @@ def plot_pairs(objs: List[Any],
                                              zoom
                                              )
         figure, axes = plt.subplots(n_bins, n_columns, 
-                                    figsize=figsize
+                                    figsize=figsize,
                                     )
         # figure = plt.figure(figsize=figsize)
         #  = figure.subplots(
             # 
         #     gridspec_kw={'hspace': 0.0, 'wspace': 0.0})
-        ax = [axes[:, i] for i in range(n_objs)]
+        if len(objs) != 2:
+            ax = [axes[:, i] for i in range(n_objs)]
+        else:
+            ax = axes
     else:
         X = objs[0].shape[0]
         Y = objs[0].shape[1]*n_objs
