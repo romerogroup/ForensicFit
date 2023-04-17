@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import importlib.util
 import sys
+from .version import __version__
 def has_package(name):
     spec = importlib.util.find_spec(name)
     if name in sys.modules:

@@ -3,65 +3,24 @@ from setuptools import find_packages
 import json
 import pathlib
 import os
+from forensicfit import __version__ as version
 
-def get_version_info():
-    """ 
-    Retrieve version info from setup.json
-    Method adopted from PyChemia.
-    """
-
-    basepath = pathlib.Path(__file__).parent.absolute()
-    rf = open(str(basepath) + os.sep + "setup.json")
-    release_data = json.load(rf)
-    rf.close()
-
-    return release_data
-
-def write_version_py(filename="forensicfit/version.py"):
-    """ 
-    Write forensicfit/version.py. Adopted from
-    PyChemia.
-    """
-
-    versioninfo_string = """
-        # THIS FILE IS GENERATED FROM Forensicfit SETUP.PY.
-        name = '%(name)s'
-        version = '%(version)s'
-        description = '%(description)s'
-        url = '%(url)s'
-        author = '%(author)s'
-        email = '%(email)s'
-        status = '%(status)s'
-        copyright = '%(copyright)s'
-        date = '%(date)s'
-        """
-    release_data = get_version_info()
-
-    a = open(filename, "w")
-    try:
-        a.write(
-            versioninfo_string
-            % {
-                "name": release_data["name"],
-                "version": release_data["version"],
-                "description": release_data["description"],
-                "url": release_data["url"],
-                "author": release_data["author"],
-                "email": release_data["email"],
-                "status": release_data["status"],
-                "copyright": release_data["copyright"],
-                "date": release_data["date"],
-            }
-        )
-    finally:
-        a.close()
-    return release_data
-
-data = write_version_py()
+{
+  "name": "forensicfit",
+  "version": "1.00",
+  "description": "A Python library for forensic image comarision.",
+  "author": "Pedram Tavadze, Meghan Prusinowski, Zachary Andrews, Colton Diges, Tatiana Trejos, Aldo H Romero ",
+  "email": "petavazohi@mix.wvu.edu, mnp0006@mix.wvu.edu, tatiana.trejos@mail.wvu.edu, alromero@mail.wvu.edu, ",
+  "url": "https://github.com/romerogroup/ForensicFit",
+  "download_url": "https://github.com/romerogroup/ForensicFit",
+  "status": "development",
+  "copyright": "Copyright 2021",
+  "date": "Jun 16th, 2021"
+}
 
 setup(
-    name=data["name"],
-    version=data["version"],
+    name="forensicfit",
+    version=version,
     description=data["description"],
     author=data["author"],
     author_email=data["email"],
