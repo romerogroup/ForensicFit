@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-used PyChemia code output class as a guide  
-pychemia/code/codes.py
-"""
-
 __all__ = []
 __version__ = '1.0'
 __author__ = 'Pedram Tavadze'
@@ -17,7 +12,6 @@ from pathlib import Path
 
 import cv2
 import numpy as np
-import numpy.typing as npt
 import PIL
 from matplotlib import pylab as plt
 from matplotlib.axes import Axes
@@ -28,14 +22,15 @@ from typing import Union
 from ..utils import copy_doc, image_tools, plotter
 from .metadata import Metadata
 
-IMAGE_EXTENSIONS = image_tools.IMAGE_EXTENSIONS
-PIL.Image.MAX_IMAGE_PIXELS = None
+# IMAGE_EXTENSIONS = image_tools.IMAGE_EXTENSIONS
+# PIL.Image.MAX_IMAGE_PIXELS = None
 # mpl.rcParams['image.origin'] = 'lower'
 
 class Image(Mapping):
+
     __metaclass__ = ABCMeta
 
-    def __init__(self, image: npt.ArrayLike, **kwargs):
+    def __init__(self, image: np.ndarray, **kwargs):
         """_summary_
 
         Parameters

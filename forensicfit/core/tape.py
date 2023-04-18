@@ -5,7 +5,6 @@ Created on Sun Jun 28 14:11:02 2020
 @author: Pedram Tavadze
 """
 import warnings
-import numpy.typing as npt
 from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
@@ -20,7 +19,7 @@ else:
 
 class Tape(Image):
     def __init__(self,
-                 image: npt.ArrayLike,
+                 image: np.ndarray,
                  label: str = None,
                  surface: str = None,
                  stretched: bool=False,
@@ -30,6 +29,7 @@ class Tape(Image):
         and returns the results in 3 different method coordinate_based, 
         bin_based and max_contrast. 
         """
+        
         assert type(image) is np.ndarray, "image arg must be a numpy array"
         assert image.ndim in [2, 3] , "image array must be 2 dimensional"
         super().__init__(image, **kwargs)
@@ -467,7 +467,7 @@ class TapeAnalyzer(Analyzer):
                                   x_0: float,
                                   x_1: float,
                                   y_0: float,
-                                  y_1: float) -> npt.ArrayLike:
+                                  y_1: float) -> np.ndarray:
         coordinates = self['boundary']
         cond_1 = coordinates[:, 0] >= x_0
         cond_2 = coordinates[:, 0] <= x_1

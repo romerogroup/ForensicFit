@@ -13,6 +13,8 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
+def setup(app):
+    app.add_js_file("js/copybutton_custom.js")
 
 
 # -- Project information -----------------------------------------------------
@@ -31,9 +33,10 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.coverage',
     'sphinx.ext.viewcode',
+    'sphinx_copybutton',
+    'sphinx.ext.napoleon',
     'numpydoc'
 ]
-
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -49,19 +52,21 @@ language = 'en'
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 autoclass_content = 'both'
-# autodoc_default_options = {
-#     'members': True,
-#     'member-order': 'bysource',
-#     'special-members': '__init__',
-#     'undoc-members': True,
-#     'exclude-members': '__weakref__'
-# }
+autodoc_default_options = {
+    'members': True,
+    'member-order': 'bysource',
+    'special-members': '__init__',
+    'undoc-members': True,
+    'exclude-members': '__weakref__',
+    # 'inherited-members': True,
+}
 
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
+
 html_theme = "pydata_sphinx_theme"
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -72,7 +77,11 @@ html_static_path = ['_static']
 
 # -- Extension configuration -------------------------------------------------
 # The name of the Pygments (syntax highlighting) style to use.
-#pygments_style = "sphinx"
+html_theme_options = {
+    "pygment_light_style": "igor",
+    "pygment_dark_style": "monokai"
+}
 
-
-
+# -- Copybutton configuration -------------------------------------------------
+# 
+copybutton_exclude = '.linenos, .gp, .go'

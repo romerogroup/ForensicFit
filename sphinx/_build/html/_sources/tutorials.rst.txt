@@ -1,59 +1,50 @@
 Tutorials
 =========
 
-The following set of tutorials explains the basic usage of this package. 
-The examples provide information on how to use the preprocessing method for different
-approaches. Later it will explain how one can use the data generated in this 
-section in different Machine Learning approaches using keras package.
+The following set of tutorials demonstrates the basic usage of the ForensicFit package. The examples illustrate how to apply the preprocessing method for various approaches.
 
 Preprocessing
 -------------
-
-At first we will explain the steps one has to take to process a single image, 
-Then we will move to processing directories of images. Each gray scale image is constructed from a grid of pixels. Each pixel contains a number from 0 to 255 representing the gray shade of that specific pixel.
+Initially, we will describe the steps required to process a single image. After that, we will proceed to discuss the processing of directories containing multiple images. 
+Each grayscale image consists of a grid of pixels, where each pixel holds a value ranging from 0 to 255, representing the specific gray shade of the pixel.
 
 1. Single image processing
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-All of our tutorials are eplained in ipython interactive session, However these
-commands can be easily moved to a python script for more automation.
+
+1.1. Loading the Image and Displaying It
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Given the path to the image, ForensicFit will create a ``Tape`` object.
+``Tape`` is instantiated by providing a numpy array. Alternatively, one can use the ``from_file`` method to load the image from a file.
+
+.. code-block:: python
+
+    >>> import forensicfit as ff
+    >>> tape = ff.core.Tape.from_file(fname='L001.tiff')
+
+``tape`` is a ``Tape`` object with various properties and methods. In this section, 
+we will explain the usage of each method and property. ``Tape`` inherits from the class ``Image``.
 
 
-1.1. Loading the image and show
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Given the path to the image forensicfit will create a TapeImage object.
+Before discussing each method, let's list the input parameters of this class. 
+A comprehensive description of each parameter is provided in the `API package <forensicfit.core.html#module-forensicfit.core.tape>`_ section. To display the image, we can use the ``show`` or the ``plot`` method.
+We can save the image by including the argument ``savefig`` when plotting.
 
-Usage::
+.. code-block:: python
 
-  import forensicfit
-  tape_image = forensicfit.TapeImage(fname='L001.tiff')
-
-``tape_image`` is a TapeImage object with different properties and method in 
-this section we will explain the usage of each method and property.
-Before explaining each of the methods, let's list the input parameter of this 
-class. A comprehensive description of each parameter is provided in the 
-`API package <forensicfit.preprocess.html#module-forensicfit.preprocess.tape_image>`_ section.
-To show the image we can use the method ``show``.
-
-Usage::
-
-    tape_image = forensicfir.TapeImage(fname='LQ_775.tiff')
-    tape_image.show(cmap='gray')
-    
-The following plot will appear as a confirmation that the image has been loaded.
-As ``cmap`` defines the color map for the gray scale image. 
+    >>> tape = ff.core.Tape.from_file(fname='L001.tiff')
+    >>> tape.plot()
+    >>> tape.plot(savefig='L001.png')
 
 .. image:: images/1.show.png
     :align: center
     
-``gaussian_blur`` is also an important filter that is applied in the begining of this class.
-This filter is applied to image to decrease the image noise and help the finding of the 
-boundaries. A good number usually depends on the amount of the noise the scanner 
-adds to the image. This parameter defines the window of pixels in which this filter is applied.
-The default of this paramter is ``gaussian_blur=(15,15)``. To demonstrate the effects of this 
-filter we choose a large window to exagerate the effect. The window has to be alway constructed 
-by odd numbers.
 
+``gaussian_blur`` is an important filter applied at the beginning of this class. 
+This filter is used to reduce image noise and facilitate boundary detection. 
+The optimal value typically depends on the amount of noise the scanner introduces to the image. 
+This parameter defines the window of pixels where the filter is applied. The default value for this parameter is ``gaussian_blur=(15,15)``. 
+To illustrate the effects of this filter, we choose a large window to exaggerate the impact. The window must always be constructed using odd numbers.
 Usage::
 
     tape_image = forensicfit.preprocess.TapeImage('LQ_775.tif',
@@ -229,9 +220,6 @@ Usage::
 
 
 
-.. toctree::
-   
-   preprocess
-   preprocess_dir
-   machine_learning
+  
+
    
