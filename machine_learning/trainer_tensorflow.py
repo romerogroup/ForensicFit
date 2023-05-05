@@ -2,28 +2,39 @@ import tensorflow as tf
 import os
 import matplotlib.pyplot as plt
 
-# Hyperparameters
 
-num_epochs = 50
-learning_rate = 1e-4
-batch_size = 5
 
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(__file__))
+model_dir = os.path.join(PROJECT_DIR,'models')
+
+
+# Hyperparameters
+num_epochs = 100
+learning_rate = 1e-4
+batch_size = 5
+early_stopping = True
+patience = 10
+
+model_type = 'back'
+
+save_model = True 
+save_path = os.path.join(model_dir,f'{model_type}_model_tensorflow')
 
 processed_dir = os.path.join(PROJECT_DIR, "data", "processed", "normal_split", "match_nonmatch_ratio_0.3")
-
 # processed_dir = os.path.join(PROJECT_DIR, "data", "processed", "cross_validation", "match_nonmatch_ratio_0.3", "0")
 
-train_dir = os.path.join(processed_dir, "back", "train")
-test_dir = os.path.join(processed_dir, "back", "test")
+train_dir = os.path.join(processed_dir, model_type, "train")
+test_dir = os.path.join(processed_dir, model_type, "test")
 
+tf.random.set_seed(0)
 ######################################################
 ######################################################
 ######################################################
 ######################################################
+
 def random_flip(image, label):
-    image = tf.image.random_flip_up_down(image)
+    # image = tf.image.random_flip_up_down(image)
     image = tf.image.random_flip_left_right(image)
     return image, label
 
@@ -71,7 +82,8 @@ metrics = ['accuracy',
             tf.keras.metrics.TruePositives(name='tp'),
             tf.keras.metrics.FalsePositives(name='fp'),
             tf.keras.metrics.TrueNegatives(name='tn'),
-            tf.keras.metrics.FalseNegatives(name='fn')
+            tf.keras.metrics.FalseNegatives(name='fn'),
+            tf.keras.metrics.AUC(name='auc'),
             ]
 
 loss=tf.keras.losses.BinaryCrossentropy()
@@ -81,12 +93,31 @@ lr_scheduler = tf.keras.optimizers.schedules.PolynomialDecay(initial_learning_ra
 
 optimizer = tf.keras.optimizers.Adam(learning_rate=lr_scheduler)
 
+if early_stopping:
+    early_stopping_callback = tf.keras.callbacks.EarlyStopping(
+        monitor='val_auc',
+        mode="auto",
+        patience=patience,
+        restore_best_weights=True
+        # start_from_epoch=0,
+    )
+    callbacks = [early_stopping_callback]
+else:
+    callbacks = None
+
+
 model.compile(optimizer=optimizer,
               loss=loss,
               metrics=metrics)
 
 # Train the model
-history = model.fit(train_dataset, epochs=num_epochs, validation_data=test_dataset)
+history = model.fit(train_dataset, 
+                    validation_data=test_dataset,
+                    epochs=num_epochs, 
+                    callbacks=callbacks)
 
-test_loss, test_acc,tp,fp,tn,fn = model.evaluate(test_dataset)
+test_loss, test_acc,tp,fp,tn,fn,auc = model.evaluate(test_dataset)
 print(f'Test accuracy: {test_acc:.4f}')
+
+if save_model:
+    model.save(save_path)
