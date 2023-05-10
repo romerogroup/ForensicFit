@@ -94,7 +94,6 @@ html[data-theme="dark"] .highlight .py { color: #f8f8f2 } /* Name.Property */
 html[data-theme="dark"] .highlight .nt { color: #f92672 } /* Name.Tag */
 html[data-theme="dark"] .highlight .nv { color: #f8f8f2 } /* Name.Variable */
 html[data-theme="dark"] .highlight .ow { color: #f92672 } /* Operator.Word */
-html[data-theme="dark"] .highlight .pm { color: #f8f8f2 } /* Punctuation.Marker */
 html[data-theme="dark"] .highlight .w { color: #f8f8f2 } /* Text.Whitespace */
 html[data-theme="dark"] .highlight .mb { color: #ae81ff } /* Literal.Number.Bin */
 html[data-theme="dark"] .highlight .mf { color: #ae81ff } /* Literal.Number.Float */
