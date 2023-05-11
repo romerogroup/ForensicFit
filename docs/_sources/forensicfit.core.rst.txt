@@ -4,6 +4,13 @@ forensicfit.core package
 Submodules
 ----------
 
+forensicfit.core.image module
+-----------------------------
+
+.. automodule:: forensicfit.core.image
+   :members:
+   :inherited-members:
+
 forensicfit.core.analyzer module
 --------------------------------
 
@@ -20,13 +27,6 @@ forensicfit.core.data module
    :undoc-members:
    :show-inheritance:
 
-forensicfit.core.image module
------------------------------
-
-.. automodule:: forensicfit.core.image
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 forensicfit.core.metadata module
 --------------------------------
