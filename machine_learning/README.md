@@ -1,5 +1,9 @@
 # This directory contains everything needed to set up a training pipeline for determining if Tapes are a fit or non fit
 
+Install the necessary pyhon libraries by doing the following:
+
+pip install -r requirements.txt
+
 Run the code in the following order:
 
 1. python download.py
