@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -29,7 +28,6 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
@@ -38,8 +36,6 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/sphinx_highlight.js"></script>
-    <script src="../../../_static/clipboard.min.js"></script>
-    <script src="../../../_static/copybutton.js"></script>
     <script src="../../../_static/js/copybutton_custom.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/forensicfit/core/tape';</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -352,18 +348,42 @@ document.write(`
     <span class="kn">import</span> <span class="nn">cv2</span>
 
 <div class="viewcode-block" id="Tape"><a class="viewcode-back" href="../../../forensicfit.core.html#forensicfit.core.tape.Tape">[docs]</a><span class="k">class</span> <span class="nc">Tape</span><span class="p">(</span><span class="n">Image</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tape class is used for preprocessing tape images for machine learning.</span>
+<span class="sd">    </span>
+<span class="sd">    This class takes in a tape image, detects the edges, auto crops the image and</span>
+<span class="sd">    returns the results in 3 different methods: coordinate_based, bin_based,</span>
+<span class="sd">    and max_contrast.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    image : np.ndarray</span>
+<span class="sd">        The image to be processed. It must be a 2D numpy array.</span>
+<span class="sd">    label : str, optional</span>
+<span class="sd">        The label associated with the tape, by default None.</span>
+<span class="sd">    surface : str, optional</span>
+<span class="sd">        The surface the tape is on, by default None.</span>
+<span class="sd">    stretched : bool, optional</span>
+<span class="sd">        Flag indicating whether the tape is stretched or not, by default False.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        Arbitrary keyword arguments.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    metadata : dict</span>
+<span class="sd">        A dictionary storing metadata of the image such as flipping information,</span>
+<span class="sd">        splitting information, label, material, surface, stretched status, and mode.</span>
+<span class="sd">    </span>
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    AssertionError</span>
+<span class="sd">        If `image` is not a numpy array or not a 2D array.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Tape.__init__"><a class="viewcode-back" href="../../../forensicfit.core.html#forensicfit.core.tape.Tape.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
                  <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">surface</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">stretched</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Tape is a class created for tape images to be preprocessed for </span>
-<span class="sd">        Machine Learning. This Class detects the edges, auto crops the image </span>
-<span class="sd">        and returns the results in 3 different method coordinate_based, </span>
-<span class="sd">        bin_based and max_contrast. </span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        
         <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">image</span><span class="p">)</span> <span class="ow">is</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="s2">&quot;image arg must be a numpy array&quot;</span>
         <span class="k">assert</span> <span class="n">image</span><span class="o">.</span><span class="n">ndim</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="p">,</span> <span class="s2">&quot;image array must be 2 dimensional&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -375,9 +395,28 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;material&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;tape&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">surface</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;stretched&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stretched</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;mode&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;material&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;mode&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;material&#39;</span></div>
         
-<div class="viewcode-block" id="Tape.split_v"><a class="viewcode-back" href="../../../forensicfit.core.html#forensicfit.core.tape.Tape.split_v">[docs]</a>    <span class="k">def</span> <span class="nf">split_v</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">side</span><span class="p">,</span> <span class="n">correct_tilt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pixel_index</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Tape.split_v"><a class="viewcode-back" href="../../../forensicfit.core.html#forensicfit.core.tape.Tape.split_v">[docs]</a>    <span class="k">def</span> <span class="nf">split_v</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">side</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">correct_tilt</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pixel_index</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Splits the tape image vertically.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        side : str</span>
+<span class="sd">            The side of the image to be processed.</span>
+<span class="sd">        correct_tilt : bool, optional</span>
+<span class="sd">            If set to True, tilt correction is applied on the image, by default True.</span>
+<span class="sd">        pixel_index : int, optional</span>
+<span class="sd">            The index of the pixel where the image is to be split, by default None.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        </span>
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Changes the &#39;image&#39;, &#39;split_v&#39;, &#39;image_tilt&#39;, &#39;tilt_corrected&#39;, &#39;resolution&#39; fields of the metadata attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;original_image&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">pixel_index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">tape_analyzer</span> <span class="o">=</span> <span class="n">TapeAnalyzer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">correct_tilt</span><span class="o">=</span><span class="n">correct_tilt</span><span class="p">,</span> <span class="n">auto_crop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -397,7 +436,32 @@ document.write(`
 
 
 <div class="viewcode-block" id="TapeAnalyzer"><a class="viewcode-back" href="../../../forensicfit.core.html#forensicfit.core.tape.TapeAnalyzer">[docs]</a><span class="k">class</span> <span class="nc">TapeAnalyzer</span><span class="p">(</span><span class="n">Analyzer</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The TapeAnalyzer class is a specialized Analyzer used to preprocess duct tape images.</span>
+
+<span class="sd">    This class is used to process images of duct tape to prepare them for machine learning tasks.</span>
+<span class="sd">    It includes functionality for Gaussian blur, auto-cropping, tilt correction, and background removal.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tape : Tape, optional</span>
+<span class="sd">        An instance of the Tape class representing the tape image to be analyzed. The default is None.</span>
+<span class="sd">    mask_threshold : int, optional</span>
+<span class="sd">        The threshold used for masking during the image preprocessing. The default is 60.</span>
+<span class="sd">    gaussian_blur : tuple, optional</span>
+<span class="sd">        The kernel size for the Gaussian blur applied during the preprocessing. The default is (15, 15).</span>
+<span class="sd">    n_divisions : int, optional</span>
+<span class="sd">        The number of divisions to be used in the analysis. The default is 6.</span>
+<span class="sd">    auto_crop : bool, optional</span>
+<span class="sd">        A flag indicating whether the image should be auto-cropped. The default is False.</span>
+<span class="sd">    correct_tilt : bool, optional</span>
+<span class="sd">        A flag indicating whether the image tilt should be corrected. The default is False.</span>
+<span class="sd">    padding : str, optional</span>
+<span class="sd">        The padding method used in the analysis. The default is &#39;tape&#39;.</span>
+<span class="sd">    remove_background : bool, optional</span>
+<span class="sd">        A flag indicating whether the background should be removed from the image. The default is True.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="TapeAnalyzer.__init__"><a class="viewcode-back" href="../../../forensicfit.core.html#forensicfit.core.tape.TapeAnalyzer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">tape</span><span class="p">:</span> <span class="n">Tape</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">mask_threshold</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
                  <span class="n">gaussian_blur</span><span class="p">:</span> <span class="nb">tuple</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span>
@@ -406,33 +470,7 @@ document.write(`
                  <span class="n">correct_tilt</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">padding</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;tape&#39;</span><span class="p">,</span>
                  <span class="n">remove_background</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        </span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        tape : TYPE, optional</span>
-<span class="sd">            DESCRIPTION. The default is None.</span>
-<span class="sd">        mask_threshold : TYPE, optional</span>
-<span class="sd">            DESCRIPTION. The default is 60.</span>
-<span class="sd">        gaussian_blur : TYPE, optional</span>
-<span class="sd">            DESCRIPTION. The default is (15, 15).</span>
-<span class="sd">        n_divisions : TYPE, optional</span>
-<span class="sd">            DESCRIPTION. The default is 6.</span>
-<span class="sd">        auto_crop : TYPE, optional</span>
-<span class="sd">            DESCRIPTION. The default is True.</span>
-<span class="sd">        calculate_tilt : TYPE, optional</span>
-<span class="sd">            DESCRIPTION. The default is True.</span>
-<span class="sd">        verbose : TYPE, optional</span>
-<span class="sd">            DESCRIPTION. The default is True.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        None.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;n_divisions&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_divisions</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;gaussian_blur&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gaussian_blur</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;mask_threshold&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">mask_threshold</span><span class="p">)</span>
@@ -458,8 +496,7 @@ document.write(`
                 <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">remove_background</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;masked&#39;</span><span class="p">]</span>
-            
-        <span class="k">return</span>
+        <span class="k">return</span></div>
 
 <div class="viewcode-block" id="TapeAnalyzer.preprocess"><a class="viewcode-back" href="../../../forensicfit.core.html#forensicfit.core.tape.TapeAnalyzer.preprocess">[docs]</a>    <span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -470,11 +507,11 @@ document.write(`
 <span class="sd">            DESCRIPTION. The default is True.</span>
 <span class="sd">        auto_crop : TYPE, optional</span>
 <span class="sd">            DESCRIPTION. The default is True.</span>
-
+<span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        None.</span>
-
+<span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">image</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">200</span><span class="p">:</span>
@@ -563,17 +600,17 @@ document.write(`
 <span class="sd">            DESCRIPTION.</span>
 <span class="sd">        values : TYPE</span>
 <span class="sd">            DESCRIPTION.</span>
-
+<span class="sd">        </span>
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        Exception</span>
 <span class="sd">            DESCRIPTION.</span>
-
+<span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        TYPE</span>
 <span class="sd">            DESCRIPTION.</span>
-
+<span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">image</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
@@ -586,7 +623,7 @@ document.write(`
 <div class="viewcode-block" id="TapeAnalyzer.get_image_tilt"><a class="viewcode-back" href="../../../forensicfit.core.html#forensicfit.core.tape.TapeAnalyzer.get_image_tilt">[docs]</a>    <span class="k">def</span> <span class="nf">get_image_tilt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plot</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        </span>
-
+<span class="sd">        </span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        plot : TYPE, optional</span>
@@ -1232,7 +1269,7 @@ document.write(`
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
     <br/>
   </p>
 </div>

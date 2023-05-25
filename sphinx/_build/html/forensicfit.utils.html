@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -7,7 +6,8 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
     <title>forensicfit.utils package &#8212; Forensic Fit  documentation</title>
   
   
@@ -29,25 +29,20 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
-    <script src="_static/clipboard.min.js"></script>
-    <script src="_static/copybutton.js"></script>
     <script src="_static/js/copybutton_custom.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'forensicfit.utils';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="forensicfit.database package" href="forensicfit.database.html" />
+    <link rel="next" title="forensicfit.utils.array_tools module" href="forensicfit.utils.array_tools.html" />
+    <link rel="prev" title="forensicfit.database.database module" href="forensicfit.database.database.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -290,9 +285,25 @@ document.write(`
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="forensicfit.html">forensicfit package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="forensicfit.core.html">forensicfit.core package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="forensicfit.database.html">forensicfit.database package</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">forensicfit.utils package</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="forensicfit.core.html">forensicfit.core package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.analyzer.html">forensicfit.core.analyzer module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.image.html">forensicfit.core.image module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.metadata.html">forensicfit.core.metadata module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.tape.html">forensicfit.core.tape module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="forensicfit.database.html">forensicfit.database package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="forensicfit.database.database.html">forensicfit.database.database module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current active has-children"><a class="current reference internal" href="#">forensicfit.utils package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="forensicfit.utils.array_tools.html">forensicfit.utils.array_tools module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="forensicfit.utils.general.html">forensicfit.utils.general module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="forensicfit.utils.image_tools.html">forensicfit.utils.image_tools module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="forensicfit.utils.plotter.html">forensicfit.utils.plotter module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="forensicfit.version.html">forensicfit.version module</a></li>
 </ul>
 </li>
 </ul>
@@ -355,317 +366,58 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <div class="section" id="forensicfit-utils-package">
+  <section id="forensicfit-utils-package">
 <h1>forensicfit.utils package<a class="headerlink" href="#forensicfit-utils-package" title="Permalink to this heading">#</a></h1>
-<div class="section" id="submodules">
+<section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
-</div>
-<div class="section" id="module-forensicfit.utils.array_tools">
-<span id="forensicfit-utils-array-tools-module"></span><h2>forensicfit.utils.array_tools module<a class="headerlink" href="#module-forensicfit.utils.array_tools" title="Permalink to this heading">#</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="forensicfit.utils.array_tools.serializer">
-<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.array_tools.</span></span><span class="sig-name descname"><span class="pre">serializer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/forensicfit/utils/array_tools.html#serializer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.array_tools.serializer" title="Permalink to this definition">#</a></dt>
-<dd><p>Serilizes any given dictionary for mongodb.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>indict</strong> (<em>dict</em>) – input dictionary</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="forensicfit.utils.array_tools.vote_calculator">
-<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.array_tools.</span></span><span class="sig-name descname"><span class="pre">vote_calculator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prediction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">complex</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">generic</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">complex</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">generic</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">_SupportsArray</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">complex</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">generic</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">complex</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">generic</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">_SupportsArray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/forensicfit/utils/array_tools.html#vote_calculator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.array_tools.vote_calculator" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="forensicfit.utils.array_tools.read_bytes_io">
-<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.array_tools.</span></span><span class="sig-name descname"><span class="pre">read_bytes_io</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GridOut</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'numpy'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="_modules/forensicfit/utils/array_tools.html#read_bytes_io"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.array_tools.read_bytes_io" title="Permalink to this definition">#</a></dt>
-<dd><p>reads a binary file stored in mongodb and returns a numpy array</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>obj</strong> (<em>GridOut</em>) – output from a mongodb girdfs file</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>numpy array containing the information loaded from gridfs file</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>np.array</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="forensicfit.utils.array_tools.write_bytes_io">
-<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.array_tools.</span></span><span class="sig-name descname"><span class="pre">write_bytes_io</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'numpy'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">BytesIO</span></span></span><a class="reference internal" href="_modules/forensicfit/utils/array_tools.html#write_bytes_io"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.array_tools.write_bytes_io" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</div>
-<div class="section" id="module-forensicfit.utils.general">
-<span id="forensicfit-utils-general-module"></span><h2>forensicfit.utils.general module<a class="headerlink" href="#module-forensicfit.utils.general" title="Permalink to this heading">#</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="forensicfit.utils.general.copy_doc">
-<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.general.</span></span><span class="sig-name descname"><span class="pre">copy_doc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">copy_func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span></span></span><a class="reference internal" href="_modules/forensicfit/utils/general.html#copy_doc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.general.copy_doc" title="Permalink to this definition">#</a></dt>
-<dd><p>Use Example: copy_doc(self.copy_func)(self.func) or used as deco</p>
-</dd></dl>
-
-</div>
-<div class="section" id="module-forensicfit.utils.image_tools">
-<span id="forensicfit-utils-image-tools-module"></span><h2>forensicfit.utils.image_tools module<a class="headerlink" href="#module-forensicfit.utils.image_tools" title="Permalink to this heading">#</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="forensicfit.utils.image_tools.rotate_image">
-<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.image_tools.</span></span><span class="sig-name descname"><span class="pre">rotate_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/utils/image_tools.html#rotate_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.image_tools.rotate_image" title="Permalink to this definition">#</a></dt>
-<dd><p>Rotates the image by angle degrees</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>angle</strong> (<em>float</em>) – Angle of rotation.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>None.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="forensicfit.utils.image_tools.gaussian_blur">
-<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.image_tools.</span></span><span class="sig-name descname"><span class="pre">gaussian_blur</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(15,</span> <span class="pre">15)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/utils/image_tools.html#gaussian_blur"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.image_tools.gaussian_blur" title="Permalink to this definition">#</a></dt>
-<dd><p>This method applies Gaussian Blur filter to the image.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>window</strong> (<em>tuple int</em><em>, </em><em>optional</em>) – The window in which the gaussian blur is going to be applied.
-The default is (15,15).</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>None.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="forensicfit.utils.image_tools.split_v">
-<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.image_tools.</span></span><span class="sig-name descname"><span class="pre">split_v</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pixel_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pick_side</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'L'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/utils/image_tools.html#split_v"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.image_tools.split_v" title="Permalink to this definition">#</a></dt>
-<dd><p>This method splits the image in 2 images based on the fraction that is
-given in pixel_index</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>pixel_index</strong> (<em>float</em><em>, </em><em>optional</em>) – fraction in which the image is going to be split. The value should
-be a number between zero and one. The default is 0.5.</p></li>
-<li><p><strong>pick_side</strong> (<em>str</em><em>, </em><em>optional</em>) – The side in which will over write the image in the class. The
-default is ‘L’.</p></li>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="forensicfit.utils.array_tools.html">forensicfit.utils.array_tools module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="forensicfit.utils.array_tools.html#forensicfit.utils.array_tools.serializer"><code class="docutils literal notranslate"><span class="pre">serializer()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="forensicfit.utils.array_tools.html#forensicfit.utils.array_tools.vote_calculator"><code class="docutils literal notranslate"><span class="pre">vote_calculator()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="forensicfit.utils.array_tools.html#forensicfit.utils.array_tools.read_bytes_io"><code class="docutils literal notranslate"><span class="pre">read_bytes_io()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="forensicfit.utils.array_tools.html#forensicfit.utils.array_tools.write_bytes_io"><code class="docutils literal notranslate"><span class="pre">write_bytes_io()</span></code></a></li>
 </ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>None.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="forensicfit.utils.image_tools.to_gray">
-<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.image_tools.</span></span><span class="sig-name descname"><span class="pre">to_gray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SD'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/forensicfit/utils/image_tools.html#to_gray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.image_tools.to_gray" title="Permalink to this definition">#</a></dt>
-<dd><p>Gray Scale image of the input image.</p>
-<p>modes: ‘BT.470’ and ‘BT.709’
-SD ‘BT.470’ : Y = 0.299 R + 0.587 G + 0.114 B
-HD ‘BT.709’ : Y = 0.2125 R + 0.7154 G + 0.0721 B</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><strong>gray_scale</strong> – Gray Scale image of the input image.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>cv2 object</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="forensicfit.utils.image_tools.to_rbg">
-<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.image_tools.</span></span><span class="sig-name descname"><span class="pre">to_rbg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/utils/image_tools.html#to_rbg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.image_tools.to_rbg" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="forensicfit.utils.image_tools.flip">
-<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.image_tools.</span></span><span class="sig-name descname"><span class="pre">flip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/utils/image_tools.html#flip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.image_tools.flip" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="forensicfit.utils.image_tools.contours">
-<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.image_tools.</span></span><span class="sig-name descname"><span class="pre">contours</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/utils/image_tools.html#contours"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.image_tools.contours" title="Permalink to this definition">#</a></dt>
-<dd><blockquote>
-<div><p>A list of pixels that create the contours in the image</p>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><strong>contours</strong> – A list of pixels that create the contours in the image</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>list</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="forensicfit.utils.image_tools.largest_contour">
-<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.image_tools.</span></span><span class="sig-name descname"><span class="pre">largest_contour</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contours</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/utils/image_tools.html#largest_contour"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.image_tools.largest_contour" title="Permalink to this definition">#</a></dt>
-<dd><p>A list of pixels forming the contour with the largest area</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><strong>contour_max_area</strong> – A list of pixels forming the contour with the largest area</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>list</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="forensicfit.utils.image_tools.remove_background">
-<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.image_tools.</span></span><span class="sig-name descname"><span class="pre">remove_background</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contour</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outside</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pixel_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/utils/image_tools.html#remove_background"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.image_tools.remove_background" title="Permalink to this definition">#</a></dt>
-<dd><p>Removes the background outside or inside the contour</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>image</strong> (<em>np.array</em>) – _description_</p></li>
-<li><p><strong>contour</strong> (<em>np.array</em>) – _description_</p></li>
-<li><p><strong>outside</strong> (<em>bool</em><em>, </em><em>optional</em>) – _description_, by default True</p></li>
-<li><p><strong>pixel_value</strong> (<em>int</em><em>, </em><em>optional</em>) – _description_, by default 0</p></li>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="forensicfit.utils.general.html">forensicfit.utils.general module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="forensicfit.utils.general.html#forensicfit.utils.general.copy_doc"><code class="docutils literal notranslate"><span class="pre">copy_doc()</span></code></a></li>
 </ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="forensicfit.utils.image_tools.get_masked">
-<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.image_tools.</span></span><span class="sig-name descname"><span class="pre">get_masked</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_threshold</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/utils/image_tools.html#get_masked"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.image_tools.get_masked" title="Permalink to this definition">#</a></dt>
-<dd><p>Populates the masked image with the gray scale threshold
-Returns</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="forensicfit.utils.image_tools.resize">
-<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.image_tools.</span></span><span class="sig-name descname"><span class="pre">resize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/utils/image_tools.html#resize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.image_tools.resize" title="Permalink to this definition">#</a></dt>
-<dd><p>This method resizes the image to the pixel size given.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>size</strong> (<em>tuple int</em><em>,</em>) – The target size in which the image is going to be resized.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>None.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="forensicfit.utils.image_tools.exposure_control">
-<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.image_tools.</span></span><span class="sig-name descname"><span class="pre">exposure_control</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'equalize_hist'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/forensicfit/utils/image_tools.html#exposure_control"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.image_tools.exposure_control" title="Permalink to this definition">#</a></dt>
-<dd><p>modifies the exposure</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>mode</strong> (<em>str</em><em>, </em><em>optional</em>) – Type of exposure correction. It can be selected from the options:
-<code class="docutils literal notranslate"><span class="pre">'equalize_hist'</span></code> or <code class="docutils literal notranslate"><span class="pre">'equalize_adapthist'</span></code>.
-<a class="reference external" href="https://scikit-image.org/docs/stable/api/skimage.exposure.html#equalize-hist">equalize_hist</a>
-and <cite>equalize_adapthist &lt;https://scikit-image.org/docs/stable/api/skimage.exposure.html#equalize-adapthist&gt;</cite>
-use sk-image. by default ‘equalize_hist’</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="forensicfit.utils.image_tools.apply_filter">
-<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.image_tools.</span></span><span class="sig-name descname"><span class="pre">apply_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/forensicfit/utils/image_tools.html#apply_filter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.image_tools.apply_filter" title="Permalink to this definition">#</a></dt>
-<dd><p>Applies different types of filters to the image</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>mode</strong> (<em>str</em>) – Type of filter to be applied. The options are
-* <code class="docutils literal notranslate"><span class="pre">'meijering'</span></code>: &lt;Meijering neuriteness filter <a class="reference external" href="https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.meijering">https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.meijering</a>&gt;_,
-* <code class="docutils literal notranslate"><span class="pre">'frangi'</span></code>: &lt; Frangi vesselness filter <a class="reference external" href="https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.frangi">https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.frangi</a>&gt;_,
-* <code class="docutils literal notranslate"><span class="pre">'prewitt'</span></code>: &lt;Prewitt transform <a class="reference external" href="https://scikit-image.org/docs/stable/api/skimage.filters.html#prewitt">https://scikit-image.org/docs/stable/api/skimage.filters.html#prewitt</a>&gt;_,
-* <code class="docutils literal notranslate"><span class="pre">'sobel'</span></code>: &lt;Sobel filter <a class="reference external" href="https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.sobel">https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.sobel</a>&gt;_,
-* <code class="docutils literal notranslate"><span class="pre">'scharr'</span></code>: &lt;Scharr transform <a class="reference external" href="https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.scharr">https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.scharr</a>&gt;,
-* <code class="docutils literal notranslate"><span class="pre">'roberts'</span></code>: &lt;Roberts’ Cross operator <a class="reference external" href="https://scikit-image.org/docs/stable/api/skimage.filters.html#examples-using-skimage-filters-roberts">https://scikit-image.org/docs/stable/api/skimage.filters.html#examples-using-skimage-filters-roberts</a>&gt;_,
-* <code class="docutils literal notranslate"><span class="pre">'sato'</span></code>: &lt;Sato tubeness filter <a class="reference external" href="https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.sato">https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.sato</a>&gt;_.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="forensicfit.utils.image_tools.binerized_mask">
-<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.image_tools.</span></span><span class="sig-name descname"><span class="pre">binerized_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masked</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/utils/image_tools.html#binerized_mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.image_tools.binerized_mask" title="Permalink to this definition">#</a></dt>
-<dd><p>This function return the binarized version of the tape</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><p>.</p>
-</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>2d array of the image</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="forensicfit.utils.image_tools.imwrite">
-<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.image_tools.</span></span><span class="sig-name descname"><span class="pre">imwrite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gray'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/utils/image_tools.html#imwrite"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.image_tools.imwrite" title="Permalink to this definition">#</a></dt>
-<dd><p>save any 2d numpy array (or list) to an image file</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>fname</strong> (<em>str</em>) – flie name to be saved</p></li>
-<li><p><strong>image</strong> (<em>np.array</em>) – 2d numpy array (or list) to be saved</p></li>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="forensicfit.utils.image_tools.html">forensicfit.utils.image_tools module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="forensicfit.utils.image_tools.html#forensicfit.utils.image_tools.rotate_image"><code class="docutils literal notranslate"><span class="pre">rotate_image()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="forensicfit.utils.image_tools.html#forensicfit.utils.image_tools.gaussian_blur"><code class="docutils literal notranslate"><span class="pre">gaussian_blur()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="forensicfit.utils.image_tools.html#forensicfit.utils.image_tools.split_v"><code class="docutils literal notranslate"><span class="pre">split_v()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="forensicfit.utils.image_tools.html#forensicfit.utils.image_tools.to_gray"><code class="docutils literal notranslate"><span class="pre">to_gray()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="forensicfit.utils.image_tools.html#forensicfit.utils.image_tools.to_rbg"><code class="docutils literal notranslate"><span class="pre">to_rbg()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="forensicfit.utils.image_tools.html#forensicfit.utils.image_tools.flip"><code class="docutils literal notranslate"><span class="pre">flip()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="forensicfit.utils.image_tools.html#forensicfit.utils.image_tools.contours"><code class="docutils literal notranslate"><span class="pre">contours()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="forensicfit.utils.image_tools.html#forensicfit.utils.image_tools.largest_contour"><code class="docutils literal notranslate"><span class="pre">largest_contour()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="forensicfit.utils.image_tools.html#forensicfit.utils.image_tools.remove_background"><code class="docutils literal notranslate"><span class="pre">remove_background()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="forensicfit.utils.image_tools.html#forensicfit.utils.image_tools.get_masked"><code class="docutils literal notranslate"><span class="pre">get_masked()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="forensicfit.utils.image_tools.html#forensicfit.utils.image_tools.resize"><code class="docutils literal notranslate"><span class="pre">resize()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="forensicfit.utils.image_tools.html#forensicfit.utils.image_tools.exposure_control"><code class="docutils literal notranslate"><span class="pre">exposure_control()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="forensicfit.utils.image_tools.html#forensicfit.utils.image_tools.apply_filter"><code class="docutils literal notranslate"><span class="pre">apply_filter()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="forensicfit.utils.image_tools.html#forensicfit.utils.image_tools.binerized_mask"><code class="docutils literal notranslate"><span class="pre">binerized_mask()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="forensicfit.utils.image_tools.html#forensicfit.utils.image_tools.imwrite"><code class="docutils literal notranslate"><span class="pre">imwrite()</span></code></a></li>
 </ul>
-</dd>
-</dl>
-</dd></dl>
-
+</li>
+<li class="toctree-l1"><a class="reference internal" href="forensicfit.utils.plotter.html">forensicfit.utils.plotter module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="forensicfit.utils.plotter.html#forensicfit.utils.plotter.get_figure_size"><code class="docutils literal notranslate"><span class="pre">get_figure_size()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="forensicfit.utils.plotter.html#forensicfit.utils.plotter.plot_coordinate_based"><code class="docutils literal notranslate"><span class="pre">plot_coordinate_based()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="forensicfit.utils.plotter.html#forensicfit.utils.plotter.plot_pair"><code class="docutils literal notranslate"><span class="pre">plot_pair()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="forensicfit.utils.plotter.html#forensicfit.utils.plotter.plot_pairs"><code class="docutils literal notranslate"><span class="pre">plot_pairs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="forensicfit.utils.plotter.html#forensicfit.utils.plotter.plot_confusion_matrix"><code class="docutils literal notranslate"><span class="pre">plot_confusion_matrix()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="forensicfit.utils.plotter.html#forensicfit.utils.plotter.plot_kde_distribution"><code class="docutils literal notranslate"><span class="pre">plot_kde_distribution()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="forensicfit.utils.plotter.html#forensicfit.utils.plotter.plot_hist_distribution"><code class="docutils literal notranslate"><span class="pre">plot_hist_distribution()</span></code></a></li>
+</ul>
+</li>
+</ul>
 </div>
-<div class="section" id="module-forensicfit.utils.plotter">
-<span id="forensicfit-utils-plotter-module"></span><h2>forensicfit.utils.plotter module<a class="headerlink" href="#module-forensicfit.utils.plotter" title="Permalink to this heading">#</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="forensicfit.utils.plotter.get_figure_size">
-<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.plotter.</span></span><span class="sig-name descname"><span class="pre">get_figure_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dpi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_shape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zoom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">margin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/forensicfit/utils/plotter.html#get_figure_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.plotter.get_figure_size" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="forensicfit.utils.plotter.plot_coordinate_based">
-<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.plotter.</span></span><span class="sig-name descname"><span class="pre">plot_coordinate_based</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coordinates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">complex</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">generic</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">complex</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">generic</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">_SupportsArray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slopes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">complex</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">generic</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">complex</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">generic</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">_SupportsArray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">complex</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">generic</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">complex</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">generic</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">_SupportsArray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Axes</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_slope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_error_bars</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dark_bg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Axes</span></span></span><a class="reference internal" href="_modules/forensicfit/utils/plotter.html#plot_coordinate_based"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.plotter.plot_coordinate_based" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="forensicfit.utils.plotter.plot_pair">
-<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.plotter.</span></span><span class="sig-name descname"><span class="pre">plot_pair</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj_1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj_2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">which</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'boundary'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">savefig</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'gray'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zoom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Figure</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Axes</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/forensicfit/utils/plotter.html#plot_pair"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.plotter.plot_pair" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="forensicfit.utils.plotter.plot_pairs">
-<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.plotter.</span></span><span class="sig-name descname"><span class="pre">plot_pairs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">objs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">which</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'boundary'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">savefig</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'gray'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zoom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Figure</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Axes</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/forensicfit/utils/plotter.html#plot_pairs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.plotter.plot_pairs" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="forensicfit.utils.plotter.plot_confusion_matrix">
-<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.plotter.</span></span><span class="sig-name descname"><span class="pre">plot_confusion_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">asarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">asarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Confusion</span> <span class="pre">matrix'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Blues'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">savefig</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Axes</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colorbar</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/utils/plotter.html#plot_confusion_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.plotter.plot_confusion_matrix" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="forensicfit.utils.plotter.plot_kde_distribution">
-<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.plotter.</span></span><span class="sig-name descname"><span class="pre">plot_kde_distribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">distribution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'blue'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opacity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Axes</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">savefig</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_curve</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/utils/plotter.html#plot_kde_distribution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.plotter.plot_kde_distribution" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="forensicfit.utils.plotter.plot_hist_distribution">
-<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.plotter.</span></span><span class="sig-name descname"><span class="pre">plot_hist_distribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">distribution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'blue'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opacity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Axes</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">savefig</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/utils/plotter.html#plot_hist_distribution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.plotter.plot_hist_distribution" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="forensicfit.utils.plotter.plot_metrics">
-<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.plotter.</span></span><span class="sig-name descname"><span class="pre">plot_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">history</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">History</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Metric</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_valid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">savefig</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/utils/plotter.html#plot_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.plotter.plot_metrics" title="Permalink to this definition">#</a></dt>
-<dd><p>Plots the given ‘metric’ from ‘history’.</p>
-</dd></dl>
-
-</div>
-<div class="section" id="module-forensicfit.utils">
+</section>
+<section id="module-forensicfit.utils">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-forensicfit.utils" title="Permalink to this heading">#</a></h2>
-</div>
-</div>
+</section>
+</section>
 
 
                 </article>
@@ -679,13 +431,22 @@ use sk-image. by default ‘equalize_hist’</p>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="forensicfit.database.html"
+       href="forensicfit.database.database.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">forensicfit.database package</p>
+        <p class="prev-next-title">forensicfit.database.database module</p>
       </div>
+    </a>
+    <a class="right-next"
+       href="forensicfit.utils.array_tools.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">forensicfit.utils.array_tools module</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div></div>
   
@@ -706,46 +467,6 @@ use sk-image. by default ‘equalize_hist’</p>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-forensicfit.utils.array_tools">forensicfit.utils.array_tools module</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.array_tools.serializer"><code class="docutils literal notranslate"><span class="pre">serializer()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.array_tools.vote_calculator"><code class="docutils literal notranslate"><span class="pre">vote_calculator()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.array_tools.read_bytes_io"><code class="docutils literal notranslate"><span class="pre">read_bytes_io()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.array_tools.write_bytes_io"><code class="docutils literal notranslate"><span class="pre">write_bytes_io()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-forensicfit.utils.general">forensicfit.utils.general module</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.general.copy_doc"><code class="docutils literal notranslate"><span class="pre">copy_doc()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-forensicfit.utils.image_tools">forensicfit.utils.image_tools module</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.image_tools.rotate_image"><code class="docutils literal notranslate"><span class="pre">rotate_image()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.image_tools.gaussian_blur"><code class="docutils literal notranslate"><span class="pre">gaussian_blur()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.image_tools.split_v"><code class="docutils literal notranslate"><span class="pre">split_v()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.image_tools.to_gray"><code class="docutils literal notranslate"><span class="pre">to_gray()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.image_tools.to_rbg"><code class="docutils literal notranslate"><span class="pre">to_rbg()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.image_tools.flip"><code class="docutils literal notranslate"><span class="pre">flip()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.image_tools.contours"><code class="docutils literal notranslate"><span class="pre">contours()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.image_tools.largest_contour"><code class="docutils literal notranslate"><span class="pre">largest_contour()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.image_tools.remove_background"><code class="docutils literal notranslate"><span class="pre">remove_background()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.image_tools.get_masked"><code class="docutils literal notranslate"><span class="pre">get_masked()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.image_tools.resize"><code class="docutils literal notranslate"><span class="pre">resize()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.image_tools.exposure_control"><code class="docutils literal notranslate"><span class="pre">exposure_control()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.image_tools.apply_filter"><code class="docutils literal notranslate"><span class="pre">apply_filter()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.image_tools.binerized_mask"><code class="docutils literal notranslate"><span class="pre">binerized_mask()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.image_tools.imwrite"><code class="docutils literal notranslate"><span class="pre">imwrite()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-forensicfit.utils.plotter">forensicfit.utils.plotter module</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.plotter.get_figure_size"><code class="docutils literal notranslate"><span class="pre">get_figure_size()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.plotter.plot_coordinate_based"><code class="docutils literal notranslate"><span class="pre">plot_coordinate_based()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.plotter.plot_pair"><code class="docutils literal notranslate"><span class="pre">plot_pair()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.plotter.plot_pairs"><code class="docutils literal notranslate"><span class="pre">plot_pairs()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.plotter.plot_confusion_matrix"><code class="docutils literal notranslate"><span class="pre">plot_confusion_matrix()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.plotter.plot_kde_distribution"><code class="docutils literal notranslate"><span class="pre">plot_kde_distribution()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.plotter.plot_hist_distribution"><code class="docutils literal notranslate"><span class="pre">plot_hist_distribution()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.plotter.plot_metrics"><code class="docutils literal notranslate"><span class="pre">plot_metrics()</span></code></a></li>
-</ul>
-</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-forensicfit.utils">Module contents</a></li>
 </ul>
   </nav></div>
@@ -790,7 +511,7 @@ use sk-image. by default ‘equalize_hist’</p>
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
     <br/>
   </p>
 </div>

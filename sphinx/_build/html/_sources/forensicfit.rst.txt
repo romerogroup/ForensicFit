@@ -14,13 +14,10 @@ Subpackages
 Submodules
 ----------
 
-forensicfit.version module
---------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: forensicfit.version
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   forensicfit.version
 
 Module contents
 ---------------

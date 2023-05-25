@@ -18,18 +18,42 @@ else:
     import cv2
 
 class Tape(Image):
+    """Tape class is used for preprocessing tape images for machine learning.
+    
+    This class takes in a tape image, detects the edges, auto crops the image and
+    returns the results in 3 different methods: coordinate_based, bin_based,
+    and max_contrast.
+    
+    Parameters
+    ----------
+    image : np.ndarray
+        The image to be processed. It must be a 2D numpy array.
+    label : str, optional
+        The label associated with the tape, by default None.
+    surface : str, optional
+        The surface the tape is on, by default None.
+    stretched : bool, optional
+        Flag indicating whether the tape is stretched or not, by default False.
+    **kwargs
+        Arbitrary keyword arguments.
+    
+    Attributes
+    ----------
+    metadata : dict
+        A dictionary storing metadata of the image such as flipping information,
+        splitting information, label, material, surface, stretched status, and mode.
+    
+    Raises
+    ------
+    AssertionError
+        If `image` is not a numpy array or not a 2D array.
+    """
     def __init__(self,
                  image: np.ndarray,
                  label: str = None,
                  surface: str = None,
                  stretched: bool=False,
                  **kwargs):
-        """Tape is a class created for tape images to be preprocessed for 
-        Machine Learning. This Class detects the edges, auto crops the image 
-        and returns the results in 3 different method coordinate_based, 
-        bin_based and max_contrast. 
-        """
-        
         assert type(image) is np.ndarray, "image arg must be a numpy array"
         assert image.ndim in [2, 3] , "image array must be 2 dimensional"
         super().__init__(image, **kwargs)
@@ -43,7 +67,26 @@ class Tape(Image):
         self.metadata['stretched'] = stretched
         self.metadata['mode'] = 'material'
         
-    def split_v(self, side, correct_tilt=True, pixel_index=None):
+    def split_v(self, side: str, correct_tilt: bool=True, pixel_index: int=None):
+        """Splits the tape image vertically.
+        
+        Parameters
+        ----------
+        side : str
+            The side of the image to be processed.
+        correct_tilt : bool, optional
+            If set to True, tilt correction is applied on the image, by default True.
+        pixel_index : int, optional
+            The index of the pixel where the image is to be split, by default None.
+        
+        Returns
+        -------
+        None
+        
+        Notes
+        -----
+        Changes the 'image', 'split_v', 'image_tilt', 'tilt_corrected', 'resolution' fields of the metadata attribute.
+        """
         self.values['original_image'] = self.image.copy()
         if pixel_index is None:
             tape_analyzer = TapeAnalyzer(self, correct_tilt=correct_tilt, auto_crop=True)
@@ -63,6 +106,31 @@ class Tape(Image):
 
 
 class TapeAnalyzer(Analyzer):
+    """
+    The TapeAnalyzer class is a specialized Analyzer used to preprocess duct tape images.
+
+    This class is used to process images of duct tape to prepare them for machine learning tasks.
+    It includes functionality for Gaussian blur, auto-cropping, tilt correction, and background removal.
+
+    Parameters
+    ----------
+    tape : Tape, optional
+        An instance of the Tape class representing the tape image to be analyzed. The default is None.
+    mask_threshold : int, optional
+        The threshold used for masking during the image preprocessing. The default is 60.
+    gaussian_blur : tuple, optional
+        The kernel size for the Gaussian blur applied during the preprocessing. The default is (15, 15).
+    n_divisions : int, optional
+        The number of divisions to be used in the analysis. The default is 6.
+    auto_crop : bool, optional
+        A flag indicating whether the image should be auto-cropped. The default is False.
+    correct_tilt : bool, optional
+        A flag indicating whether the image tilt should be corrected. The default is False.
+    padding : str, optional
+        The padding method used in the analysis. The default is 'tape'.
+    remove_background : bool, optional
+        A flag indicating whether the background should be removed from the image. The default is True.
+    """
     def __init__(self,
                  tape: Tape = None,
                  mask_threshold: int=60,
@@ -72,33 +140,7 @@ class TapeAnalyzer(Analyzer):
                  correct_tilt: bool=False,
                  padding: str='tape',
                  remove_background: bool=True):
-        """
-        
-
-        Parameters
-        ----------
-        tape : TYPE, optional
-            DESCRIPTION. The default is None.
-        mask_threshold : TYPE, optional
-            DESCRIPTION. The default is 60.
-        gaussian_blur : TYPE, optional
-            DESCRIPTION. The default is (15, 15).
-        n_divisions : TYPE, optional
-            DESCRIPTION. The default is 6.
-        auto_crop : TYPE, optional
-            DESCRIPTION. The default is True.
-        calculate_tilt : TYPE, optional
-            DESCRIPTION. The default is True.
-        verbose : TYPE, optional
-            DESCRIPTION. The default is True.
-
-        Returns
-        -------
-        None.
-
-        """
         super().__init__()
-        self.debug = {}
         self.metadata['n_divisions'] = n_divisions
         self.metadata['gaussian_blur'] = gaussian_blur
         self.metadata['mask_threshold'] = int(mask_threshold)
@@ -124,7 +166,6 @@ class TapeAnalyzer(Analyzer):
                 self.preprocess()
             if remove_background:
                 self.image = self['masked']
-            
         return
 
     def preprocess(self):
@@ -136,11 +177,11 @@ class TapeAnalyzer(Analyzer):
             DESCRIPTION. The default is True.
         auto_crop : TYPE, optional
             DESCRIPTION. The default is True.
-
+        
         Returns
         -------
         None.
-
+        
         """
         image = self.image
         if np.average(image) > 200:
@@ -229,17 +270,17 @@ class TapeAnalyzer(Analyzer):
             DESCRIPTION.
         values : TYPE
             DESCRIPTION.
-
+        
         Raises
         ------
         Exception
             DESCRIPTION.
-
+        
         Returns
         -------
         TYPE
             DESCRIPTION.
-
+        
         """
         if image is None:
             raise Exception(
@@ -252,7 +293,7 @@ class TapeAnalyzer(Analyzer):
     def get_image_tilt(self, plot: bool=False):
         """
         
-
+        
         Parameters
         ----------
         plot : TYPE, optional

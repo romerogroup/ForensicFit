@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -7,7 +6,8 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
     <title>Welcome to ForensicFit Documentation! &#8212; Forensic Fit  documentation</title>
   
   
@@ -29,20 +29,14 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
-    <script src="_static/clipboard.min.js"></script>
-    <script src="_static/copybutton.js"></script>
     <script src="_static/js/copybutton_custom.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -307,11 +301,11 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <div class="section" id="welcome-to-forensicfit-documentation">
+  <section id="welcome-to-forensicfit-documentation">
 <h1>Welcome to ForensicFit Documentation!<a class="headerlink" href="#welcome-to-forensicfit-documentation" title="Permalink to this heading">#</a></h1>
 <p>ForensicFit is a Python package designed to preprocess scanned images from various sources and generate a database to be used in different machine learning approaches. This package prepares the data using four distinct techniques, which will be explained in the tutorial sections. ForensicFit leverages state-of-the-art image processing methods to analyze and store the generated data, ensuring compatibility with popular machine learning packages such as TensorFlow, PyTorch, and SciKit-learn. It utilizes NumPy, SciPy, matplotlib, OpenCV, scikit-image, PyMongo, and GridFS. For ease of use and future development, the package adheres to PEP-257 and PEP-484 for documentation and type hints, respectively.</p>
-</div>
-<div class="section" id="package-structure">
+</section>
+<section id="package-structure">
 <h1>Package Structure<a class="headerlink" href="#package-structure" title="Permalink to this heading">#</a></h1>
 <p>ForensicFit is organized into three main sub-packages: <code class="docutils literal notranslate"><span class="pre">core</span></code>, <code class="docutils literal notranslate"><span class="pre">database</span></code>, and <code class="docutils literal notranslate"><span class="pre">utils</span></code>.</p>
 <ul class="simple">
@@ -319,15 +313,15 @@ document.write(`
 <li><p><code class="docutils literal notranslate"><span class="pre">database</span></code>: This sub-package offers an efficient and flexible method for storing and retrieving raw and preprocessed data. Although the rest of the package does not depend on this sub-package, it has been included to simplify the data storage and query process. Users can still store and access raw or analyzed data using traditional image storage methods.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">utils</span></code>: The <code class="docutils literal notranslate"><span class="pre">utils</span></code> sub-package contains various image manipulation, plotting, and memory access tools used throughout the package.</p></li>
 </ul>
-<img alt="_images/ForensicFit_tree.svg" class="align-center" src="_images/ForensicFit_tree.svg" /></div>
-<div class="section" id="installation">
+<img alt="_images/ForensicFit_tree.svg" class="align-center" src="_images/ForensicFit_tree.svg" /></section>
+<section id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">#</a></h1>
 <p>To install ForensicFit, use the following command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install forensicfit
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>forensicfit
 </pre></div>
 </div>
-</div>
-<div class="section" id="quick-start">
+</section>
+<section id="quick-start">
 <h1>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this heading">#</a></h1>
 <p>Here’s a quick example of how to use ForensicFit:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">forensicfit</span> <span class="k">as</span> <span class="nn">ff</span>
@@ -388,8 +382,10 @@ document.write(`
 <li class="toctree-l4"><a class="reference internal" href="forensicfit.utils.html">forensicfit.utils package</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.html#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.html#module-forensicfit.version">forensicfit.version module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="forensicfit.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="forensicfit.version.html">forensicfit.version module</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="forensicfit.html#module-forensicfit">Module contents</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="forensicfit.html#forensicfit.has_package"><code class="docutils literal notranslate"><span class="pre">has_package()</span></code></a></li>
 </ul>
@@ -400,15 +396,15 @@ document.write(`
 </li>
 </ul>
 </div>
-</div>
-<div class="section" id="indices-and-tables">
+</section>
+<section id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading">#</a></h1>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
-</div>
+</section>
 
 
                 </article>
@@ -497,7 +493,7 @@ document.write(`
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
     <br/>
   </p>
 </div>
