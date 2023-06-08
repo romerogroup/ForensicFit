@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import math
 from ..utils import image_tools
 from . import Image, Analyzer
+from typing import Union, Tuple, List, Dict, Any, Optional
 from . import HAS_OPENCV
 if not HAS_OPENCV:
     print("To enable analyzer please install opencv")
@@ -115,7 +116,7 @@ class TapeAnalyzer(Analyzer):
     Parameters
     ----------
     tape : Tape, optional
-        An instance of the Tape class representing the tape image to be analyzed. The default is None.
+        An instance of the Tape class representing the tape image to be analyzed.
     mask_threshold : int, optional
         The threshold used for masking during the image preprocessing. The default is 60.
     gaussian_blur : tuple, optional
@@ -132,7 +133,7 @@ class TapeAnalyzer(Analyzer):
         A flag indicating whether the background should be removed from the image. The default is True.
     """
     def __init__(self,
-                 tape: Tape = None,
+                 tape: Tape,
                  mask_threshold: int=60,
                  gaussian_blur: tuple=(15, 15),
                  n_divisions: int=6,
@@ -170,18 +171,24 @@ class TapeAnalyzer(Analyzer):
 
     def preprocess(self):
         """
-        
+        The preprocess method applies various image processing techniques to prepare the image for analysis.
+
+        This method performs several image preprocessing tasks including color inversion if necessary, conversion to grayscale, Gaussian blur, contour detection, and retrieval of the largest contour.
+
         Parameters
         ----------
-        calculate_tilt : TYPE, optional
-            DESCRIPTION. The default is True.
-        auto_crop : TYPE, optional
-            DESCRIPTION. The default is True.
-        
+        calculate_tilt : bool, optional
+            A flag indicating whether the image tilt should be calculated. The default is True.
+        auto_crop : bool, optional
+            A flag indicating whether the image should be auto-cropped. The default is True.
+
         Returns
         -------
         None.
-        
+
+        Notes
+        -----
+        The original image is processed and the largest contour of the processed image is stored in the metadata under the 'boundary' key.
         """
         image = self.image
         if np.average(image) > 200:
@@ -198,6 +205,26 @@ class TapeAnalyzer(Analyzer):
         self.metadata['boundary'] = largest_contour.reshape(-1, 2)
             
     def flip_v(self):
+        """
+        Flips the image vertically and updates the relevant metadata.
+
+        The flip_v method flips the image vertically, i.e., around the y-axis. It also updates the associated 
+        metadata such as the boundary, coordinates, slopes and dynamic positions if they are present in the metadata.
+        The 'flip_v' metadata attribute is also toggled.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        The original image is flipped vertically, and the corresponding changes are reflected in the metadata. The 'flip_v'
+        metadata attribute is also toggled to reflect whether a vertical flip has been performed.
+        """
         self.image = np.fliplr(self.image)
         self.metadata['boundary'] = np.array(self.metadata['boundary'])
         self.metadata['boundary'][:, 0] = self.metadata['boundary'][:, 0]*-1 + self.image.shape[1]
@@ -222,6 +249,26 @@ class TapeAnalyzer(Analyzer):
         self.metadata['flip_v'] =  not(self.metadata['flip_v'])
 
     def flip_h(self):
+        """
+        Flips the image horizontally and updates the relevant metadata.
+
+        The flip_h method flips the image horizontally, i.e., around the x-axis. It also updates the associated 
+        metadata such as the boundary, coordinates, slopes and dynamic positions if they are present in the metadata.
+        The 'flip_h' metadata attribute is also toggled.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        The original image is flipped horizontally, and the corresponding changes are reflected in the metadata. The 'flip_h'
+        metadata attribute is also toggled to reflect whether a horizontal flip has been performed.
+        """
         self.image = np.flipud(self.image)
         self.metadata['boundary'] = np.array(self.metadata['boundary'])
         self.metadata['boundary'][:, 1] = self.metadata['boundary'][:, 1]*-1 + self.image.shape[0]
@@ -246,11 +293,24 @@ class TapeAnalyzer(Analyzer):
         
     def load_metadata(self):
         """
-        
+        Loads additional metadata about the image.
+
+        This method retrieves the minimum and maximum values of the x and y coordinates 
+        and their intervals from the TapeAnalyzer object, casts them to integers and stores them 
+        in the metadata attribute.
+
+        Parameters
+        ----------
+        None
+
         Returns
         -------
-        None.
+        None
 
+        Notes
+        -----
+        The original metadata of the TapeAnalyzer object is updated with the minimum and maximum x and y values 
+        and their intervals, and these values are cast to integers.
         """
         self.metadata["xmin"] = int(self.xmin)
         self.metadata["xmax"] = int(self.xmax)
@@ -261,26 +321,31 @@ class TapeAnalyzer(Analyzer):
         return 
 
     @classmethod
-    def from_dict(cls, image, metadata):
+    def from_dict(cls, image: np.ndarray, metadata: dict):
         """
-        
+        Class method to create an instance of the TapeAnalyzer class from provided image data and metadata.
+
         Parameters
         ----------
-        cls : TYPE
-            DESCRIPTION.
-        values : TYPE
-            DESCRIPTION.
-        
+        image : np.ndarray
+            The image data to initialize the TapeAnalyzer instance. 
+        metadata : dict
+            Dictionary containing metadata for the TapeAnalyzer instance. 
+
         Raises
         ------
         Exception
-            DESCRIPTION.
-        
+            If the provided image is empty or None.
+
         Returns
         -------
-        TYPE
-            DESCRIPTION.
-        
+        TapeAnalyzer
+            An instance of TapeAnalyzer initialized with the provided image data and metadata.
+            
+        Notes
+        -----
+        This class method provides an alternative way to create an instance of the TapeAnalyzer class, particularly 
+        when the necessary image data and metadata are available in advance.
         """
         if image is None:
             raise Exception(
@@ -290,20 +355,36 @@ class TapeAnalyzer(Analyzer):
         cls.metadata.update(metadata)
         return cls
 
-    def get_image_tilt(self, plot: bool=False):
+    def get_image_tilt(self, plot: bool=False) -> float:
         """
-        
-        
+        Calculate the tilt angle of the image.
+
+        This function calculates the tilt angle of the image by applying a linear fit to the upper and lower boundaries of the image. 
+        It first divides the x-axis into 'n_divisions' segments, then it finds the top and bottom boundaries by searching for points 
+        within each segment that are within the top and bottom y-intervals respectively. For each segment, a linear fit is applied to 
+        the found boundary points, resulting in a set of slopes. The process is done separately for the top and bottom boundaries. 
+
+        For each set of slopes, the one with the smallest standard deviation of the y-coordinates is selected. 
+        If no points are found in a segment, no slope is added for that segment. 
+
+        The final tilt angle is the arctan of the average of the selected top and bottom slopes, converted to degrees.
+
         Parameters
         ----------
-        plot : TYPE, optional
-            DESCRIPTION. The default is False.
+        plot : bool, optional
+            If True, the function will plot the boundary conditions that were used for the fit. 
+            The top boundary conditions are plotted in blue, and the bottom ones in red. Default is False.
 
         Returns
         -------
-        angle_d : TYPE
-            DESCRIPTION.
+        float
+            The tilt angle of the image in degrees.
 
+        Notes
+        -----
+        If the standard deviation of the y-coordinates of the boundaries used for the fit exceeds 10, 
+        the respective y-coordinate is set to the corresponding image boundary (y_max for the top, y_min for the bottom).
+        The function also updates the 'crop_y_top', 'crop_y_bottom' and 'image_tilt' keys in the metadata of the TapeAnalyzer instance.
         """
         figsize=(16, 9)
         stds = np.ones((self.metadata.n_divisions-2, 2))*1000
@@ -418,21 +499,31 @@ class TapeAnalyzer(Analyzer):
         return angle_d
 
     @property
-    def xmin(self):
+    def xmin(self) -> int:
         """
-        X coordinate of minimum pixel of the boundary
+        Calculate the minimum x-coordinate value among the boundary points.
+
+        This function computes the minimum value along the x-axis (horizontal direction in image) from the set of 
+        coordinates that form the boundary of the image. These boundaries have been identified 
+        and stored in the 'boundary' attribute of the object, which is a numpy array of shape (N, 2), 
+        where N is the number of boundary points and the 2 columns represent the x and y coordinates, respectively. 
 
         Returns
         -------
-        xmin : int
-            X coordinate of minimum pixel of the boundary
+        int
+            The minimum x-coordinate value of the boundary points in the image.
 
+        Notes
+        -----
+        The boundary points should be pre-calculated and stored in the 'boundary' attribute before 
+        calling this function. If the 'boundary' attribute is not set, or if it is empty, 
+        this function may raise an error or return an unexpected result.
         """
         xmin = self.boundary[:, 0].min()
         return xmin
 
     @property
-    def xmax(self):
+    def xmax(self) -> int:
         """
         X coordinate of minimum pixel of the boundary
 
@@ -446,69 +537,142 @@ class TapeAnalyzer(Analyzer):
         return xmax
 
     @property
-    def x_interval(self):
+    def x_interval(self) -> int:
         """
-        interval of the coordinates in X direction
+        Calculate the maximum x-coordinate value among the boundary points.
+
+        This function computes the maximum value along the x-axis (horizontal direction in image) 
+        from the set of coordinates that form the boundary of the image. These boundaries have been 
+        identified and stored in the 'boundary' attribute of the object, which is a numpy array of 
+        shape (N, 2), where N is the number of boundary points and the 2 columns represent the x 
+        and y coordinates, respectively. 
 
         Returns
         -------
-        x_interval : int
-            interval of the coordinates in X direction
+        int
+            The maximum x-coordinate value of the boundary points in the image.
 
+        Notes
+        -----
+        The boundary points should be pre-calculated and stored in the 'boundary' attribute before 
+        calling this function. If the 'boundary' attribute is not set, or if it is empty, 
+        this function may raise an error or return an unexpected result.
         """
         return self.xmax - self.xmin
 
     @property
-    def ymin(self):
+    def ymin(self) -> int:
         """
-        Y coordinate of minimum pixel of the boundary
+        Calculate the minimum y-coordinate value among the boundary points.
+
+        This function computes the minimum value along the y-axis (vertical direction in image)
+        from the set of coordinates that form the boundary of the image. These boundaries have been
+        identified and stored in the 'boundary' attribute of the object, which is a numpy array of
+        shape (N, 2), where N is the number of boundary points and the 2 columns represent the x
+        and y coordinates, respectively.
 
         Returns
         -------
-        ymin : int
-             Y coordinate of minimum pixel of the boundary
+        int
+            The minimum y-coordinate value of the boundary points in the image.
 
+        Notes
+        -----
+        The boundary points should be pre-calculated and stored in the 'boundary' attribute before
+        calling this function. If the 'boundary' attribute is not set, or if it is empty,
+        this function may raise an error or return an unexpected result.
         """
         ymin = self.boundary[:, 1].min()
         return ymin
 
     @property
-    def ymax(self):
+    def ymax(self) -> int:
         """
-        Y coordinate of maximum pixel of the boundary
+        Calculate the maximum y-coordinate value among the boundary points.
+
+        This function computes the maximum value along the y-axis (vertical direction in image)
+        from the set of coordinates that form the boundary of the image. These boundaries have been
+        identified and stored in the 'boundary' attribute of the object, which is a numpy array of
+        shape (N, 2), where N is the number of boundary points and the 2 columns represent the x
+        and y coordinates, respectively.
 
         Returns
         -------
-        ymax : int
-             Y coordinate of maximum pixel of the boundary
+        int
+            The maximum y-coordinate value of the boundary points in the image.
 
+        Notes
+        -----
+        The boundary points should be pre-calculated and stored in the 'boundary' attribute before
+        calling this function. If the 'boundary' attribute is not set, or if it is empty,
+        this function may raise an error or return an unexpected result.
         """
         ymax = self.boundary[:, 1].max()
         return ymax
 
     def auto_crop_y(self):
         """
-        This method automatically crops the image in y direction (top and bottom)
+        Automatically crop the image in the y-direction.
 
-
-        Parameters
-        ----------
-        calculate_tilt : TYPE, optional
-            DESCRIPTION. The default is False.
-
+        This function removes pixels from the top and bottom of the image based on the values stored 
+        in `metadata.crop_y_bottom` and `metadata.crop_y_top`, respectively. This can be useful 
+        for focusing on specific regions of interest in the image and removing unnecessary or 
+        distracting parts of the image.
+        
+        Notes
+        -----
+        The cropping limits are determined by the `metadata.crop_y_bottom` and `metadata.crop_y_top`
+        attributes. Before calling this method, these attributes should be calculated or set. If these 
+        attributes are not set, the function may throw an error or return an unexpected result.
+        
+        After cropping, the original image stored in the 'image' attribute is replaced by the cropped
+        image. If you need to keep the original image as well, you should create a copy before calling 
+        this function.
+        
         Returns
         -------
-        None.
-
+        None
         """
         self.image = self.image[int(
             self.metadata.crop_y_bottom):int(self.metadata.crop_y_top), :]
+        return
 
     def _get_points_from_boundary(self,
                                   x_0: float,
                                   x_1: float,
                                   y_0: float,
                                   y_1: float) -> np.ndarray:
+        """
+        A private method to extract the points from the object boundary that are 
+        within a specific rectangle defined by the input coordinates (x_0, x_1, y_0, y_1).
+
+        Parameters
+        ----------
+        x_0 : float
+            The minimum x-coordinate of the rectangular region.
+        x_1 : float
+            The maximum x-coordinate of the rectangular region.
+        y_0 : float
+            The minimum y-coordinate of the rectangular region.
+        y_1 : float
+            The maximum y-coordinate of the rectangular region.
+
+        Returns
+        -------
+        np.ndarray
+            An array of coordinates within the boundary that lie within the defined 
+            rectangular region. Each element of the array is an array of two elements, 
+            the x and y coordinates of a point.
+
+        Note
+        ----
+        The method assumes that the coordinates are stored in a 2D numpy array 
+        with each row being a point and the two columns representing the x and y 
+        coordinates. The boundary points are filtered based on whether they fall 
+        within the rectangular region defined by (x_0, x_1) for the x-coordinate 
+        and (y_0, y_1) for the y-coordinate. The resulting array of coordinates 
+        is then returned.
+        """
         coordinates = self['boundary']
         cond_1 = coordinates[:, 0] >= x_0
         cond_2 = coordinates[:, 0] <= x_1
@@ -521,25 +685,30 @@ class TapeAnalyzer(Analyzer):
 
     def get_coordinate_based(self,
                              n_points: int=64,
-                             x_trim_param: int=6) -> None:
+                             x_trim_param: int=6) -> dict:
         """
-        This method returns the data of the detected edge as a set of points 
-        in 2d plain with (x,y)
+        This method returns the coordinate-based representation of the detected edge in the image.
+        The edge is segmented into 'n_points' horizontal slices, and for each slice, the average
+        x and y coordinates of the edge points within that slice are calculated. The method can also
+        account for vertically flipped images.
 
         Parameters
         ----------
-        n_points : TYPE, optional
-            DESCRIPTION. The default is 1024.
-        x_trim_param : TYPE, optional
-            DESCRIPTION. The default is 2.
-        plot : TYPE, optional
-            DESCRIPTION. The default is False.
+        n_points : int, optional
+            The number of slices into which the edge is divided. The default is 64.
+        x_trim_param : int, optional
+            A parameter to determine the range in the x-direction for edge point consideration.
+            The x-range is divided by this parameter to define the x-range for edge detection.
+            A smaller value of x_trim_param results in a larger x-range. The default is 6.
 
         Returns
         -------
-        data : TYPE
-            DESCRIPTION.
-
+        dict
+            A dictionary containing the calculated coordinate-based representation. The dictionary 
+            includes the number of points, the x_trim_param used, and three numpy arrays: 'coordinates' 
+            with the average (x, y) coordinates for each slice, 'stds' with the standard deviations 
+            of the x-coordinates within each slice, and 'slopes' with the slope and intercept of 
+            the least-square linear fit to the edge points within each slice.
         """
         was_flipped = self.metadata['flip_v']
         if was_flipped:
@@ -595,44 +764,42 @@ class TapeAnalyzer(Analyzer):
         return self['coordinate_based']
 
     def get_bin_based(self,
-                      window_background=50,
-                      window_tape=1000,
-                      dynamic_window=True,
-                      size=None,
-                      n_bins=10,
-                      overlap=0,
+                      window_background: int=50,
+                      window_tape: int=1000,
+                      dynamic_window: bool=True,
+                      n_bins: int=10,
+                      overlap: int=0,
                       border: str = 'avg',
-                      ):
+                      ) -> List[Tuple[int, int]]:
         """
-        This method returns the detected edge as a set of cropped images from 
-        the edge. The number if images is defined by n_bins. The goal is 
-        to try to match the segmentation to the wefts of the tape. 
-        In the future this method will try to detected the wefts automatically.
-
+        This method returns the edges detected in the image segmented into a given number of bins. Each bin is a slice 
+        of the image, vertically defined and extending horizontally to include a given number of pixels on both sides 
+        of the edge. The slices can have overlaps and their horizontal positions can be adjusted dynamically based on 
+        the edge location within the slice. 
 
         Parameters
         ----------
         window_background : int, optional
-            Number of pixels to be included in each segment in the background 
-            side of the image. The default is 20.
+            Number of pixels to be included in each slice on the background side of the edge. The default is 50.
         window_tape : int, optional
-            Number of pixels to be included in each segment in the tape side 
-            of the image. The default is 300.
-        dynamic_window : TYPE, optional
-            Whether the windows move in each segment. The default is False.
-        size : 2d tuple integers, optional
-            The size of each segment in pixels. The default is (300,30).
+            Number of pixels to be included in each slice on the tape side of the edge. The default is 1000.
+        dynamic_window : bool, optional
+            Whether to adjust the horizontal position of the slices based on the edge location within the slice. 
+            The default is True.
         n_bins : int, optional
-            Number of segments that the tape is going to divided into. The 
-            default is 4.
-        plot : bool, optional
-            Whether or not to plot the divided image. The default is False.
-
+            Number of slices into which the edge is divided. The default is 10.
+        overlap : int, optional
+            The number of rows of overlap between consecutive slices. If positive, slices will overlap, if negative,
+            there will be gaps between them. The default is 0.
+        border : str, optional
+            Determines the method of edge detection within each slice. Options are 'avg' for the average position 
+            or 'min' for the minimum position of edge pixels in the slice. The default is 'avg'.
 
         Returns
         -------
-        An array of 2d numpy arrays with images of each segment.
-
+        List[Tuple[int, int]]
+            A list of tuples specifying the x-range and y-range of each slice in the format:
+            [(x_start, x_end), (y_start, y_end)]
         """
         was_flipped = self.metadata['flip_v']
         if was_flipped:
@@ -685,8 +852,7 @@ class TapeAnalyzer(Analyzer):
                     "overlap": overlap,
                     "dynamic_window": dynamic_window,
                     "window_background": window_background,
-                    "window_tape": window_tape,
-                    "size": size}
+                    "window_tape": window_tape}
 
         self.metadata['analysis']['bin_based'] = metadata
         if was_flipped:
@@ -695,36 +861,65 @@ class TapeAnalyzer(Analyzer):
 
     def get_max_contrast(self,
                          window_background: int=100,
-                         window_tape: int=600):
+                         window_tape: int=600) -> np.ndarray:
         """
-        This method returns the detected image as a black image with only the 
-        boundary being white.
+        This method generates a binary image representation of the detected edge in the image.
+        It generates a new image where all pixels are set to 0 (black), except for the ones
+        at the detected edge location, which are set to 1 (white).
+        
+        This can help in visualizing the edge or in performing further analysis, as the edge
+        is distinctly highlighted against a uniform background.
 
         Parameters
         ----------
         window_background : int, optional
-            Number of pixels to be included in each segment in the background side of the image. The default is 20.
+            Number of pixels to be included in each slice on the background side of the edge.
+            These pixels will be set to black in the resulting image. The default is 100.
         window_tape : int, optional
-            Number of pixels to be included in each segment in the tape side of the image. The default is 300.
-        plot : bool, optional
-            Whether or not to plot the divided image. The default is False.
+            Number of pixels to be included in each slice on the tape side of the edge.
+            These pixels will be set to black in the resulting image. The default is 600.
 
         Returns
         -------
-        edge_bw : 2d numpy array
-            A black image with all the pixels on the edge white.
-
+        edge_bw : np.ndarray
+            A 2D numpy array representing the image. All pixels are black (0), except the ones
+            at the detected edge location, which are white (1).
         """
-        
         self.metadata['analysis']['max_contrast'] = {
             "window_background": window_background,
             "window_tape": window_tape}
-        return 
+        return self['max_contrast']
 
     def __getattr__(self, name):
         return self[name]
 
     def __getitem__(self, x):
+        """
+        This method is a special Python method that allows custom classes to 
+        implement the square bracket access notation. This method is responsible 
+        for returning different attributes of the TapeAnalyzer object, given the 
+        attribute name.
+
+        Parameters
+        ----------
+        x : str
+            The name of the attribute. The value of `x` can be one of the 
+            following: 'image', 'original_image', 'masked', 'gray_scale', 
+            'binarized', 'largest_contour', 'boundary', 'coordinate_based', 
+            'edge_bw', 'max_contrast', 'bin_based'.
+
+        Returns
+        -------
+        Various data types
+            The returned data type depends on the attribute name. It can be a 
+            numpy array (2D or 3D), a dictionary, a list of numpy arrays or lists, 
+            or a single numpy array.
+
+        Raises
+        ------
+        ValueError
+            If the attribute name is not recognized, a ValueError will be raised.
+        """
         if x == 'image':
             return self.image
         elif x == 'original_image':
