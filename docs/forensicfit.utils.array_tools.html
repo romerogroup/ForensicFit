@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>forensicfit.core package &#8212; Forensic Fit  documentation</title>
+    <title>forensicfit.utils.array_tools module &#8212; Forensic Fit  documentation</title>
   
   
   
@@ -38,11 +38,11 @@
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/copybutton_custom.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'forensicfit.core';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'forensicfit.utils.array_tools';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="forensicfit.core.analyzer module" href="forensicfit.core.analyzer.html" />
-    <link rel="prev" title="forensicfit package" href="forensicfit.html" />
+    <link rel="next" title="forensicfit.utils.general module" href="forensicfit.utils.general.html" />
+    <link rel="prev" title="forensicfit.utils package" href="forensicfit.utils.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -285,7 +285,7 @@ document.write(`
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="forensicfit.html">forensicfit package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l2 current active has-children"><a class="current reference internal" href="#">forensicfit.core package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="forensicfit.core.html">forensicfit.core package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="forensicfit.core.analyzer.html">forensicfit.core.analyzer module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="forensicfit.core.image.html">forensicfit.core.image module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="forensicfit.core.metadata.html">forensicfit.core.metadata module</a></li>
@@ -296,8 +296,8 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="forensicfit.database.database.html">forensicfit.database.database module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="forensicfit.utils.html">forensicfit.utils package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.utils.array_tools.html">forensicfit.utils.array_tools module</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="forensicfit.utils.html">forensicfit.utils package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">forensicfit.utils.array_tools module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="forensicfit.utils.general.html">forensicfit.utils.general module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="forensicfit.utils.image_tools.html">forensicfit.utils.image_tools module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="forensicfit.utils.plotter.html">forensicfit.utils.plotter module</a></li>
@@ -335,6 +335,8 @@ document.write(`
 
 
 
+
+
 <nav aria-label="Breadcrumbs">
   <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
     
@@ -347,9 +349,12 @@ document.write(`
     <li class="breadcrumb-item"><a href="modules.html" class="nav-link">forensicfit</a></li>
     
     
-    <li class="breadcrumb-item"><a href="forensicfit.html" class="nav-link">forensicfit package</a></li>
+    <li class="breadcrumb-item"><i class="fa-solid fa-ellipsis"></i></li>
     
-    <li class="breadcrumb-item active" aria-current="page">forensicfit.core package</li>
+    
+    <li class="breadcrumb-item"><a href="forensicfit.utils.html" class="nav-link">forensicfit.utils package</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">forensicfit.utils.array_tools module</li>
   </ul>
 </nav>
 </div>
@@ -366,68 +371,62 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="forensicfit-core-package">
-<h1>forensicfit.core package<a class="headerlink" href="#forensicfit-core-package" title="Permalink to this heading">#</a></h1>
-<section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="forensicfit.core.analyzer.html">forensicfit.core.analyzer module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="forensicfit.core.analyzer.html#forensicfit.core.analyzer.Analyzer"><code class="docutils literal notranslate"><span class="pre">Analyzer</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.analyzer.html#forensicfit.core.analyzer.Analyzer.image"><code class="docutils literal notranslate"><span class="pre">Analyzer.image</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.analyzer.html#forensicfit.core.analyzer.Analyzer.values"><code class="docutils literal notranslate"><span class="pre">Analyzer.values</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.analyzer.html#forensicfit.core.analyzer.Analyzer.metadata"><code class="docutils literal notranslate"><span class="pre">Analyzer.metadata</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.analyzer.html#forensicfit.core.analyzer.Analyzer.__init__"><code class="docutils literal notranslate"><span class="pre">Analyzer.__init__()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.analyzer.html#forensicfit.core.analyzer.Analyzer.exposure_control"><code class="docutils literal notranslate"><span class="pre">Analyzer.exposure_control()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.analyzer.html#forensicfit.core.analyzer.Analyzer.apply_filter"><code class="docutils literal notranslate"><span class="pre">Analyzer.apply_filter()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.analyzer.html#forensicfit.core.analyzer.Analyzer.resize"><code class="docutils literal notranslate"><span class="pre">Analyzer.resize()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.analyzer.html#forensicfit.core.analyzer.Analyzer.plot_boundary"><code class="docutils literal notranslate"><span class="pre">Analyzer.plot_boundary()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.analyzer.html#forensicfit.core.analyzer.Analyzer.plot"><code class="docutils literal notranslate"><span class="pre">Analyzer.plot()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.analyzer.html#forensicfit.core.analyzer.Analyzer.load_dict"><code class="docutils literal notranslate"><span class="pre">Analyzer.load_dict()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.analyzer.html#forensicfit.core.analyzer.Analyzer.from_dict"><code class="docutils literal notranslate"><span class="pre">Analyzer.from_dict()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.analyzer.html#forensicfit.core.analyzer.Analyzer.from_buffer"><code class="docutils literal notranslate"><span class="pre">Analyzer.from_buffer()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.analyzer.html#forensicfit.core.analyzer.Analyzer.to_buffer"><code class="docutils literal notranslate"><span class="pre">Analyzer.to_buffer()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.analyzer.html#forensicfit.core.analyzer.Analyzer.shape"><code class="docutils literal notranslate"><span class="pre">Analyzer.shape</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="forensicfit.core.image.html">forensicfit.core.image module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="forensicfit.core.metadata.html">forensicfit.core.metadata module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="forensicfit.core.tape.html">forensicfit.core.tape module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="forensicfit.core.tape.html#forensicfit.core.tape.Tape"><code class="docutils literal notranslate"><span class="pre">Tape</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.tape.html#forensicfit.core.tape.Tape.metadata"><code class="docutils literal notranslate"><span class="pre">Tape.metadata</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.tape.html#forensicfit.core.tape.Tape.__init__"><code class="docutils literal notranslate"><span class="pre">Tape.__init__()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.tape.html#forensicfit.core.tape.Tape.split_v"><code class="docutils literal notranslate"><span class="pre">Tape.split_v()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="forensicfit.core.tape.html#forensicfit.core.tape.TapeAnalyzer"><code class="docutils literal notranslate"><span class="pre">TapeAnalyzer</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.tape.html#forensicfit.core.tape.TapeAnalyzer.__init__"><code class="docutils literal notranslate"><span class="pre">TapeAnalyzer.__init__()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.tape.html#forensicfit.core.tape.TapeAnalyzer.preprocess"><code class="docutils literal notranslate"><span class="pre">TapeAnalyzer.preprocess()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.tape.html#forensicfit.core.tape.TapeAnalyzer.flip_v"><code class="docutils literal notranslate"><span class="pre">TapeAnalyzer.flip_v()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.tape.html#forensicfit.core.tape.TapeAnalyzer.flip_h"><code class="docutils literal notranslate"><span class="pre">TapeAnalyzer.flip_h()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.tape.html#forensicfit.core.tape.TapeAnalyzer.load_metadata"><code class="docutils literal notranslate"><span class="pre">TapeAnalyzer.load_metadata()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.tape.html#forensicfit.core.tape.TapeAnalyzer.from_dict"><code class="docutils literal notranslate"><span class="pre">TapeAnalyzer.from_dict()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.tape.html#forensicfit.core.tape.TapeAnalyzer.get_image_tilt"><code class="docutils literal notranslate"><span class="pre">TapeAnalyzer.get_image_tilt()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.tape.html#forensicfit.core.tape.TapeAnalyzer.xmin"><code class="docutils literal notranslate"><span class="pre">TapeAnalyzer.xmin</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.tape.html#forensicfit.core.tape.TapeAnalyzer.xmax"><code class="docutils literal notranslate"><span class="pre">TapeAnalyzer.xmax</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.tape.html#forensicfit.core.tape.TapeAnalyzer.x_interval"><code class="docutils literal notranslate"><span class="pre">TapeAnalyzer.x_interval</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.tape.html#forensicfit.core.tape.TapeAnalyzer.ymin"><code class="docutils literal notranslate"><span class="pre">TapeAnalyzer.ymin</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.tape.html#forensicfit.core.tape.TapeAnalyzer.ymax"><code class="docutils literal notranslate"><span class="pre">TapeAnalyzer.ymax</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.tape.html#forensicfit.core.tape.TapeAnalyzer.auto_crop_y"><code class="docutils literal notranslate"><span class="pre">TapeAnalyzer.auto_crop_y()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.tape.html#forensicfit.core.tape.TapeAnalyzer.get_coordinate_based"><code class="docutils literal notranslate"><span class="pre">TapeAnalyzer.get_coordinate_based()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.tape.html#forensicfit.core.tape.TapeAnalyzer.get_bin_based"><code class="docutils literal notranslate"><span class="pre">TapeAnalyzer.get_bin_based()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="forensicfit.core.tape.html#forensicfit.core.tape.TapeAnalyzer.get_max_contrast"><code class="docutils literal notranslate"><span class="pre">TapeAnalyzer.get_max_contrast()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="module-forensicfit.core">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-forensicfit.core" title="Permalink to this heading">#</a></h2>
-</section>
+  <section id="module-forensicfit.utils.array_tools">
+<span id="forensicfit-utils-array-tools-module"></span><h1>forensicfit.utils.array_tools module<a class="headerlink" href="#module-forensicfit.utils.array_tools" title="Permalink to this heading">#</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="forensicfit.utils.array_tools.serializer">
+<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.array_tools.</span></span><span class="sig-name descname"><span class="pre">serializer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/utils/array_tools.html#serializer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.array_tools.serializer" title="Permalink to this definition">#</a></dt>
+<dd><p>Serilizes any given dictionary for mongodb.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>indict</strong> (<em>dict</em>) – input dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="forensicfit.utils.array_tools.vote_calculator">
+<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.array_tools.</span></span><span class="sig-name descname"><span class="pre">vote_calculator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prediction</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/utils/array_tools.html#vote_calculator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.array_tools.vote_calculator" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">_SupportsArray</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">_NestedSequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">_SupportsArray</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>]], <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">complex</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">_NestedSequence</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">complex</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>]]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="forensicfit.utils.array_tools.read_bytes_io">
+<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.array_tools.</span></span><span class="sig-name descname"><span class="pre">read_bytes_io</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'numpy'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/utils/array_tools.html#read_bytes_io"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.array_tools.read_bytes_io" title="Permalink to this definition">#</a></dt>
+<dd><p>reads a binary file stored in mongodb and returns a numpy array</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">array</span></code></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>obj</strong> (<em>GridOut</em>) – output from a mongodb girdfs file</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy array containing the information loaded from gridfs file</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="forensicfit.utils.array_tools.write_bytes_io">
+<span class="sig-prename descclassname"><span class="pre">forensicfit.utils.array_tools.</span></span><span class="sig-name descname"><span class="pre">write_bytes_io</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'numpy'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/utils/array_tools.html#write_bytes_io"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.utils.array_tools.write_bytes_io" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">BytesIO</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 
@@ -442,20 +441,20 @@ document.write(`
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="forensicfit.html"
+       href="forensicfit.utils.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">forensicfit package</p>
+        <p class="prev-next-title">forensicfit.utils package</p>
       </div>
     </a>
     <a class="right-next"
-       href="forensicfit.core.analyzer.html"
+       href="forensicfit.utils.general.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">forensicfit.core.analyzer module</p>
+        <p class="prev-next-title">forensicfit.utils.general module</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -477,14 +476,16 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-forensicfit.core">Module contents</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.array_tools.serializer"><code class="docutils literal notranslate"><span class="pre">serializer()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.array_tools.vote_calculator"><code class="docutils literal notranslate"><span class="pre">vote_calculator()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.array_tools.read_bytes_io"><code class="docutils literal notranslate"><span class="pre">read_bytes_io()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.utils.array_tools.write_bytes_io"><code class="docutils literal notranslate"><span class="pre">write_bytes_io()</span></code></a></li>
 </ul>
   </nav></div>
 
   <div class="sidebar-secondary-item">
   <div class="tocsection sourcelink">
-    <a href="_sources/forensicfit.core.rst.txt">
+    <a href="_sources/forensicfit.utils.array_tools.rst.txt">
       <i class="fa-solid fa-file-lines"></i> Show Source
     </a>
   </div>

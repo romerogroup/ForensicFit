@@ -4,13 +4,10 @@ forensicfit.database package
 Submodules
 ----------
 
-forensicfit.database.database module
-------------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: forensicfit.database.database
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   forensicfit.database.database
 
 Module contents
 ---------------
