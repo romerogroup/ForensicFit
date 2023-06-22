@@ -4,7 +4,6 @@ import io
 
 import cv2
 import numpy as np
-from numpy import typing as npt
 
 from .. import HAS_PYMONGO
 
@@ -28,7 +27,7 @@ def serializer(indict: dict) -> dict:
             ret[key] = indict[key]
     return ret
     
-def vote_calculator(prediction: npt.ArrayLike) -> npt.ArrayLike:
+def vote_calculator(prediction: np.ndarray) -> np.ndarray:
     n_voters = prediction.shape[1]
     ret = np.zeros(shape=(prediction.shape[0]))
     for i, pred in enumerate(prediction):

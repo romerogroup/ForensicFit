@@ -393,7 +393,10 @@ document.write(`
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="forensicfit.core.image.html">forensicfit.core.image module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="forensicfit.core.metadata.html">forensicfit.core.metadata module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="forensicfit.core.metadata.html">forensicfit.core.metadata module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="forensicfit.core.metadata.html#metadata-py">metadata.py</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="forensicfit.core.tape.html">forensicfit.core.tape module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="forensicfit.core.tape.html#forensicfit.core.tape.Tape"><code class="docutils literal notranslate"><span class="pre">Tape</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="forensicfit.core.tape.html#forensicfit.core.tape.Tape.metadata"><code class="docutils literal notranslate"><span class="pre">Tape.metadata</span></code></a></li>
@@ -427,6 +430,34 @@ document.write(`
 </section>
 <section id="module-forensicfit.core">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-forensicfit.core" title="Permalink to this heading">#</a></h2>
+<section id="core-module">
+<span id="id1"></span><h3>Core Module<a class="headerlink" href="#core-module" title="Permalink to this heading">#</a></h3>
+<p>The core subpackage provides fundamental classes and functions needed for the operation of the ForensicFit package.</p>
+<section id="dependencies">
+<h4>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this heading">#</a></h4>
+<p>The core subpackage requires the following external libraries:</p>
+<ul class="simple">
+<li><p>OpenCV (<code class="docutils literal notranslate"><span class="pre">HAS_OPENCV</span></code>)</p></li>
+<li><p>PyMongo (<code class="docutils literal notranslate"><span class="pre">HAS_PYMONGO</span></code>)</p></li>
+</ul>
+<p>If these libraries are not installed, relevant functionalities might be disabled.</p>
+</section>
+<section id="main-classes">
+<h4>Main Classes<a class="headerlink" href="#main-classes" title="Permalink to this heading">#</a></h4>
+<p>The core subpackage defines the following primary classes:</p>
+<ul class="simple">
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Image</span></code> : Class for handling and manipulating images.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Metadata</span></code> : Class for handling metadata associated with images.</p></li>
+<li><p><a class="reference internal" href="forensicfit.core.analyzer.html#forensicfit.core.analyzer.Analyzer" title="forensicfit.core.analyzer.Analyzer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Analyzer</span></code></a> : Base class for implementing different types of image analysis.</p></li>
+<li><p><a class="reference internal" href="forensicfit.core.tape.html#forensicfit.core.tape.Tape" title="forensicfit.core.tape.Tape"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tape</span></code></a> : Class for creating and manipulating tape objects.</p></li>
+<li><p><a class="reference internal" href="forensicfit.core.tape.html#forensicfit.core.tape.TapeAnalyzer" title="forensicfit.core.tape.TapeAnalyzer"><code class="xref py py-class docutils literal notranslate"><span class="pre">TapeAnalyzer</span></code></a> : Class that extends Analyzer, specialized in analyzing tape images.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>These classes form the backbone of the ForensicFit package and are used throughout its various functions and methods.</p>
+</div>
+</section>
+</section>
 </section>
 </section>
 
@@ -478,7 +509,14 @@ document.write(`
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-forensicfit.core">Module contents</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-forensicfit.core">Module contents</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core-module">Core Module</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dependencies">Dependencies</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#main-classes">Main Classes</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

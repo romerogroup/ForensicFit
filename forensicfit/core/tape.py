@@ -1,22 +1,44 @@
 # -*- Coding: utf-8 -*-
 """
-Created on Sun Jun 28 14:11:02 2020
+tape.py
 
-@author: Pedram Tavadze
+This module contains classes for handling and analyzing measurements 
+from tape in the context of the ForensicFit application. These 
+measurements are represented as images which are processed and 
+analyzed using a variety of computer vision techniques.
+
+The module includes the following classes:
+
+- Tape: A class that represents an image of a tape measurement. It 
+provides functionalities to load and process the image, extract 
+relevant information, and perform various operations such as 
+binarization and smearing.
+
+- TapeAnalyzer: A class that inherits from the Tape class, adding 
+analysis functionalities. It can calculate the tape's boundary, 
+plot it, and compute and store analysis metadata.
+
+The Tape class represents a single tape measurement and provides 
+basic image processing operations. The TapeAnalyzer class extends 
+this functionality by adding methods to analyze the tape's boundary 
+and other features, which can be useful in forensic applications.
+
+Author: Pedram Tavadze
+Email: petavazohi@gmail.com
 """
-import warnings
-from pathlib import Path
-import numpy as np
-import matplotlib.pyplot as plt
 import math
-from ..utils import image_tools
-from . import Image, Analyzer
+from pathlib import Path
 from typing import Union, Tuple, List, Dict, Any, Optional
-from . import HAS_OPENCV
+
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
+
+from ..utils import image_tools
+from . import Image, Analyzer, HAS_OPENCV
+
 if not HAS_OPENCV:
     print("To enable analyzer please install opencv")
-else:
-    import cv2
 
 class Tape(Image):
     """Tape class is used for preprocessing tape images for machine learning.

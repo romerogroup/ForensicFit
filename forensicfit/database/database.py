@@ -39,6 +39,49 @@ class ClassMap(Mapping):
         return self.mapping.__len__()   
             
 class Database:
+    """
+    .. _Database:
+
+    Database
+    ========
+
+    This class provides an interface to interact with the MongoDB database.
+
+    The Database class encapsulates the MongoDB client, and provides methods 
+    to query and manipulate the data stored in the MongoDB collections.
+    
+    Parameters
+    ----------
+    name : str, optional
+        The name of the database, defaults to 'forensicfit'.
+    host : str, optional
+        The host IP address or hostname where the MongoDB database is running, defaults to "localhost".
+    port : int, optional
+        The port number to connect to the MongoDB database, defaults to 27017.
+    username : str, optional
+        The username for authenticating with the MongoDB database, defaults to an empty string.
+    password : str, optional
+        The password for authenticating with the MongoDB database, defaults to an empty string.
+    verbose : bool, optional
+        A flag to indicate whether to print verbose output, defaults to False.
+
+    Attributes
+    ----------
+    uri : str
+        The URI for connecting to the MongoDB database.
+    client : pymongo.MongoClient
+        The MongoDB client instance.
+    db : pymongo.database.Database
+        The Database instance from pymongo representing the MongoDB database.
+    entries : pymongo.collection.Collection
+        The Collection instance representing the entries in the MongoDB database.
+    fs : dict
+        A dictionary of GridFS instances for different collections in the MongoDB database.
+    class_mapping : ClassMap
+        The ClassMap instance for classifying the entries.
+    db_info : dict
+        A dictionary storing the information about the MongoDB database connection.
+    """
     def __init__(self,
                  name: str = 'forensicfit',
                  host: str = "localhost",
@@ -82,8 +125,18 @@ class Database:
             print(self)
 
     def disconnect(self):
-        """Closes the connection with the mongodb Client.
+        """
+        .. _disconnect:
 
+        Disconnect
+        ==========
+
+        Disconnects the Database object from the MongoDB database by closing the 
+        pymongo client connection.
+
+        Returns
+        -------
+        None
         """
         self.client.close()
 
