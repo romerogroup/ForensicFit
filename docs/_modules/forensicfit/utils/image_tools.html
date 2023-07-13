@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -29,7 +28,6 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
@@ -38,8 +36,6 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/sphinx_highlight.js"></script>
-    <script src="../../../_static/clipboard.min.js"></script>
-    <script src="../../../_static/copybutton.js"></script>
     <script src="../../../_static/js/copybutton_custom.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/forensicfit/utils/image_tools';</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -342,15 +338,14 @@ document.write(`
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
 
-
-<span class="n">IMAGE_EXTENSIONS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;.png&#39;</span><span class="p">,</span> <span class="s1">&#39;.bmp&#39;</span><span class="p">,</span> <span class="s1">&#39;.dib&#39;</span><span class="p">,</span> <span class="s1">&#39;.jpeg&#39;</span><span class="p">,</span> 
+<span class="n">IMAGE_EXTENSIONS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;.png&#39;</span><span class="p">,</span> <span class="s1">&#39;.bmp&#39;</span><span class="p">,</span> <span class="s1">&#39;.dib&#39;</span><span class="p">,</span> <span class="s1">&#39;.jpeg&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;.jpg&#39;</span><span class="p">,</span> <span class="s1">&#39;.jpe&#39;</span><span class="p">,</span> <span class="s1">&#39;.jp2&#39;</span><span class="p">,</span> <span class="s1">&#39;.webp&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;.pbm&#39;</span><span class="p">,</span> <span class="s1">&#39;.pgm&#39;</span><span class="p">,</span> <span class="s1">&#39;.ppm&#39;</span><span class="p">,</span> <span class="s1">&#39;.pxm&#39;</span><span class="p">,</span> 
+                    <span class="s1">&#39;.pbm&#39;</span><span class="p">,</span> <span class="s1">&#39;.pgm&#39;</span><span class="p">,</span> <span class="s1">&#39;.ppm&#39;</span><span class="p">,</span> <span class="s1">&#39;.pxm&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;.pnm&#39;</span><span class="p">,</span> <span class="s1">&#39;.sr&#39;</span><span class="p">,</span> <span class="s1">&#39;.ras&#39;</span><span class="p">,</span> <span class="s1">&#39;.tiff&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;.tif&#39;</span><span class="p">,</span> <span class="s1">&#39;.exr&#39;</span><span class="p">,</span> <span class="s1">&#39;.hdr&#39;</span><span class="p">,</span> <span class="s1">&#39;.pic&#39;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="rotate_image"><a class="viewcode-back" href="../../../forensicfit.utils.html#forensicfit.utils.image_tools.rotate_image">[docs]</a><span class="k">def</span> <span class="nf">rotate_image</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">angle</span><span class="p">):</span>
+<div class="viewcode-block" id="rotate_image"><a class="viewcode-back" href="../../../forensicfit.utils.image_tools.html#forensicfit.utils.image_tools.rotate_image">[docs]</a><span class="k">def</span> <span class="nf">rotate_image</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">angle</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Rotates the image by angle degrees</span>
 
@@ -364,14 +359,15 @@ document.write(`
 <span class="sd">        None.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="n">image_center</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
     <span class="n">rot_mat</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">getRotationMatrix2D</span><span class="p">(</span><span class="n">image_center</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
     <span class="n">image</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">warpAffine</span><span class="p">(</span>
         <span class="n">image</span><span class="p">,</span> <span class="n">rot_mat</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">flags</span><span class="o">=</span><span class="n">cv2</span><span class="o">.</span><span class="n">INTER_LINEAR</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">image</span></div>
 
-<div class="viewcode-block" id="gaussian_blur"><a class="viewcode-back" href="../../../forensicfit.utils.html#forensicfit.utils.image_tools.gaussian_blur">[docs]</a><span class="k">def</span> <span class="nf">gaussian_blur</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">)):</span>
+
+<div class="viewcode-block" id="gaussian_blur"><a class="viewcode-back" href="../../../forensicfit.utils.image_tools.html#forensicfit.utils.image_tools.gaussian_blur">[docs]</a><span class="k">def</span> <span class="nf">gaussian_blur</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">)):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This method applies Gaussian Blur filter to the image. </span>
 
@@ -389,7 +385,8 @@ document.write(`
     <span class="n">image</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">GaussianBlur</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">image</span></div>
 
-<div class="viewcode-block" id="split_v"><a class="viewcode-back" href="../../../forensicfit.utils.html#forensicfit.utils.image_tools.split_v">[docs]</a><span class="k">def</span> <span class="nf">split_v</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">pixel_index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pick_side</span><span class="o">=</span><span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="n">flip</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="split_v"><a class="viewcode-back" href="../../../forensicfit.utils.image_tools.html#forensicfit.utils.image_tools.split_v">[docs]</a><span class="k">def</span> <span class="nf">split_v</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">pixel_index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pick_side</span><span class="o">=</span><span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="n">flip</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This method splits the image in 2 images based on the fraction that is </span>
 <span class="sd">    given in pixel_index</span>
@@ -409,23 +406,24 @@ document.write(`
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">width</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-    
+
     <span class="k">if</span> <span class="n">pixel_index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">pixel_index</span> <span class="o">=</span> <span class="n">width</span><span class="o">//</span><span class="mi">2</span>
-    <span class="k">if</span> <span class="n">pixel_index</span><span class="o">&lt;</span><span class="mi">1</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">pixel_index</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">pixel_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">width</span><span class="o">*</span><span class="n">pixel_index</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">pick_side</span> <span class="o">==</span> <span class="s1">&#39;L&#39;</span><span class="p">:</span>
         <span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="n">pixel_index</span><span class="p">]</span>
-    <span class="k">else</span> <span class="p">:</span> 
+    <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">flip</span><span class="p">:</span>
-            <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fliplr</span><span class="p">(</span><span class="n">image</span><span class="p">[:,</span><span class="n">pixel_index</span><span class="p">:</span><span class="n">width</span><span class="p">])</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fliplr</span><span class="p">(</span><span class="n">image</span><span class="p">[:,</span> <span class="n">pixel_index</span><span class="p">:</span><span class="n">width</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="p">[:,</span> <span class="n">pixel_index</span><span class="p">:</span><span class="n">width</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">image</span></div>
 
-<div class="viewcode-block" id="to_gray"><a class="viewcode-back" href="../../../forensicfit.utils.html#forensicfit.utils.image_tools.to_gray">[docs]</a><span class="k">def</span> <span class="nf">to_gray</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;SD&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+
+<div class="viewcode-block" id="to_gray"><a class="viewcode-back" href="../../../forensicfit.utils.image_tools.html#forensicfit.utils.image_tools.to_gray">[docs]</a><span class="k">def</span> <span class="nf">to_gray</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;SD&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Gray Scale image of the input image.</span>
-<span class="sd">    </span>
+
 <span class="sd">    modes: &#39;BT.470&#39; and &#39;BT.709&#39;</span>
 <span class="sd">    SD &#39;BT.470&#39; : Y = 0.299 R + 0.587 G + 0.114 B</span>
 <span class="sd">    HD &#39;BT.709&#39; : Y = 0.2125 R + 0.7154 G + 0.0721 B</span>
@@ -443,20 +441,23 @@ document.write(`
             <span class="k">return</span> <span class="n">image</span>
         <span class="k">elif</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;SD&#39;</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">image</span><span class="p">,</span><span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_BGR2GRAY</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_BGR2GRAY</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;HD&#39;</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">rgb2gray</span><span class="p">(</span><span class="n">image</span><span class="p">)</span></div>
-            
-<div class="viewcode-block" id="to_rbg"><a class="viewcode-back" href="../../../forensicfit.utils.html#forensicfit.utils.image_tools.to_rbg">[docs]</a><span class="k">def</span> <span class="nf">to_rbg</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+
+
+<div class="viewcode-block" id="to_rbg"><a class="viewcode-back" href="../../../forensicfit.utils.image_tools.html#forensicfit.utils.image_tools.to_rbg">[docs]</a><span class="k">def</span> <span class="nf">to_rbg</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">image</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_GRAY2RGB</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="flip"><a class="viewcode-back" href="../../../forensicfit.utils.html#forensicfit.utils.image_tools.flip">[docs]</a><span class="k">def</span> <span class="nf">flip</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+
+<div class="viewcode-block" id="flip"><a class="viewcode-back" href="../../../forensicfit.utils.image_tools.html#forensicfit.utils.image_tools.flip">[docs]</a><span class="k">def</span> <span class="nf">flip</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">cv2</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
-    
-<div class="viewcode-block" id="contours"><a class="viewcode-back" href="../../../forensicfit.utils.html#forensicfit.utils.image_tools.contours">[docs]</a><span class="k">def</span> <span class="nf">contours</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">mask_threshold</span><span class="o">=</span><span class="mi">60</span><span class="p">):</span>
+
+
+<div class="viewcode-block" id="contours"><a class="viewcode-back" href="../../../forensicfit.utils.image_tools.html#forensicfit.utils.image_tools.contours">[docs]</a><span class="k">def</span> <span class="nf">contours</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">mask_threshold</span><span class="o">=</span><span class="mi">60</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">     A list of pixels that create the contours in the image</span>
 
@@ -467,11 +468,12 @@ document.write(`
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">masked</span> <span class="o">=</span> <span class="n">get_masked</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">mask_threshold</span><span class="p">)</span>
-    <span class="n">contours</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">findContours</span><span class="p">(</span>
-        <span class="n">masked</span><span class="p">,</span><span class="n">cv2</span><span class="o">.</span><span class="n">RETR_TREE</span><span class="p">,</span><span class="n">cv2</span><span class="o">.</span><span class="n">CHAIN_APPROX_NONE</span><span class="p">)</span>
+    <span class="n">contours</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">findContours</span><span class="p">(</span>
+        <span class="n">masked</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">RETR_TREE</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">CHAIN_APPROX_NONE</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">contours</span></div>
 
-<div class="viewcode-block" id="largest_contour"><a class="viewcode-back" href="../../../forensicfit.utils.html#forensicfit.utils.image_tools.largest_contour">[docs]</a><span class="k">def</span> <span class="nf">largest_contour</span><span class="p">(</span><span class="n">contours</span><span class="p">):</span>
+
+<div class="viewcode-block" id="largest_contour"><a class="viewcode-back" href="../../../forensicfit.utils.image_tools.html#forensicfit.utils.image_tools.largest_contour">[docs]</a><span class="k">def</span> <span class="nf">largest_contour</span><span class="p">(</span><span class="n">contours</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A list of pixels forming the contour with the largest area</span>
 
@@ -481,18 +483,19 @@ document.write(`
 <span class="sd">        A list of pixels forming the contour with the largest area</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="n">max_con</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">max_con_arg</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">ic</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">contours</span><span class="p">)):</span>
-        <span class="k">if</span> <span class="n">cv2</span><span class="o">.</span><span class="n">contourArea</span><span class="p">(</span><span class="n">contours</span><span class="p">[</span><span class="n">ic</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">max_con</span> <span class="p">:</span>
+        <span class="k">if</span> <span class="n">cv2</span><span class="o">.</span><span class="n">contourArea</span><span class="p">(</span><span class="n">contours</span><span class="p">[</span><span class="n">ic</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">max_con</span><span class="p">:</span>
             <span class="n">max_con</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">contourArea</span><span class="p">(</span><span class="n">contours</span><span class="p">[</span><span class="n">ic</span><span class="p">])</span>
             <span class="n">max_con_arg</span> <span class="o">=</span> <span class="n">ic</span>
     <span class="n">contour_max_area</span> <span class="o">=</span> <span class="n">contours</span><span class="p">[</span><span class="n">max_con_arg</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">contour_max_area</span></div>
 
-<div class="viewcode-block" id="remove_background"><a class="viewcode-back" href="../../../forensicfit.utils.html#forensicfit.utils.image_tools.remove_background">[docs]</a><span class="k">def</span> <span class="nf">remove_background</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> 
-                      <span class="n">contour</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> 
+
+<div class="viewcode-block" id="remove_background"><a class="viewcode-back" href="../../../forensicfit.utils.image_tools.html#forensicfit.utils.image_tools.remove_background">[docs]</a><span class="k">def</span> <span class="nf">remove_background</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
+                      <span class="n">contour</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
                       <span class="n">outside</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
                       <span class="n">pixel_value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Removes the background outside or inside the contour</span>
@@ -511,25 +514,27 @@ document.write(`
     <span class="n">bkg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">image</span><span class="p">)</span><span class="o">*</span><span class="n">pixel_value</span>
     <span class="n">bkg</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">fillPoly</span><span class="p">(</span><span class="n">bkg</span><span class="p">,</span> <span class="p">[</span><span class="n">contour</span><span class="p">],</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">))</span>
     <span class="n">image</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">bitwise_and</span><span class="p">(</span><span class="n">image</span><span class="p">,</span>
-                        <span class="n">bkg</span><span class="p">)</span>
+                            <span class="n">bkg</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">image</span></div>
 
-<div class="viewcode-block" id="get_masked"><a class="viewcode-back" href="../../../forensicfit.utils.html#forensicfit.utils.image_tools.get_masked">[docs]</a><span class="k">def</span> <span class="nf">get_masked</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">mask_threshold</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Populates the masked image with the gray scale threshold</span>
-<span class="sd">        Returns</span>
-<span class="sd">        </span>
-<span class="sd">        -------</span>
-<span class="sd">        None.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">masked</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">inRange</span><span class="p">(</span><span class="n">image</span><span class="p">,</span>
-                             <span class="n">mask_threshold</span><span class="p">,</span>
-                             <span class="mi">255</span><span class="p">)</span>
-        
-        <span class="k">return</span> <span class="n">masked</span></div>
-    
-<div class="viewcode-block" id="resize"><a class="viewcode-back" href="../../../forensicfit.utils.html#forensicfit.utils.image_tools.resize">[docs]</a><span class="k">def</span> <span class="nf">resize</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+<div class="viewcode-block" id="get_masked"><a class="viewcode-back" href="../../../forensicfit.utils.image_tools.html#forensicfit.utils.image_tools.get_masked">[docs]</a><span class="k">def</span> <span class="nf">get_masked</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">mask_threshold</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Populates the masked image with the gray scale threshold</span>
+<span class="sd">    Returns</span>
+
+<span class="sd">    -------</span>
+<span class="sd">    None.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">masked</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">inRange</span><span class="p">(</span><span class="n">image</span><span class="p">,</span>
+                         <span class="n">mask_threshold</span><span class="p">,</span>
+                         <span class="mi">255</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">masked</span></div>
+
+
+<div class="viewcode-block" id="resize"><a class="viewcode-back" href="../../../forensicfit.utils.image_tools.html#forensicfit.utils.image_tools.resize">[docs]</a><span class="k">def</span> <span class="nf">resize</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This method resizes the image to the pixel size given.</span>
 
@@ -545,11 +550,12 @@ document.write(`
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">size</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">size</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;Resizing needs two dimensions&#39;</span>
-    <span class="n">image</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">image</span><span class="p">,</span><span class="n">size</span><span class="p">)</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">image</span></div>
 
-<div class="viewcode-block" id="exposure_control"><a class="viewcode-back" href="../../../forensicfit.utils.html#forensicfit.utils.image_tools.exposure_control">[docs]</a><span class="k">def</span> <span class="nf">exposure_control</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> 
-                     <span class="n">mode</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="s1">&#39;equalize_hist&#39;</span><span class="p">,</span> 
+
+<div class="viewcode-block" id="exposure_control"><a class="viewcode-back" href="../../../forensicfit.utils.image_tools.html#forensicfit.utils.image_tools.exposure_control">[docs]</a><span class="k">def</span> <span class="nf">exposure_control</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                     <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;equalize_hist&#39;</span><span class="p">,</span>
                      <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;modifies the exposure</span>
 
@@ -562,13 +568,14 @@ document.write(`
 <span class="sd">        and `equalize_adapthist &lt;https://scikit-image.org/docs/stable/api/skimage.exposure.html#equalize-adapthist&gt;`</span>
 <span class="sd">        use sk-image. by default &#39;equalize_hist&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">exps</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;equalize_hist&#39;</span><span class="p">:</span><span class="n">exposure</span><span class="o">.</span><span class="n">equalize_hist</span><span class="p">,</span>
-            <span class="s1">&#39;equalize_adapthist&#39;</span><span class="p">:</span><span class="n">exposure</span><span class="o">.</span><span class="n">equalize_adapthist</span><span class="p">}</span>
+    <span class="n">exps</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;equalize_hist&#39;</span><span class="p">:</span> <span class="n">exposure</span><span class="o">.</span><span class="n">equalize_hist</span><span class="p">,</span>
+            <span class="s1">&#39;equalize_adapthist&#39;</span><span class="p">:</span> <span class="n">exposure</span><span class="o">.</span><span class="n">equalize_adapthist</span><span class="p">}</span>
     <span class="k">assert</span> <span class="n">mode</span> <span class="ow">in</span> <span class="n">exps</span><span class="p">,</span> <span class="s1">&#39;Mode not valid.&#39;</span>
     <span class="n">image</span> <span class="o">=</span> <span class="n">exps</span><span class="p">[</span><span class="n">mode</span><span class="p">](</span><span class="n">image</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">image</span><span class="o">*</span><span class="mi">255</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;uint8&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="apply_filter"><a class="viewcode-back" href="../../../forensicfit.utils.html#forensicfit.utils.image_tools.apply_filter">[docs]</a><span class="k">def</span> <span class="nf">apply_filter</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+
+<div class="viewcode-block" id="apply_filter"><a class="viewcode-back" href="../../../forensicfit.utils.image_tools.html#forensicfit.utils.image_tools.apply_filter">[docs]</a><span class="k">def</span> <span class="nf">apply_filter</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Applies different types of filters to the image</span>
 
 <span class="sd">    Parameters</span>
@@ -584,7 +591,7 @@ document.write(`
 <span class="sd">        * ``&#39;sato&#39;``: &lt;Sato tubeness filter https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.sato&gt;_.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">flts</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;meijering&#39;</span><span class="p">:</span><span class="n">filters</span><span class="o">.</span><span class="n">meijering</span><span class="p">,</span>
+        <span class="s1">&#39;meijering&#39;</span><span class="p">:</span> <span class="n">filters</span><span class="o">.</span><span class="n">meijering</span><span class="p">,</span>
         <span class="s1">&#39;frangi&#39;</span><span class="p">:</span> <span class="n">filters</span><span class="o">.</span><span class="n">frangi</span><span class="p">,</span>
         <span class="s1">&#39;prewitt&#39;</span><span class="p">:</span> <span class="n">filters</span><span class="o">.</span><span class="n">prewitt</span><span class="p">,</span>
         <span class="s1">&#39;sobel&#39;</span><span class="p">:</span> <span class="n">filters</span><span class="o">.</span><span class="n">sobel</span><span class="p">,</span>
@@ -600,7 +607,8 @@ document.write(`
     <span class="n">image</span> <span class="o">=</span> <span class="n">flts</span><span class="p">[</span><span class="n">mode</span><span class="p">](</span><span class="n">image</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">image</span><span class="o">*</span><span class="mi">255</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;uint8&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="binerized_mask"><a class="viewcode-back" href="../../../forensicfit.utils.html#forensicfit.utils.image_tools.binerized_mask">[docs]</a><span class="k">def</span> <span class="nf">binerized_mask</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">masked</span><span class="p">):</span>
+
+<div class="viewcode-block" id="binerized_mask"><a class="viewcode-back" href="../../../forensicfit.utils.image_tools.html#forensicfit.utils.image_tools.binerized_mask">[docs]</a><span class="k">def</span> <span class="nf">binerized_mask</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">masked</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function return the binarized version of the tape</span>
 
@@ -616,8 +624,9 @@ document.write(`
     <span class="k">return</span> <span class="n">cv2</span><span class="o">.</span><span class="n">bitwise_and</span><span class="p">(</span><span class="n">image</span><span class="p">,</span>
                            <span class="n">image</span><span class="p">,</span>
                            <span class="n">mask</span><span class="o">=</span><span class="n">masked</span><span class="p">)</span></div>
-    
-<div class="viewcode-block" id="imwrite"><a class="viewcode-back" href="../../../forensicfit.utils.html#forensicfit.utils.image_tools.imwrite">[docs]</a><span class="k">def</span> <span class="nf">imwrite</span><span class="p">(</span><span class="n">fname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+
+<div class="viewcode-block" id="imwrite"><a class="viewcode-back" href="../../../forensicfit.utils.image_tools.html#forensicfit.utils.image_tools.imwrite">[docs]</a><span class="k">def</span> <span class="nf">imwrite</span><span class="p">(</span><span class="n">fname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;save any 2d numpy array (or list) to an image file</span>
 
 <span class="sd">    Parameters</span>
@@ -677,7 +686,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2020, Pedram Tavadze.
+      © Copyright 2023, Pedram Tavadze.
       <br/>
     
   </p>
@@ -685,7 +694,7 @@ document.write(`
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
     <br/>
   </p>
 </div>

@@ -1006,7 +1006,32 @@ database are dumped.</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="forensicfit.database.database.restore">
 <span class="sig-prename descclassname"><span class="pre">forensicfit.database.database.</span></span><span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/database/database.html#restore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.database.database.restore" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Restore a MongoDB database or collection from a BSON file.</p>
+<p>This function uses the <cite>mongorestore</cite> command to restore a MongoDB database or collection from
+a BSON file. The <cite>mongorestore</cite> command is a utility for creating a binary import from the
+contents of a BSON file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em><em>, </em><em>optional</em>) – The path to the BSON file. If not provided, the ‘dump’ directory in the current working
+directory is used.</p></li>
+<li><p><strong>db</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the database to restore. If not provided, all databases are restored.</p></li>
+<li><p><strong>host</strong> (<em>str</em><em>, </em><em>optional</em>) – The host IP address or hostname where the MongoDB server is running. If not provided,
+‘localhost’ is used.</p></li>
+<li><p><strong>port</strong> (<em>int</em><em>, </em><em>optional</em>) – The port number to connect to the MongoDB server. If not provided, 27017 is used.</p></li>
+<li><p><strong>username</strong> (<em>str</em><em>, </em><em>optional</em>) – The username for authenticating with the MongoDB server. If not provided, no authentication
+is used.</p></li>
+<li><p><strong>password</strong> (<em>str</em><em>, </em><em>optional</em>) – The password for authenticating with the MongoDB server. If not provided, no authentication
+is used.</p></li>
+<li><p><strong>collection</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the collection to restore. If not provided, all collections in the specified
+database are restored.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 
@@ -1126,7 +1151,7 @@ database are dumped.</p></li>
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2020, Pedram Tavadze.
+      © Copyright 2023, Pedram Tavadze.
       <br/>
     
   </p>

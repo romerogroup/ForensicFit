@@ -1214,6 +1214,39 @@ document.write(`
             <span class="n">password</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">collection</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Restore a MongoDB database or collection from a BSON file.</span>
+
+<span class="sd">    This function uses the `mongorestore` command to restore a MongoDB database or collection from </span>
+<span class="sd">    a BSON file. The `mongorestore` command is a utility for creating a binary import from the </span>
+<span class="sd">    contents of a BSON file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path : str, optional</span>
+<span class="sd">        The path to the BSON file. If not provided, the &#39;dump&#39; directory in the current working </span>
+<span class="sd">        directory is used.</span>
+<span class="sd">    db : str, optional</span>
+<span class="sd">        The name of the database to restore. If not provided, all databases are restored.</span>
+<span class="sd">    host : str, optional</span>
+<span class="sd">        The host IP address or hostname where the MongoDB server is running. If not provided, </span>
+<span class="sd">        &#39;localhost&#39; is used.</span>
+<span class="sd">    port : int, optional</span>
+<span class="sd">        The port number to connect to the MongoDB server. If not provided, 27017 is used.</span>
+<span class="sd">    username : str, optional</span>
+<span class="sd">        The username for authenticating with the MongoDB server. If not provided, no authentication </span>
+<span class="sd">        is used.</span>
+<span class="sd">    password : str, optional</span>
+<span class="sd">        The password for authenticating with the MongoDB server. If not provided, no authentication </span>
+<span class="sd">        is used.</span>
+<span class="sd">    collection : str, optional</span>
+<span class="sd">        The name of the collection to restore. If not provided, all collections in the specified </span>
+<span class="sd">        database are restored.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;mongorestore &#39;</span>
     <span class="n">tags</span> <span class="o">=</span> <span class="nb">locals</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">itag</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">:</span>
@@ -1266,7 +1299,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2020, Pedram Tavadze.
+      © Copyright 2023, Pedram Tavadze.
       <br/>
     
   </p>
