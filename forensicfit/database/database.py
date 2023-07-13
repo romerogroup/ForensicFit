@@ -884,6 +884,39 @@ def restore(path: Optional[str] = None,
             password: Optional[str] = None,
             collection: Optional[str] = None,
             ):
+    """
+    Restore a MongoDB database or collection from a BSON file.
+
+    This function uses the `mongorestore` command to restore a MongoDB database or collection from 
+    a BSON file. The `mongorestore` command is a utility for creating a binary import from the 
+    contents of a BSON file.
+
+    Parameters
+    ----------
+    path : str, optional
+        The path to the BSON file. If not provided, the 'dump' directory in the current working 
+        directory is used.
+    db : str, optional
+        The name of the database to restore. If not provided, all databases are restored.
+    host : str, optional
+        The host IP address or hostname where the MongoDB server is running. If not provided, 
+        'localhost' is used.
+    port : int, optional
+        The port number to connect to the MongoDB server. If not provided, 27017 is used.
+    username : str, optional
+        The username for authenticating with the MongoDB server. If not provided, no authentication 
+        is used.
+    password : str, optional
+        The password for authenticating with the MongoDB server. If not provided, no authentication 
+        is used.
+    collection : str, optional
+        The name of the collection to restore. If not provided, all collections in the specified 
+        database are restored.
+
+    Returns
+    -------
+    None
+    """
     command = 'mongorestore '
     tags = locals()
     for itag in tags:

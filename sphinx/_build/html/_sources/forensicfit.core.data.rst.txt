@@ -1,7 +1,0 @@
-forensicfit.core.data module
-============================
-
-.. automodule:: forensicfit.core.data
-   :members:
-   :undoc-members:
-   :show-inheritance:
