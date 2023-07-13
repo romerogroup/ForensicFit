@@ -373,8 +373,29 @@ document.write(`
                   
   <section id="module-forensicfit.core.tape">
 <span id="forensicfit-core-tape-module"></span><h1>forensicfit.core.tape module<a class="headerlink" href="#module-forensicfit.core.tape" title="Permalink to this heading">#</a></h1>
-<p>Created on Sun Jun 28 14:11:02 2020</p>
-<p>&#64;author: Pedram Tavadze</p>
+<p>tape.py</p>
+<p>This module contains classes for handling and analyzing measurements
+from tape in the context of the ForensicFit application. These
+measurements are represented as images which are processed and
+analyzed using a variety of computer vision techniques.</p>
+<p>The module includes the following classes:</p>
+<ul class="simple">
+<li><p>Tape: A class that represents an image of a tape measurement. It</p></li>
+</ul>
+<p>provides functionalities to load and process the image, extract
+relevant information, and perform various operations such as
+binarization and smearing.</p>
+<ul class="simple">
+<li><p>TapeAnalyzer: A class that inherits from the Tape class, adding</p></li>
+</ul>
+<p>analysis functionalities. It can calculate the tape’s boundary,
+plot it, and compute and store analysis metadata.</p>
+<p>The Tape class represents a single tape measurement and provides
+basic image processing operations. The TapeAnalyzer class extends
+this functionality by adding methods to analyze the tape’s boundary
+and other features, which can be useful in forensic applications.</p>
+<p>Author: Pedram Tavadze
+Email: <a class="reference external" href="mailto:petavazohi&#37;&#52;&#48;gmail&#46;com">petavazohi<span>&#64;</span>gmail<span>&#46;</span>com</a></p>
 <dl class="py class">
 <dt class="sig sig-object py" id="forensicfit.core.tape.Tape">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">forensicfit.core.tape.</span></span><span class="sig-name descname"><span class="pre">Tape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stretched</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/core/tape.html#Tape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.core.tape.Tape" title="Permalink to this definition">#</a></dt>
@@ -412,7 +433,8 @@ splitting information, label, material, surface, stretched status, and mode.</p>
 </dd>
 <dt class="field-even">Attributes<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>shape</strong></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code></dt><dd><p>Returns the shape of the image.</p>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -422,17 +444,41 @@ splitting information, label, material, surface, stretched status, and mode.</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_filter</span></code>(mode, **kwargs)</p></td>
 <td><p>Applies different types of filters to the image</p></td>
 </tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_to_gray</span></code>()</p></td>
+<td><p>Converts the image to grayscale.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_to_rgb</span></code>()</p></td>
+<td><p>Converts the image to RGB color space.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code>()</p></td>
+<td><p>Creates a copy of the current image instance.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">crop</span></code>(x_start, x_end, y_start, y_end)</p></td>
+<td><p>Crops the image using the specified x and y coordinates.</p></td>
+</tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">exposure_control</span></code>([mode])</p></td>
 <td><p>modifies the exposure</p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">flip_h</span></code>()</p></td>
+<td><p>Flips the image horizontally.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">flip_v</span></code>()</p></td>
+<td><p>Flips the image vertically.</p></td>
+</tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_buffer</span></code>(buffer, metadata[, ext, ...])</p></td>
-<td><p>receives an io byte buffer with the corresponding metadata and creates the image class</p></td>
+<td><p>Create an Image object from a given buffer and its corresponding metadata.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_dict</span></code>(values, metadata)</p></td>
+<td><p>Create an Image object from a dictionary of values and metadata.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_file</span></code>(filepath)</p></td>
+<td><p>Create an Image object from a given file path.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get</span></code>(k[,d])</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">isolate</span></code>([x_start, x_end, y_start, y_end])</p></td>
-<td><p>isolates a rectangle from the image</p></td>
+<td><p>Isolates a rectangular section from the image.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">items</span></code>()</p></td>
 <td><p></p></td>
@@ -441,12 +487,13 @@ splitting information, label, material, surface, stretched status, and mode.</p>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code>([savefig, cmap, ax, show, zoom])</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">param savefig<span class="colon">:</span></dt>
-<dd class="field-odd"><p>DESCRIPTION. The default is None.</p>
-</dd>
-</dl>
-</p></td>
+<td><p>Plots the current image.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">resize</span></code>([size, dpi])</p></td>
+<td><p>Resizes the image according to the specified dimensions or dpi.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotate</span></code>(angle)</p></td>
+<td><p>Rotates the image by a specified angle.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">show</span></code>([wait, savefig])</p></td>
 <td><p><dl class="field-list simple">
@@ -459,166 +506,21 @@ splitting information, label, material, surface, stretched status, and mode.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#forensicfit.core.tape.Tape.split_v" title="forensicfit.core.tape.Tape.split_v"><code class="xref py py-obj docutils literal notranslate"><span class="pre">split_v</span></code></a>(side[, correct_tilt, pixel_index])</p></td>
 <td><p>Splits the tape image vertically.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">values</span></code>()</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_buffer</span></code>([ext])</p></td>
+<td><p>Converts the Image instance into a bytes object.</p></td>
 </tr>
-</tbody>
-</table>
-<table class="table">
-<tbody>
-<tr class="row-odd"><td><p><strong>convert_to_gray</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>convert_to_rgb</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>copy</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>crop</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>flip_h</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>flip_v</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>from_dict</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>from_file</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>resize</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>rotate</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>to_buffer</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>to_file</strong></p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<p>_summary_</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>image</strong> (<em>np.array</em>) – _description_</p></li>
-<li><p><strong>label</strong> (<em>str</em><em>, </em><em>optional</em>) – _description_, by default None</p></li>
-</ul>
-</dd>
-<dt class="field-even">Attributes<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>shape</strong></dt><dd></dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">Methods</p>
-<table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_filter</span></code>(mode, **kwargs)</p></td>
-<td><p>Applies different types of filters to the image</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">exposure_control</span></code>([mode])</p></td>
-<td><p>modifies the exposure</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_buffer</span></code>(buffer, metadata[, ext, ...])</p></td>
-<td><p>receives an io byte buffer with the corresponding metadata and creates the image class</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get</span></code>(k[,d])</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">isolate</span></code>([x_start, x_end, y_start, y_end])</p></td>
-<td><p>isolates a rectangle from the image</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">items</span></code>()</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">keys</span></code>()</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code>([savefig, cmap, ax, show, zoom])</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">param savefig<span class="colon">:</span></dt>
-<dd class="field-odd"><p>DESCRIPTION. The default is None.</p>
-</dd>
-</dl>
-</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">show</span></code>([wait, savefig])</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">param wait<span class="colon">:</span></dt>
-<dd class="field-odd"><p>DESCRIPTION. The default is 0.</p>
-</dd>
-</dl>
-</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#forensicfit.core.tape.Tape.split_v" title="forensicfit.core.tape.Tape.split_v"><code class="xref py py-obj docutils literal notranslate"><span class="pre">split_v</span></code></a>(side[, correct_tilt, pixel_index])</p></td>
-<td><p>Splits the tape image vertically.</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_file</span></code>(filepath)</p></td>
+<td><p>Writes the Image instance to a file.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">values</span></code>()</p></td>
 <td><p></p></td>
-</tr>
-</tbody>
-</table>
-<table class="table">
-<tbody>
-<tr class="row-odd"><td><p><strong>convert_to_gray</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>convert_to_rgb</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>copy</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>crop</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>flip_h</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>flip_v</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>from_dict</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>from_file</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>resize</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>rotate</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>to_buffer</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>to_file</strong></p></td>
-<td></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="forensicfit.core.tape.Tape.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stretched</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/core/tape.html#Tape.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.core.tape.Tape.__init__" title="Permalink to this definition">#</a></dt>
-<dd><p>_summary_</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>image</strong> (<em>np.array</em>) – _description_</p></li>
-<li><p><strong>label</strong> (<em>str</em><em>, </em><em>optional</em>) – _description_, by default None</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="forensicfit.core.tape.Tape.split_v">

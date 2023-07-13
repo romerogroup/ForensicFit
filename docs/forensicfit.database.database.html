@@ -381,6 +381,63 @@ used PyChemia Database class as a guide
 <dt class="sig sig-object py" id="forensicfit.database.database.ClassMap">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">forensicfit.database.database.</span></span><span class="sig-name descname"><span class="pre">ClassMap</span></span><a class="reference internal" href="_modules/forensicfit/database/database.html#ClassMap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.database.database.ClassMap" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></p>
+<p>A custom mapping class that maps string keys to specific classes.</p>
+<p>This class is a subclass of <cite>collections.abc.Mapping</cite> and provides a custom mapping
+between string keys and classes. The keys ‘material’, ‘analysis’, and ‘any’ are mapped
+to the classes <cite>Tape</cite>, <cite>TapeAnalyzer</cite>, and <cite>Image</cite> respectively.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="forensicfit.database.database.ClassMap.mapping">
+<span class="sig-name descname"><span class="pre">mapping</span></span><a class="headerlink" href="#forensicfit.database.database.ClassMap.mapping" title="Permalink to this definition">#</a></dt>
+<dd><p>The internal dictionary that stores the mapping between keys and classes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="forensicfit.database.database.ClassMap.__contains__">
+<span class="sig-name descname"><span class="pre">__contains__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/forensicfit/database/database.html#ClassMap.__contains__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.database.database.ClassMap.__contains__" title="Permalink to this definition">#</a></dt>
+<dd><p>Check if <cite>x</cite> is a key in the mapping.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="forensicfit.database.database.ClassMap.__getitem__">
+<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="forensicfit.core.tape.html#forensicfit.core.tape.Tape" title="forensicfit.core.tape.Tape"><span class="pre">Tape</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="forensicfit.core.tape.html#forensicfit.core.tape.TapeAnalyzer" title="forensicfit.core.tape.TapeAnalyzer"><span class="pre">TapeAnalyzer</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Image</span></span></span><a class="reference internal" href="_modules/forensicfit/database/database.html#ClassMap.__getitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.database.database.ClassMap.__getitem__" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the class associated with the key <cite>x</cite>. If <cite>x</cite> is not a key in the mapping, return the class associated with the key ‘any’.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="forensicfit.database.database.ClassMap.__iter__">
+<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterator</span></span></span><a class="reference internal" href="_modules/forensicfit/database/database.html#ClassMap.__iter__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.database.database.ClassMap.__iter__" title="Permalink to this definition">#</a></dt>
+<dd><p>Return an iterator over the keys in the mapping.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="forensicfit.database.database.ClassMap.__len__">
+<span class="sig-name descname"><span class="pre">__len__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/forensicfit/database/database.html#ClassMap.__len__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.database.database.ClassMap.__len__" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the number of key-value pairs in the mapping.</p>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get</span></code>(k[,d])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">items</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">keys</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">values</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p>Initialize a new instance of ClassMap.</p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable table autosummary">
 <tbody>
@@ -401,7 +458,8 @@ used PyChemia Database class as a guide
 <dl class="py method">
 <dt class="sig sig-object py" id="forensicfit.database.database.ClassMap.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/database/database.html#ClassMap.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.database.database.ClassMap.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Initialize a new instance of ClassMap.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -409,63 +467,62 @@ used PyChemia Database class as a guide
 <dt class="sig sig-object py" id="forensicfit.database.database.Database">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">forensicfit.database.database.</span></span><span class="sig-name descname"><span class="pre">Database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'forensicfit'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'localhost'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">27017</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/database/database.html#Database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.database.database.Database" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="field-list simple">
+<dl class="field-list simple" id="database">
 <dt class="field-odd">Attributes<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>collection_names</strong></dt><dd></dd>
-<dt><strong>connected</strong></dt><dd></dd>
-<dt><strong>server_info</strong></dt><dd></dd>
+<dt><a class="reference internal" href="#forensicfit.database.database.Database.collection_names" title="forensicfit.database.database.Database.collection_names"><code class="xref py py-obj docutils literal notranslate"><span class="pre">collection_names</span></code></a></dt><dd><p>Get the names of the collections in the MongoDB database.</p>
+</dd>
+<dt><a class="reference internal" href="#forensicfit.database.database.Database.connected" title="forensicfit.database.database.Database.connected"><code class="xref py py-obj docutils literal notranslate"><span class="pre">connected</span></code></a></dt><dd><p>Check if the Database instance is currently connected to the MongoDB database.</p>
+</dd>
+<dt><a class="reference internal" href="#forensicfit.database.database.Database.server_info" title="forensicfit.database.database.Database.server_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">server_info</span></code></a></dt><dd><p>Get the server information for the MongoDB database.</p>
+</dd>
 </dl>
 </dd>
 </dl>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable table autosummary">
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#forensicfit.database.database.Database.add_collection" title="forensicfit.database.database.Database.add_collection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_collection</span></code></a>(collection)</p></td>
+<td><p>Add a new collection to the database.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#forensicfit.database.database.Database.count_documents" title="forensicfit.database.database.Database.count_documents"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count_documents</span></code></a>(filter, collection)</p></td>
+<td><p>Count the number of documents in the specified collection that match the provided filter.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#forensicfit.database.database.Database.delete" title="forensicfit.database.database.Database.delete"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete</span></code></a>(filter, collection)</p></td>
+<td><p>Delete documents from the specified collection that match the provided filter.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#forensicfit.database.database.Database.delete_database" title="forensicfit.database.database.Database.delete_database"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete_database</span></code></a>()</p></td>
+<td><p>Delete the MongoDB database associated with this Database instance.</p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#forensicfit.database.database.Database.disconnect" title="forensicfit.database.database.Database.disconnect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">disconnect</span></code></a>()</p></td>
-<td><p>Closes the connection with the mongodb Client.</p></td>
+<td><p><span class="target" id="disconnect"></span></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#forensicfit.database.database.Database.find_one" title="forensicfit.database.database.Database.find_one"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_one</span></code></a>([filter, collection])</p></td>
-<td><p>finds one entry that matches the filter.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#forensicfit.database.database.Database.drop_collection" title="forensicfit.database.database.Database.drop_collection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">drop_collection</span></code></a>(collection)</p></td>
+<td><p>Drop the specified collection from the MongoDB database.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#forensicfit.database.database.Database.find_with_id" title="forensicfit.database.database.Database.find_with_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_with_id</span></code></a>(_id, collection)</p></td>
-<td><p>Retrieves core object based on the MongoDB _id</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#forensicfit.database.database.Database.exists" title="forensicfit.database.database.Database.exists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">exists</span></code></a>([filter, collection, metadata])</p></td>
+<td><p>Check if a document exists in the specified collection based on the provided filter or metadata.</p></td>
 </tr>
-</tbody>
-</table>
-<table class="table">
-<tbody>
-<tr class="row-odd"><td><p><strong>add_collection</strong></p></td>
-<td></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#forensicfit.database.database.Database.export_to_files" title="forensicfit.database.database.Database.export_to_files"><code class="xref py py-obj docutils literal notranslate"><span class="pre">export_to_files</span></code></a>(destination, filter, collection)</p></td>
+<td><p>Export objects from the specified collection that match the provided filter to files.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>count_documents</strong></p></td>
-<td></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#forensicfit.database.database.Database.filter_with_metadata" title="forensicfit.database.database.Database.filter_with_metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_with_metadata</span></code></a>(inp, filter, collection)</p></td>
+<td><p>Filter a list of filenames based on metadata and return the indices of the matching filenames.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>delete</strong></p></td>
-<td></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#forensicfit.database.database.Database.find" title="forensicfit.database.database.Database.find"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find</span></code></a>(filter[, collection, ext, version, ...])</p></td>
+<td><p>Find and return objects from the specified collection that match the provided filter.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>delete_database</strong></p></td>
-<td></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#forensicfit.database.database.Database.find_one" title="forensicfit.database.database.Database.find_one"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_one</span></code></a>([filter, collection])</p></td>
+<td><p>Find and return one object from the specified collection that matches the provided filter.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>drop_collection</strong></p></td>
-<td></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#forensicfit.database.database.Database.find_with_id" title="forensicfit.database.database.Database.find_with_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_with_id</span></code></a>(_id, collection)</p></td>
+<td><p>Find and return an object from the specified collection based on its MongoDB _id.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>exists</strong></p></td>
-<td></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#forensicfit.database.database.Database.insert" title="forensicfit.database.database.Database.insert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">insert</span></code></a>(obj[, ext, overwrite, skip, collection])</p></td>
+<td><p>Insert an object into the specified collection in the MongoDB database.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>export_to_files</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>filter_with_metadata</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>find</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>insert</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>map_to</strong></p></td>
-<td></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#forensicfit.database.database.Database.map_to" title="forensicfit.database.database.Database.map_to"><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_to</span></code></a>(func, filter, collection_source, ...)</p></td>
+<td><p>Apply a function to each object in the source collection that matches the provided filter and insert the results into the target collection.</p></td>
 </tr>
 </tbody>
 </table>
@@ -477,20 +534,53 @@ used PyChemia Database class as a guide
 <dl class="py method">
 <dt class="sig sig-object py" id="forensicfit.database.database.Database.disconnect">
 <span class="sig-name descname"><span class="pre">disconnect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/database/database.html#Database.disconnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.database.database.Database.disconnect" title="Permalink to this definition">#</a></dt>
-<dd><p>Closes the connection with the mongodb Client.</p>
-</dd></dl>
+<dd><span class="target" id="id1"></span></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="forensicfit.database.database.Database.add_collection">
 <span class="sig-name descname"><span class="pre">add_collection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/database/database.html#Database.add_collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.database.database.Database.add_collection" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Add a new collection to the database.</p>
+<p>This method creates a new GridFS instance for the specified collection
+and adds it to the <cite>fs</cite> attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>collection</strong> (<em>str</em>) – The name of the collection to add.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="forensicfit.database.database.Database.exists">
 <span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/database/database.html#Database.exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.database.database.Database.exists" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Check if a document exists in the specified collection based on the provided filter or metadata.</p>
+<p>This method checks if a document exists in the specified collection of the MongoDB database
+that matches the provided filter or metadata. If a document is found, it returns the ObjectId
+of the document. If no document is found, it returns False.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code></p>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>filter</strong> (<em>dict</em><em>, </em><em>optional</em>) – A dictionary specifying the filter criteria to use when searching for the document.</p></li>
+<li><p><strong>collection</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the collection to search in. If not provided, the collection name is
+determined from the ‘mode’ field of the metadata.</p></li>
+<li><p><strong>metadata</strong> (<em>Metadata</em><em>, </em><em>optional</em>) – A Metadata object specifying the metadata to use when searching for the document.
+If provided, the ‘mode’ field of the metadata is used as the collection name and
+the metadata is converted to a MongoDB filter.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The ObjectId of the found document if a matching document is found, False otherwise.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>ObjectId or bool</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Exception</strong> – If neither metadata nor filter and collection are provided.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -498,14 +588,69 @@ used PyChemia Database class as a guide
 <dl class="py method">
 <dt class="sig sig-object py" id="forensicfit.database.database.Database.insert">
 <span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.png'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/database/database.html#Database.insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.database.database.Database.insert" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Insert an object into the specified collection in the MongoDB database.</p>
+<p>This method inserts an object into the specified collection of the MongoDB database.
+If the object already exists in the database, the behavior depends on the <cite>overwrite</cite>
+and <cite>skip</cite> parameters. If <cite>overwrite</cite> is True, the existing object is deleted and the
+new object is inserted. If <cite>skip</cite> is True, the insertion is skipped and the ObjectId
+of the existing object is returned. If neither <cite>overwrite</cite> nor <cite>skip</cite> is True and the
+object already exists, an exception is raised.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>obj</strong> (<em>Union</em><em>[</em><em>Image</em><em>, </em><a class="reference internal" href="forensicfit.core.tape.html#forensicfit.core.tape.Tape" title="forensicfit.core.tape.Tape"><em>Tape</em></a><em>, </em><a class="reference internal" href="forensicfit.core.tape.html#forensicfit.core.tape.TapeAnalyzer" title="forensicfit.core.tape.TapeAnalyzer"><em>TapeAnalyzer</em></a><em>]</em>) – The object to insert into the database.</p></li>
+<li><p><strong>ext</strong> (<em>str</em><em>, </em><em>optional</em>) – The file extension to use when converting the object to a buffer, defaults to ‘.png’.</p></li>
+<li><p><strong>overwrite</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to overwrite the existing object if it already exists, defaults to False.</p></li>
+<li><p><strong>skip</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to skip the insertion if the object already exists, defaults to False.</p></li>
+<li><p><strong>collection</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the collection to insert the object into. If not provided, the collection
+name is determined from the ‘mode’ field of the object’s metadata.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The ObjectId of the inserted object.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>ObjectId</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Exception</strong> – If the object already exists in the database and neither <cite>overwrite</cite> nor <cite>skip</cite> is True.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="forensicfit.database.database.Database.find">
 <span class="sig-name descname"><span class="pre">find</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'analysis'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.png'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_cursor_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/database/database.html#Database.find"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.database.database.Database.find" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Find and return objects from the specified collection that match the provided filter.</p>
+<p>This method finds and returns objects from the specified collection of the MongoDB database
+that match the provided filter. The objects are returned as instances of the class associated
+with the collection in the class mapping. The objects are sorted by their upload date in the
+order specified by the <cite>version</cite> parameter.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>filter</strong> (<em>dict</em>) – A dictionary specifying the filter criteria to use when searching for the objects.</p></li>
+<li><p><strong>collection</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the collection to search in, defaults to ‘analysis’.</p></li>
+<li><p><strong>ext</strong> (<em>str</em><em>, </em><em>optional</em>) – The file extension to use when converting the objects to buffers, defaults to ‘.png’.</p></li>
+<li><p><strong>version</strong> (<em>int</em><em>, </em><em>optional</em>) – The sort order for the objects based on their upload date. If <cite>version</cite> is -1, the objects
+are sorted in descending order. If <cite>version</cite> is 1, the objects are sorted in ascending order,
+defaults to -1.</p></li>
+<li><p><strong>no_cursor_timeout</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to prevent the server-side cursor from timing out after an inactivity period,
+defaults to False.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of objects from the specified collection that match the provided filter. The objects
+are returned as instances of the class associated with the collection in the class mapping.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list</p>
 </dd>
 </dl>
 </dd></dl>
@@ -513,25 +658,59 @@ used PyChemia Database class as a guide
 <dl class="py method">
 <dt class="sig sig-object py" id="forensicfit.database.database.Database.map_to">
 <span class="sig-name descname"><span class="pre">map_to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection_source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection_target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_cursor_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/database/database.html#Database.map_to"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.database.database.Database.map_to" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Apply a function to each object in the source collection that matches the provided filter
+and insert the results into the target collection.</p>
+<p>This method applies a function to each object in the source collection of the MongoDB database
+that matches the provided filter. The results are inserted into the target collection. The
+objects are retrieved as instances of the class associated with the source collection in the
+class mapping.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func</strong> (<em>Callable</em>) – The function to apply to each object. The function should take an object as input and
+return an object.</p></li>
+<li><p><strong>filter</strong> (<em>dict</em>) – A dictionary specifying the filter criteria to use when searching for the objects in
+the source collection.</p></li>
+<li><p><strong>collection_source</strong> (<em>str</em>) – The name of the source collection to search in.</p></li>
+<li><p><strong>collection_target</strong> (<em>str</em>) – The name of the target collection to insert the results into.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to print the filename of each object being processed, defaults to True.</p></li>
+<li><p><strong>no_cursor_timeout</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to prevent the server-side cursor from timing out after an inactivity period,
+defaults to False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="forensicfit.database.database.Database.find_one">
 <span class="sig-name descname"><span class="pre">find_one</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/database/database.html#Database.find_one"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.database.database.Database.find_one" title="Permalink to this definition">#</a></dt>
-<dd><p>finds one entry that matches the filter.
-kwargs must be chosen by filter=</p>
+<dd><p>Find and return one object from the specified collection that matches the provided filter.</p>
+<p>This method finds and returns one object from the specified collection of the MongoDB database
+that matches the provided filter. The object is returned as an instance of the class associated
+with the collection in the class mapping. If no collection is specified, one is chosen randomly.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 </dd>
 <dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>collection</strong> (<em>str</em><em>, </em><em>optional</em>) – material or analysis, if none is chose it will be selected randomly, by default None</p>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>filter</strong> (<em>dict</em><em>, </em><em>optional</em>) – A dictionary specifying the filter criteria to use when searching for the object. If not
+provided, the first object in the collection is returned.</p></li>
+<li><p><strong>collection</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the collection to search in. If not provided, a collection is chosen randomly.</p></li>
+</ul>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ForensicFit object e.g. Tape</p>
+<dd class="field-odd"><p>An object from the specified collection that matches the provided filter. The object is
+returned as an instance of the class associated with the collection in the class mapping.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>object</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If no object is found that matches the provided filter.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -539,19 +718,23 @@ kwargs must be chosen by filter=</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="forensicfit.database.database.Database.find_with_id">
 <span class="sig-name descname"><span class="pre">find_with_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/database/database.html#Database.find_with_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.database.database.Database.find_with_id" title="Permalink to this definition">#</a></dt>
-<dd><p>Retrieves core object based on the MongoDB _id</p>
+<dd><p>Find and return an object from the specified collection based on its MongoDB _id.</p>
+<p>This method finds and returns an object from the specified collection of the MongoDB database
+based on its MongoDB _id. The object is returned as an instance of the class associated with
+the collection in the class mapping.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 </dd>
 <dt class="field-even">Parameters<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>_id</strong> (<em>str</em>) – MongoDB _id</p></li>
-<li><p><strong>collection</strong> (<em>str</em>) – ‘material’ or ‘analysis’</p></li>
+<li><p><strong>_id</strong> (<em>str</em>) – The MongoDB _id of the object to find.</p></li>
+<li><p><strong>collection</strong> (<em>str</em>) – The name of the collection to search in.</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ForensicFit object e.g. Tape</p>
+<dd class="field-odd"><p>An object from the specified collection with the provided MongoDB _id. The object is
+returned as an instance of the class associated with the collection in the class mapping.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>object</p>
@@ -562,56 +745,203 @@ kwargs must be chosen by filter=</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="forensicfit.database.database.Database.filter_with_metadata">
 <span class="sig-name descname"><span class="pre">filter_with_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/database/database.html#Database.filter_with_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.database.database.Database.filter_with_metadata" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Filter a list of filenames based on metadata and return the indices of the matching filenames.</p>
+<p>This method filters a list of filenames based on the provided filter and the metadata of the
+files in the specified collection of the MongoDB database. It returns a list of indices of the
+input list that correspond to the filenames that match the filter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>inp</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – The list of filenames to filter.</p></li>
+<li><p><strong>filter</strong> (<em>dict</em>) – A dictionary specifying the filter criteria to use when filtering the filenames.</p></li>
+<li><p><strong>collection</strong> (<em>str</em>) – The name of the collection to search in.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of indices of the input list that correspond to the filenames that match the filter.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[int]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="forensicfit.database.database.Database.count_documents">
 <span class="sig-name descname"><span class="pre">count_documents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/database/database.html#Database.count_documents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.database.database.Database.count_documents" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Count the number of documents in the specified collection that match the provided filter.</p>
+<p>This method counts the number of documents in the specified collection of the MongoDB database
+that match the provided filter. If the collection does not exist, it returns 0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>filter</strong> (<em>dict</em>) – A dictionary specifying the filter criteria to use when counting the documents.</p></li>
+<li><p><strong>collection</strong> (<em>str</em>) – The name of the collection to count the documents in.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The number of documents in the specified collection that match the provided filter.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="forensicfit.database.database.Database.export_to_files">
 <span class="sig-name descname"><span class="pre">export_to_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">destination</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.png'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_cursor_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/database/database.html#Database.export_to_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.database.database.Database.export_to_files" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Export objects from the specified collection that match the provided filter to files.</p>
+<p>This method exports objects from the specified collection of the MongoDB database that match
+the provided filter to files. The objects are saved as files in the specified destination
+directory. The objects are retrieved as instances of the class associated with the collection
+in the class mapping.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>destination</strong> (<em>str</em>) – The path to the directory where the files should be saved.</p></li>
+<li><p><strong>filter</strong> (<em>dict</em>) – A dictionary specifying the filter criteria to use when searching for the objects.</p></li>
+<li><p><strong>collection</strong> (<em>str</em>) – The name of the collection to search in.</p></li>
+<li><p><strong>ext</strong> (<em>str</em><em>, </em><em>optional</em>) – The file extension to use when saving the objects, defaults to ‘.png’.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to print the path of each file being saved, defaults to True.</p></li>
+<li><p><strong>no_cursor_timeout</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to prevent the server-side cursor from timing out after an inactivity period,
+defaults to False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="forensicfit.database.database.Database.drop_collection">
 <span class="sig-name descname"><span class="pre">drop_collection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/database/database.html#Database.drop_collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.database.database.Database.drop_collection" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Drop the specified collection from the MongoDB database.</p>
+<p>This method drops the specified collection and its associated ‘files’ and ‘chunks’ collections
+from the MongoDB database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>collection</strong> (<em>str</em>) – The name of the collection to drop.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="forensicfit.database.database.Database.delete">
 <span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/database/database.html#Database.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.database.database.Database.delete" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Delete documents from the specified collection that match the provided filter.</p>
+<p>This method deletes documents from the specified collection of the MongoDB database
+that match the provided filter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filter</strong> (<em>dict</em>) – A dictionary specifying the filter criteria to use when deleting the documents.</p></li>
+<li><p><strong>collection</strong> (<em>str</em>) – The name of the collection to delete the documents from.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="forensicfit.database.database.Database.delete_database">
 <span class="sig-name descname"><span class="pre">delete_database</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/database/database.html#Database.delete_database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.database.database.Database.delete_database" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Delete the MongoDB database associated with this Database instance.</p>
+<p>This method deletes the MongoDB database that this Database instance is connected to.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="forensicfit.database.database.Database.collection_names">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">collection_names</span></span><a class="headerlink" href="#forensicfit.database.database.Database.collection_names" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">collection_names</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#forensicfit.database.database.Database.collection_names" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the names of the collections in the MongoDB database.</p>
+<p>This method returns the names of the collections in the MongoDB database that this Database
+instance is connected to. The ‘.files’ suffix is removed from the collection names.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of the names of the collections in the MongoDB database.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="forensicfit.database.database.Database.connected">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">connected</span></span><a class="headerlink" href="#forensicfit.database.database.Database.connected" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">connected</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#forensicfit.database.database.Database.connected" title="Permalink to this definition">#</a></dt>
+<dd><p>Check if the Database instance is currently connected to the MongoDB database.</p>
+<p>This method checks if the Database instance is currently connected to the MongoDB database
+by attempting to retrieve the server information. If the server information is successfully
+retrieved, the method returns True. If a ServerSelectionTimeoutError occurs, the method
+prints the error and returns False.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the Database instance is currently connected to the MongoDB database, False otherwise.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="forensicfit.database.database.Database.server_info">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">server_info</span></span><a class="headerlink" href="#forensicfit.database.database.Database.server_info" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">server_info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><a class="headerlink" href="#forensicfit.database.database.Database.server_info" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the server information for the MongoDB database.</p>
+<p>This method retrieves and returns the server information for the MongoDB database that this
+Database instance is connected to.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A dictionary containing the server information for the MongoDB database.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="forensicfit.database.database.dict2mongo_query">
 <span class="sig-prename descclassname"><span class="pre">forensicfit.database.database.</span></span><span class="sig-name descname"><span class="pre">dict2mongo_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">previous_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/database/database.html#dict2mongo_query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.database.database.dict2mongo_query" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Convert a dictionary into a MongoDB query.</p>
+<p>This function takes a dictionary and converts it into a MongoDB query. The keys of the
+dictionary are concatenated with the <cite>previous_key</cite> parameter to form the keys of the query.
+The values of the dictionary are used as the values of the query.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>inp</strong> (<em>dict</em>) – The dictionary to convert into a MongoDB query.</p></li>
+<li><p><strong>previous_key</strong> (<em>str</em><em>, </em><em>optional</em>) – The key to prepend to the keys of the dictionary when forming the keys of the query,
+defaults to an empty string.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The MongoDB query formed from the input dictionary.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
@@ -619,12 +949,59 @@ kwargs must be chosen by filter=</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="forensicfit.database.database.list_databases">
 <span class="sig-prename descclassname"><span class="pre">forensicfit.database.database.</span></span><span class="sig-name descname"><span class="pre">list_databases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'localhost'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">27017</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/database/database.html#list_databases"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.database.database.list_databases" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>List the names of all databases on a MongoDB server.</p>
+<p>This function connects to a MongoDB server using the provided host, port, username, and password,
+and returns a list of the names of all databases on the server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>host</strong> (<em>str</em><em>, </em><em>optional</em>) – The host IP address or hostname where the MongoDB server is running, defaults to ‘localhost’.</p></li>
+<li><p><strong>port</strong> (<em>int</em><em>, </em><em>optional</em>) – The port number to connect to the MongoDB server, defaults to 27017.</p></li>
+<li><p><strong>username</strong> (<em>str</em><em>, </em><em>optional</em>) – The username for authenticating with the MongoDB server, defaults to an empty string.</p></li>
+<li><p><strong>password</strong> (<em>str</em><em>, </em><em>optional</em>) – The password for authenticating with the MongoDB server, defaults to an empty string.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of the names of all databases on the MongoDB server.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="forensicfit.database.database.dump">
 <span class="sig-prename descclassname"><span class="pre">forensicfit.database.database.</span></span><span class="sig-name descname"><span class="pre">dump</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forensicfit/database/database.html#dump"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#forensicfit.database.database.dump" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Dump a MongoDB database or collection to a BSON file.</p>
+<p>This function uses the <cite>mongodump</cite> command to dump a MongoDB database or collection to a BSON
+file. The <cite>mongodump</cite> command is a utility for creating a binary export of the contents of a
+database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the database to dump. If not provided, all databases are dumped.</p></li>
+<li><p><strong>host</strong> (<em>str</em><em>, </em><em>optional</em>) – The host IP address or hostname where the MongoDB server is running. If not provided,
+‘localhost’ is used.</p></li>
+<li><p><strong>port</strong> (<em>int</em><em>, </em><em>optional</em>) – The port number to connect to the MongoDB server. If not provided, 27017 is used.</p></li>
+<li><p><strong>username</strong> (<em>str</em><em>, </em><em>optional</em>) – The username for authenticating with the MongoDB server. If not provided, no authentication
+is used.</p></li>
+<li><p><strong>password</strong> (<em>str</em><em>, </em><em>optional</em>) – The password for authenticating with the MongoDB server. If not provided, no authentication
+is used.</p></li>
+<li><p><strong>out</strong> (<em>str</em><em>, </em><em>optional</em>) – The directory where the dump should be output. If not provided, the dump is output to the
+‘dump’ directory in the current working directory.</p></li>
+<li><p><strong>collection</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the collection to dump. If not provided, all collections in the specified
+database are dumped.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="forensicfit.database.database.restore">
@@ -681,6 +1058,11 @@ kwargs must be chosen by filter=</p>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.database.database.ClassMap"><code class="docutils literal notranslate"><span class="pre">ClassMap</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.database.database.ClassMap.mapping"><code class="docutils literal notranslate"><span class="pre">ClassMap.mapping</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.database.database.ClassMap.__contains__"><code class="docutils literal notranslate"><span class="pre">ClassMap.__contains__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.database.database.ClassMap.__getitem__"><code class="docutils literal notranslate"><span class="pre">ClassMap.__getitem__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.database.database.ClassMap.__iter__"><code class="docutils literal notranslate"><span class="pre">ClassMap.__iter__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.database.database.ClassMap.__len__"><code class="docutils literal notranslate"><span class="pre">ClassMap.__len__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forensicfit.database.database.ClassMap.__init__"><code class="docutils literal notranslate"><span class="pre">ClassMap.__init__()</span></code></a></li>
 </ul>
 </li>

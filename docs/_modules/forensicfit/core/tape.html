@@ -330,23 +330,45 @@ document.write(`
   <h1>Source code for forensicfit.core.tape</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- Coding: utf-8 -*-</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Created on Sun Jun 28 14:11:02 2020</span>
+<span class="sd">tape.py</span>
 
-<span class="sd">@author: Pedram Tavadze</span>
+<span class="sd">This module contains classes for handling and analyzing measurements </span>
+<span class="sd">from tape in the context of the ForensicFit application. These </span>
+<span class="sd">measurements are represented as images which are processed and </span>
+<span class="sd">analyzed using a variety of computer vision techniques.</span>
+
+<span class="sd">The module includes the following classes:</span>
+
+<span class="sd">- Tape: A class that represents an image of a tape measurement. It </span>
+<span class="sd">provides functionalities to load and process the image, extract </span>
+<span class="sd">relevant information, and perform various operations such as </span>
+<span class="sd">binarization and smearing.</span>
+
+<span class="sd">- TapeAnalyzer: A class that inherits from the Tape class, adding </span>
+<span class="sd">analysis functionalities. It can calculate the tape&#39;s boundary, </span>
+<span class="sd">plot it, and compute and store analysis metadata.</span>
+
+<span class="sd">The Tape class represents a single tape measurement and provides </span>
+<span class="sd">basic image processing operations. The TapeAnalyzer class extends </span>
+<span class="sd">this functionality by adding methods to analyze the tape&#39;s boundary </span>
+<span class="sd">and other features, which can be useful in forensic applications.</span>
+
+<span class="sd">Author: Pedram Tavadze</span>
+<span class="sd">Email: petavazohi@gmail.com</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">math</span>
-<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">image_tools</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">Analyzer</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">HAS_OPENCV</span>
+
+<span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">image_tools</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">Analyzer</span><span class="p">,</span> <span class="n">HAS_OPENCV</span>
+
 <span class="k">if</span> <span class="ow">not</span> <span class="n">HAS_OPENCV</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;To enable analyzer please install opencv&quot;</span><span class="p">)</span>
-<span class="k">else</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">cv2</span>
 
 <div class="viewcode-block" id="Tape"><a class="viewcode-back" href="../../../forensicfit.core.tape.html#forensicfit.core.tape.Tape">[docs]</a><span class="k">class</span> <span class="nc">Tape</span><span class="p">(</span><span class="n">Image</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Tape class is used for preprocessing tape images for machine learning.</span>
