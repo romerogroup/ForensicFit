@@ -45,7 +45,7 @@ google-auth==2.16.1
 google-auth-oauthlib==0.4.6
 google-pasta==0.2.0
 graphsurgeon @ file:///workspace/TensorRT-8.5.3.1/graphsurgeon/graphsurgeon-0.4.6-py2.py3-none-any.whl
-grpcio==1.39.0
+grpcio==1.53.0
 h5py==3.6.0
 HeapDict @ file:///rapids/lib/HeapDict-1.0.1-py3-none-any.whl
 horovod @ file:///opt/transfer/pip/horovod-0.27.0%2Bnv23.03-7472066-cp38-cp38-linux_x86_64.whl
