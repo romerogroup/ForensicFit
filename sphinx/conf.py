@@ -20,8 +20,8 @@ def setup(app):
 # -- Project information -----------------------------------------------------
 
 project = 'Forensic Fit'
-copyright = '2020, Pedram Tavadze'
-author = 'Pedram Tavadze, Logan Lang'
+copyright = '2023, Pedram Tavadze'
+author = 'Pedram Tavadze'
 
 
 # -- General configuration ---------------------------------------------------
