@@ -3,3 +3,5 @@ ForensicFit is created to preprocess scanned images from different tears and gen
 For more detailed documentation please visit https://romerogroup.github.io/ForensicFit/.
 ForensicFit can be installed from PyPI https://pypi.org/project/forensicfit/.
 
+## Machine Learning Model
+To access the trined models please refer to the "machine_learning" directory.
