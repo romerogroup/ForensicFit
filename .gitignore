@@ -26,3 +26,5 @@ wheels/
 
 *.code-workspace
 sphinx/_*
+
+gpu_venv/

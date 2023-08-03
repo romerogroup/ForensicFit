@@ -8,8 +8,9 @@ from PIL import Image
 import torchvision.transforms as transforms
 from torch.utils.data import Dataset, DataLoader
 import torch.nn.functional as F
-
 from torchvision import datasets, transforms
+
+from forensicfit.utils import ROOT
 
 class ConvModel(nn.Module):
     def __init__(self):
@@ -63,12 +64,10 @@ class ConvModel(nn.Module):
 def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    # Load CIFAR-10 dataset
     transform = transforms.Compose([transforms.Grayscale(1),
                                     transforms.ToTensor()])
-    PROJECT_DIR = os.path.dirname(os.path.dirname(__file__))
-    print(PROJECT_DIR)
-    processed_dir = PROJECT_DIR + os.sep + "data" + os.sep + "processed" + os.sep + "cross_validation" + os.sep + "match_nonmatch_ratio_0.3" + os.sep + "0"
+
+    processed_dir = ROOT + os.sep + "data" + os.sep + "processed" + os.sep + "cross_validation" + os.sep + "match_nonmatch_ratio_0.3" + os.sep + "0"
 
     train_dataset = datasets.ImageFolder(root = f"{processed_dir}{os.sep}back{os.sep}train", transform=transform)
     test_dataset = datasets.ImageFolder(root = f"{processed_dir}{os.sep}back{os.sep}test", transform=transform)
@@ -79,16 +78,11 @@ def main():
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=2,shuffle=True, num_workers=2)
     test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=2,shuffle=True, num_workers=2)
 
-    # Initialize the autoencoder and optimizer
+    # Initialize
     model = ConvModel().to(device)
     criterion = nn.MSELoss()
-    # criterion = nn.L1Loss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-    # for batch in test_loader:
-    #     print(batch[1])
-    # train_dataset.train_data.to(device)  # put data into GPU entirely
-    # train_dataset.train_labels.to(device)
     print( model( next(iter(train_loader) )[0].to(device) ).shape)
 
 

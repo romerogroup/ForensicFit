@@ -2,10 +2,12 @@ import os
 import shutil
 import gdown
 
-PROJECT_DIR = os.path.dirname(os.path.dirname(__file__))
+
+from forensicfit.utils import ROOT
+
 
 def download():
-    data_dir = os.path.join(PROJECT_DIR,'data')
+    data_dir = os.path.join(ROOT,'data')
 
     interim_dir = os.path.join(data_dir,'interim')
     processed_dir = os.path.join(data_dir,'processed')

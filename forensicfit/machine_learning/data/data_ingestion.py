@@ -13,11 +13,13 @@ from sklearn.model_selection import train_test_split
 from PIL import Image
 
 import forensicfit as ff
+from forensicfit.utils import ROOT
 
 Image.MAX_IMAGE_PIXELS = 933120000
-SCRATCH_DIR = f"{os.sep}users{os.sep}lllang{os.sep}SCRATCH"
-PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-DATA_DIR = f"{PROJECT_DIR}{os.sep}data"
+
+
+DATA_DIR = f"{ROOT}{os.sep}data"
+SCRATCH_DIR= os.path.dirname(ROOT)
 
 @dataclass
 class DataIngestionConfig:
