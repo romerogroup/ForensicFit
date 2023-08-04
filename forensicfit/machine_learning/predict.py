@@ -6,43 +6,54 @@ from forensicfit.utils import ROOT
 
 
 
-def predict():
+def predict(image_front_path,image_back_path):
     batch_size = 5
     model_dir = os.path.join(ROOT,'models')
 
-    model_type = 'back'
-    load_path = os.path.join(model_dir,f'{model_type}_model_tensorflow')
+    load_path_back = os.path.join(model_dir,f'back_model_tensorflow')
+    load_path_front = os.path.join(model_dir,f'front_model_tensorflow')
 
-    processed_dir = os.path.join(ROOT, "data", "processed", "normal_split", "match_nonmatch_ratio_0.3")
+    if not os.path.exists(load_path_front):
+        raise ValueError("Please download the models first. run python forensicfit.machine_learning.download_models()")
+    
+    #################################################################
+    if not os.path.exists(image_front_path):
+        raise ValueError("This image path does not exist")
+    image_data=tf.io.read_file(image_front_path)
+    # Decode the image data
+    image_front = tf.image.decode_image(image_data)
 
-    train_dir = os.path.join(processed_dir, model_type, "train")
-    test_dir = os.path.join(processed_dir, model_type, "test")
+    image_front=image_front[None,...]
+    image_front=tf.image.resize(image_front, [1200,410])
 
-    tf.random.set_seed(0)
-    ######################################################
-    ######################################################
-    ######################################################
-    ######################################################
+    if not os.path.exists(image_back_path):
+        raise ValueError("This image path does not exist")
+    image_data=tf.io.read_file(image_back_path)
+    image_back = tf.image.decode_image(image_data)
+    
+    image_back=image_back[None,...]
+    image_back = tf.image.resize(image_back, [1200,410])
 
-    def random_flip(image, label):
-        # image = tf.image.random_flip_up_down(image)
-        image = tf.image.random_flip_left_right(image)
-        return image, label
+    #################################################################
+    model_back = tf.keras.models.load_model(load_path_back)
+    model_front = tf.keras.models.load_model(load_path_front)
 
-    train_dataset = tf.keras.utils.image_dataset_from_directory(directory=train_dir,color_mode='grayscale',image_size=(1200,410), batch_size=batch_size)
-    test_dataset = tf.keras.utils.image_dataset_from_directory(directory=test_dir,color_mode='grayscale',image_size=(1200,410), batch_size=batch_size)
+    prediction_back=model_back.predict(image_back)
+    prediction_front=model_front.predict(image_front)
 
-    n_train = len(train_dataset)*batch_size
-    n_test = len(test_dataset)*batch_size
-
-    # Apply random vertical and horizontal flip augmentation
-    train_dataset = train_dataset.map(random_flip)
-
-    model = tf.keras.models.load_model(load_path)
-
-    test_loss, test_acc,tp,fp,tn,fn,auc = model.evaluate(test_dataset)
-    print(f'Test accuracy: {test_acc:.4f}')
-
+    def print_result(output):
+        if output >= 0.5:
+            result='Fit'
+            print(f"It's a {result}.")
+        else:
+            result='Non-Fit'
+            print(f"It's a {result}.")
+        return result
+    print("Back prediction")
+    result_back = print_result(prediction_back[0][0])
+    print("Front prediction")
+    result_front = print_result(prediction_front[0][0])
+    return (prediction_back[0][0], result_back , 'back') , (prediction_front[0][0], result_front , 'front' )
 
 if __name__ == '__main__':
     predict()

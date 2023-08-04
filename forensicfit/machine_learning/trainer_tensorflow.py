@@ -11,7 +11,7 @@ def train():
 
     # Hyperparameters
     num_epochs = 100
-    learning_rate = 1e-4
+    # learning_rate = 1e-4
     batch_size = 5
     early_stopping = True
     patience = 10

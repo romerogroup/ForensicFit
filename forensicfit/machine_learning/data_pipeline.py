@@ -1,5 +1,5 @@
-from data.data_ingestion import DataIngestion
-from data.data_generation import DataGenerator
+from forensicfit.machine_learning.data.data_ingestion import DataIngestion
+from forensicfit.machine_learning.data.data_generation import DataGenerator
 
 def data_pipeline():
     data_ingestion = False

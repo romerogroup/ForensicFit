@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import importlib.util
+
 import sys
 from .version import __version__
 def has_package(name):

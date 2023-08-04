@@ -18,4 +18,4 @@ from pathlib import Path
 
 # Other Constants
 FILE = Path(__file__).resolve()
-ROOT = str(FILE.parents[1])  # forensicfit
+ROOT = str(FILE.parents[2])  # forensicfit
