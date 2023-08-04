@@ -1,7 +1,8 @@
 import tensorflow as tf
 import os
 import matplotlib.pyplot as plt
-
+import numpy as np
+import joblib
 
 
 def predict(image_front_path,image_back_path, project_dir='.'):
@@ -51,6 +52,12 @@ def predict(image_front_path,image_back_path, project_dir='.'):
     result_back = print_result(prediction_back[0][0])
     print("Front prediction")
     result_front = print_result(prediction_front[0][0])
+
+    # Combine model with the descision tree
+    # dt = joblib.load(os.path.join(project_dir,'forensicfit','machine_learning','combinationDecisionTree.joblib'))
+    # X = np.array([prediction_back[0][0],prediction_front[0][0]])
+    # y_predicted = dt.predict(X)
+    # print(y_predicted)
     return (prediction_back[0][0], result_back , 'back') , (prediction_front[0][0], result_front , 'front' )
 
 if __name__ == '__main__':
