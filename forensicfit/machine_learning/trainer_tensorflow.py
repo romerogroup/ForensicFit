@@ -3,11 +3,11 @@ import os
 import matplotlib.pyplot as plt
 
 
-from forensicfit.utils import ROOT
 
 
-def train():
-    model_dir = os.path.join(ROOT,'models')
+
+def train(project_dir='.'):
+    model_dir = os.path.join(project_dir,'models')
 
     # Hyperparameters
     num_epochs = 100
@@ -21,7 +21,7 @@ def train():
     save_model = True 
     save_path = os.path.join(model_dir,f'{model_type}_model_tensorflow')
 
-    processed_dir = os.path.join(ROOT, "data", "processed", "normal_split", "match_nonmatch_ratio_0.3")
+    processed_dir = os.path.join(project_dir, "data", "processed", "normal_split", "match_nonmatch_ratio_0.3")
     # processed_dir = os.path.join(PROJECT_DIR, "data", "processed", "cross_validation", "match_nonmatch_ratio_0.3", "0")
 
     train_dir = os.path.join(processed_dir, model_type, "train")

@@ -2,21 +2,20 @@ import tensorflow as tf
 import os
 import matplotlib.pyplot as plt
 
-from forensicfit.utils import ROOT
 
 
-
-def evaluate():
+def evaluate(project_dir='.'):
     batch_size = 5
-    model_dir = os.path.join(ROOT,'models')
+    model_dir = os.path.join(project_dir,'models')
 
     model_type = 'back'
     load_path = os.path.join(model_dir,f'{model_type}_model_tensorflow')
 
-    processed_dir = os.path.join(ROOT, "data", "processed", "normal_split", "match_nonmatch_ratio_0.3")
+    processed_dir = os.path.join(project_dir, "data", "processed", "normal_split", "match_nonmatch_ratio_0.3")
     if not os.path.exists(load_path):
         raise ValueError("Please download the models first. run python forensicfit.machine_learning.download_models()")
 
+    print("Loading files from : ",processed_dir)
     if not os.path.exists(processed_dir):
         raise ValueError("Please download the processed data first. run python forensicfit.machine_learning.download_processed_data()")   
     

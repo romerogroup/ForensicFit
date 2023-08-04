@@ -2,12 +2,11 @@ import os
 import shutil
 import gdown
 
-from forensicfit.utils import ROOT
 
-def download_models():
+def download_models(project_dir='.'):
 
-    output = f"{ROOT}{os.sep}models.zip"
-    to = f"{ROOT}{os.sep}"
+    output = f"{project_dir}{os.sep}models.zip"
+    to = f"{project_dir}{os.sep}"
     url  = f'https://drive.google.com/drive/folders/1viez7q5TmwkdbcwceS4dWxeBsM8bDg0X'
 
 

@@ -6,8 +6,8 @@ import gdown
 from forensicfit.utils import ROOT
 
 
-def download():
-    data_dir = os.path.join(ROOT,'data')
+def download(project_dir='.'):
+    data_dir = os.path.join(project_dir,'data')
 
     interim_dir = os.path.join(data_dir,'interim')
     processed_dir = os.path.join(data_dir,'processed')

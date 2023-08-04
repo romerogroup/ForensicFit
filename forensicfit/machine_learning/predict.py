@@ -2,13 +2,11 @@ import tensorflow as tf
 import os
 import matplotlib.pyplot as plt
 
-from forensicfit.utils import ROOT
 
 
-
-def predict(image_front_path,image_back_path):
+def predict(image_front_path,image_back_path, project_dir='.'):
     batch_size = 5
-    model_dir = os.path.join(ROOT,'models')
+    model_dir = os.path.join(project_dir,'models')
 
     load_path_back = os.path.join(model_dir,f'back_model_tensorflow')
     load_path_front = os.path.join(model_dir,f'front_model_tensorflow')

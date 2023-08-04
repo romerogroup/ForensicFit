@@ -29,3 +29,5 @@ sphinx/_*
 data/
 models/
 gpu_venv/
+venv/
+my_test/
