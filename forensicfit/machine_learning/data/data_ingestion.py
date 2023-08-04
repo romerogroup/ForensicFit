@@ -13,11 +13,13 @@ from sklearn.model_selection import train_test_split
 from PIL import Image
 
 import forensicfit as ff
+from forensicfit.utils import ROOT
 
 Image.MAX_IMAGE_PIXELS = 933120000
-SCRATCH_DIR = f"{os.sep}users{os.sep}lllang{os.sep}SCRATCH"
-PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-DATA_DIR = f"{PROJECT_DIR}{os.sep}data"
+
+
+DATA_DIR = f"{ROOT}{os.sep}data"
+SCRATCH_DIR= os.path.dirname(ROOT)
 
 @dataclass
 class DataIngestionConfig:
@@ -25,8 +27,7 @@ class DataIngestionConfig:
     DataIngestionConfig is a dataclass that holds the configuration for data ingestion.
     """
 
-    original_data_dir: str= f"{SCRATCH_DIR}{os.sep}shared_forensics{os.sep}Tape{os.sep}Automated_Algorithm_Photos{os.sep}Scans"
-
+    external: str= f"{DATA_DIR}{os.sep}external"
     interim_dir: str= f"{DATA_DIR}{os.sep}interim"
     raw_dir: str= f"{DATA_DIR}{os.sep}raw"
 
@@ -60,11 +61,14 @@ class DataIngestion:
                                 split_image_dir_name='default'
         ):
         print("Initiating data ingestion")
-        # try:
         if not os.path.exists(self.config.shared_dir):
             print("Downloading data")
-            self.download_data_to_dir(original_scan_dir=self.config.original_data_dir, copy_dir=self.config.shared_dir)
+            self.download_data_to_dir(original_scan_dir=self.config.external, copy_dir=self.config.shared_dir)
             self.switch_mod_images(shared_dir=self.config.shared_dir)
+
+            bad_tapes_source=os.path.join(self.config.shared_dir,'bad_tapes.xlsx')
+            bad_tapes_destination=self.config.raw_dir
+            shutil.copy2(bad_tapes_source, bad_tapes_destination)
 
         if not os.path.exists(self.config.preprocess_dir):
             print("Preprocessing Images")
@@ -81,12 +85,11 @@ class DataIngestion:
         self.copy_master_inventory_to_dir(shared_dir=self.config.shared_dir,raw_data_dir=self.config.raw_dir)
         df_match,df_nonmatch = self.preprocess_xlsx()
         self.combine_match_nonmatch(df_match, df_nonmatch)
-        if not os.path.exists(f'{self.config.split_image_dir}{os.sep}{split_image_dir_name}'):
-            print("Splitting Images")
-            os.makedirs(self.config.split_image_dir,exist_ok=True)
-            self.split_images(split_image_dir_name=split_image_dir_name)
-            self.correct_rotated_images(raw_data_dir=self.config.raw_dir, tape_dir=f'{self.config.split_image_dir}{os.sep}{split_image_dir_name}')
-
+        # if not os.path.exists(f'{self.config.split_image_dir}{os.sep}{split_image_dir_name}'):
+        print("Splitting Images")
+        os.makedirs(self.config.split_image_dir,exist_ok=True)
+        self.split_images(split_image_dir_name=split_image_dir_name)
+        self.correct_rotated_images(raw_data_dir=self.config.raw_dir, tape_dir=f'{self.config.split_image_dir}{os.sep}{split_image_dir_name}')
 
     def download_data_to_dir(self,original_scan_dir, copy_dir):
         
@@ -125,8 +128,12 @@ class DataIngestion:
                     pool.map(mp_copy, list(zip(dirs_to_copy,dirs_to_copy_to)))
 
         except Exception as e:
-            logging.info('Failed to download data')
-            raise CustomException(e,sys)
+            print(e)
+            raise ValueError('Failed to download data')
+        
+        bad_tapes_source=os.path.join(original_scan_dir,'bad_tapes.xlsx')
+        bad_tapes_destination=copy_dir
+        shutil.copy2(bad_tapes_source, bad_tapes_destination)
 
     def preprocess_images(self, shared_dir, preprocess_dir):
 
@@ -167,11 +174,9 @@ class DataIngestion:
                 with multiprocessing.Pool(self.ncores) as pool:
                     pool.map(partial(mp_preprocess, raw_tape_type_dir=raw_tape_type_dir, resized_tape_type_dir=preprocessed_tape_type_dir ), filtered_files)
         except Exception as e:
-            logging.info('Failed to Preprocess IMages')
-            raise CustomException(e,sys)
+            raise ValueError('Failed to Preprocess Images')
         
     def switch_mod_images(self,shared_dir):
-        logging.info("Switching Out Modified Images")
         try:
             ####################################################################
             # Following will check the directories for modified files, if so replace the files with the modified, then delete the extra modfied files
@@ -201,7 +206,6 @@ class DataIngestion:
 
                         if os.path.isfile(f"{raw_tape_type_dir}{os.sep}{file}"):
                             os.remove(f"{raw_tape_type_dir}{os.sep}{file}")
-            logging.info("Switching Out Modified Images in Tape Type Directories Completed")
             ####################################################################
             # Following lines of code will check the modified folders, 
             # if there are modified files, they will replace the image in the raw directories, 
@@ -234,11 +238,9 @@ class DataIngestion:
                     # Open the file the save the modified file in the raw directories
                     im = Image.open(f"{corrected_type_dir}{os.sep}{file}")
                     im.save(f"{raw_tape_type_dir}{os.sep}{tape_name}.tif")
-            logging.info("Switching Out Modified Images in the corrected image directory")
         except Exception as e:
-            logging.info('Failed to switch out modified images')
-            CustomException(e,sys)
-
+            pass
+            
     def copy_images_to_dir(self,preprocess_dir, final_image_dir):
         resized_tape_type_dirs = [f"{preprocess_dir}{os.sep}HQHT", 
                                 f"{preprocess_dir}{os.sep}HQC",
@@ -523,7 +525,6 @@ def mp_edge_split(image_file: str ,
                 analyzer.get_bin_based(window_background=10,
                                             window_tape=400,
                                             dynamic_window=True,
-                                            size=None,
                                             n_bins=1,
                                             overlap=10,
                                             border='min')[0]
@@ -583,5 +584,5 @@ if __name__ == '__main__':
     ################################################
     # Starting data injestion
     #################################################
-    obj=DataIngestion(from_scratch=False)
+    obj=DataIngestion(from_scratch=True)
     obj.initiate_data_ingestion()

@@ -7,6 +7,7 @@ from PIL import Image
 import imageio
 import re
 
+from forensicfit.utils import ROOT
 
 Image.MAX_IMAGE_PIXELS = 933120000
 
@@ -69,11 +70,8 @@ def preprocess_images(raw_shared_dir, preprocessed_images_dir, ncores=16):
 
 
 if __name__ == '__main__':
-    parent_dir = f"{os.sep}users{os.sep}lllang{os.sep}SCRATCH{os.sep}forensics"
-    project_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-    print(f"The project directory is : {project_dir}")
 
-    dataset_dir = f"{project_dir}{os.sep}datasets{os.sep}raw"
+    dataset_dir = f"{ROOT}{os.sep}datasets{os.sep}raw"
     raw_shared_dir=f"{dataset_dir}{os.sep}shared"
     preprocessed_images_dir = f"{dataset_dir}{os.sep}preprocessed_images"
     ncores = 20

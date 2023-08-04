@@ -16,7 +16,7 @@ from torchvision import datasets
 from model import ConvModel
 # Hyperparameters
 
-
+from forensicfit.utils import ROOT
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -43,8 +43,7 @@ transform = transforms.Compose([transforms.Grayscale(1),
                                 # transforms.RandomVerticalFlip(p=0.5),
                                 transforms.ToTensor()])
 
-PROJECT_DIR = os.path.dirname(os.path.dirname(__file__))
-processed_dir = PROJECT_DIR + os.sep + "data" + os.sep + "processed" + os.sep + "cross_validation" + os.sep + "match_nonmatch_ratio_0.3" + os.sep + "0"
+processed_dir = ROOT + os.sep + "data" + os.sep + "processed" + os.sep + "cross_validation" + os.sep + "match_nonmatch_ratio_0.3" + os.sep + "0"
 
 train_dataset = datasets.ImageFolder(root = f"{processed_dir}{os.sep}back{os.sep}train", transform=transform)
 test_dataset = datasets.ImageFolder(root = f"{processed_dir}{os.sep}back{os.sep}test", transform=transform)
