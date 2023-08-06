@@ -8,5 +8,5 @@ scipy>=1.5.0
 scikit-image>=0.18.3
 gdown
 tensorflow
-scikit-learn
+scikit-learn==1.2.0
 joblib

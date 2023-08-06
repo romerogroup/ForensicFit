@@ -54,11 +54,13 @@ def predict(image_front_path,image_back_path, project_dir='.'):
     result_front = print_result(prediction_front[0][0])
 
     # Combine model with the descision tree
-    # dt = joblib.load(os.path.join(project_dir,'forensicfit','machine_learning','combinationDecisionTree.joblib'))
-    # X = np.array([prediction_back[0][0],prediction_front[0][0]])
-    # y_predicted = dt.predict(X)
-    # print(y_predicted)
-    return (prediction_back[0][0], result_back , 'back') , (prediction_front[0][0], result_front , 'front' )
+    dt = joblib.load(os.path.join(project_dir,'forensicfit','machine_learning','combinationDecisionTree.joblib'))
+    X = np.array([prediction_back[0][0],prediction_front[0][0]])
+    X=X[None,:]
+    y_predicted=dt.predict(X)[0]
+    y_pred_prob=dt.predict_proba(X)[0][0]
+
+    return (prediction_back[0][0], result_back , 'back') , (prediction_front[0][0], result_front, 'front' ) , (y_pred_prob, y_predicted, 'both' )
 
 if __name__ == '__main__':
     predict()
