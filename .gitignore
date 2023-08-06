@@ -31,3 +31,4 @@ models/
 gpu_venv/
 venv/
 my_test/
+.ipypirc
