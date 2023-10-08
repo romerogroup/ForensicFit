@@ -54,7 +54,7 @@ def predict(image_front_path,image_back_path, project_dir='.'):
     result_front = print_result(prediction_front[0][0])
 
     # Combine model with the descision tree
-    dt = joblib.load(os.path.join(project_dir,'forensicfit','machine_learning','combinationDecisionTree.joblib'))
+    dt = joblib.load(os.path.join(project_dir,'forensicfit','machine_learning','logistic_regression_model.joblib'))
     X = np.array([prediction_back[0][0],prediction_front[0][0]])
     X=X[None,:]
     y_predicted=dt.predict(X)[0]
