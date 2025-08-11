@@ -1,5 +1,6 @@
 # ForensicFit
 ForensicFit is created to preprocess scanned images from different tears and generate a database that will be used in different machine-learning approaches. This package will prepare the data in four different approaches, which will be shown in the tutorial sections.
+For more details please see Lang, Logan, Pedram Tavadze, Meghan Prusinowski, Zachary Andrews, Cedric Neumann, Tatiana Trejos, and Aldo H. Romero. "Using convolutional neural networks to support examiners in duct tape physical fit comparisons." Forensic Science International 353 (2023): 111884, at https://doi.org/10.1016/j.forsciint.2023.111884.
 For more detailed documentation please visit https://romerogroup.github.io/ForensicFit/.
 ForensicFit can be installed from PyPI https://pypi.org/project/forensicfit/.
 
@@ -58,4 +59,5 @@ image_front_path=os.path.join(processed_front_dir,'HQC_001_R-HQC_003_L.jpg')
 image_back_path=os.path.join(processed_back_dir,'HQC_002_L-HQC_004_R.jpg')
 prediction=ml.predict(image_front_path=image_front_path,image_back_path=image_back_path)
 print(prediction)
+
 ```
