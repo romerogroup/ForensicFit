@@ -25,6 +25,7 @@ wheels/
 \#.*
 
 *.code-workspace
+.vscode/
 sphinx/_*
 data/
 models/
