@@ -127,7 +127,7 @@ pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pycparser==2.21
 pydot==1.4.2
-Pygments==2.14.0
+Pygments==2.15.0
 pylibcugraph @ file:///rapids/lib/pylibcugraph-23.2.0-cp38-cp38-linux_x86_64.whl
 pylibcugraphops @ file:///rapids/lib/pylibcugraphops-23.2.0-cp38-cp38-linux_x86_64.whl
 pylibraft @ file:///rapids/lib/pylibraft-23.2.0-cp38-cp38-linux_x86_64.whl
